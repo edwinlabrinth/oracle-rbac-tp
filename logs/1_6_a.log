@@ -1,0 +1,35 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:51:11 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT ali/"Ali#2027"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT USER AS session_ali FROM dual;
+
+SESSION_ALI
+------------------------------------------------------------------------------------------------------------------------
+ALI
+
+1 row selected.
+
+SQL> EXEC DBMS_SESSION.SLEEP(120)
+ERROR:
+ORA-03114: not connected to ORACLE
+Help: https://docs.oracle.com/error-help/db/ora-03114/
+
+
+BEGIN DBMS_SESSION.SLEEP(120); END;
+
+*
+ERROR at line 1:
+ORA-00028: session has been terminated
+ORA-06512: at "SYS.DBMS_SESSION", line 438
+ORA-06512: at line 1
+Help: https://docs.oracle.com/error-help/db/ora-00028/
+
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,31 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:50:13 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+ERROR:
+ORA-28001: The account has expired. The password must be changed.
+Help: https://docs.oracle.com/error-help/db/ora-28001/
+
+
+Changing password for ali
+New password: Ali#2027
+
+Retype new password: Ali#2027
+
+Password changed
+
+Connected to:
+Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0
+
+SQL> SELECT USER FROM dual;
+
+USER
+--------------------------------------------------------------------------------
+ALI
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

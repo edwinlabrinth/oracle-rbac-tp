@@ -1,0 +1,139 @@
+\section{Utilisateurs}
+
+\subsection{Exercice 1.1 -- Premier compte}
+\textbf{Objectif.} Créer un utilisateur sans aucun droit, constater qu'il ne peut pas se connecter, puis
+lui accorder uniquement le privilège minimal.
+
+\shots{1_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item La création de \code{ALI} (\code{DEFAULT TABLESPACE users}, \code{TEMPORARY TABLESPACE temp})
+        réussit : un utilisateur Oracle n'est qu'une identité, sans privilège implicite.
+  \item La connexion \code{ali/"Ali\#2026"} échoue avec \code{ORA-01045: Login denied. User ALI does not
+        have CREATE SESSION privilege}. Sans \code{CREATE SESSION}, aucun utilisateur ne peut ouvrir de
+        session, même avec le bon mot de passe.
+  \item Le privilège minimal est \code{GRANT CREATE SESSION TO ali}; après reconnexion,
+        \code{SELECT USER FROM dual} renvoie \code{ALI}.
+  \item \code{DBA\_USERS} affiche : \code{USERNAME = ALI}, \code{DEFAULT\_TABLESPACE = USERS},
+        \code{TEMPORARY\_TABLESPACE = TEMP}, \code{PROFILE = DEFAULT}, \code{ACCOUNT\_STATUS = OPEN} et
+        \code{CREATED = 29-OCT-26}.
+\end{enumerate}
+
+\subsection{Exercice 1.2 -- Quotas et création différée}
+\textbf{Objectif.} Comprendre pourquoi une table peut être créée sans quota alors que l'insertion échoue,
+puis observer le dépassement de quota.
+
+\shots{1_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Après \code{GRANT CREATE TABLE TO ali}, ALI crée \code{notes(id NUMBER, texte VARCHAR2(4000))} :
+        la commande réussit. L'insertion échoue avec \code{ORA-01950: The user ALI has insufficient quota
+        on tablespace USERS}. La création avait réussi car l'allocation du segment est \emph{différée} au
+        premier insert (segment deferred) : le dictionnaire enregistre la définition de la table, mais aucun
+        espace n'est encore consommé.
+  \item Après \code{ALTER USER ali QUOTA 1M ON users}, l'insertion réussit : \code{nb\_lignes = 1}.
+  \item Le bloc PL/SQL de 2000 lignes s'arrête sur \code{ORA-01536: space quota exceeded for tablespace
+        'USERS'} (remonté par \code{ORA-06512: at line 3}) : le mégaoctet concédé est saturé.
+  \item \code{DBA\_TS\_QUOTAS} renvoie pour ALI sur \code{USERS} : \code{BYTES = 1048576} et
+        \code{MAX\_BYTES = 1048576}. Un \code{MAX\_BYTES = -1} signifierait un quota \textbf{illimité}
+        (la valeur \code{-1} code l'infini dans cette vue).
+\end{enumerate}
+
+\subsection{Exercice 1.3 -- Cycle de vie d'un compte}
+\textbf{Objectif.} Expirer un mot de passe, le changer à la connexion, verrouiller puis déverrouiller le
+compte et suivre les dates associées.
+
+\shots{1_3}
+\shots{1_3_chg}
+\shots{1_3_lock}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{ALTER USER ali PASSWORD EXPIRE} passe \code{ACCOUNT\_STATUS} de \code{OPEN} à
+        \code{EXPIRED} et renseigne \code{EXPIRY\_DATE = 29-OCT-26}. À la connexion, SQL*Plus affiche
+        \code{ORA-28001: The account has expired. The password must be changed} puis propose
+        \code{Changing password for ali / New password: / Retype new password:}. Le mot de passe est
+        effectivement changé en \code{Ali\#2027} (message \code{Password changed}), puis le compte repasse
+        \code{OPEN}.
+  \item \code{ALTER USER ali ACCOUNT LOCK} passe l'état à \code{LOCKED} avec
+        \code{LOCK\_DATE = 29-OCT-26}. La connexion renvoie alors \code{ORA-28000: The account is locked;
+        login denied}.
+  \item \code{ALTER USER ali ACCOUNT UNLOCK} ramène le compte à \code{OPEN} et vide \code{LOCK\_DATE}.
+  \item Il est préférable de \emph{verrouiller} plutôt que de supprimer immédiatement le compte d'un
+        employé qui part : on conserve ses objets (tables, vues), l'historique et la trace d'audit de ses
+        actions, et l'opération est réversible. Une suppression \code{DROP USER ... CASCADE} détruit au
+        contraire les objets et rend toute enquête impossible.
+\end{enumerate}
+
+\subsection{Exercice 1.4 -- Compte schéma seul et proxy}
+\textbf{Objectif.} Manipuler un compte \code{NO AUTHENTICATION} et une connexion proxy.
+
+\shots{1_4}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item La connexion directe \code{rh/"nimportequoi"} échoue avec \code{ORA-01017: invalid credential or
+        not authorized; logon denied} : un compte schéma seul n'a pas de mot de passe, donc aucune
+        authentification directe n'est possible.
+  \item Après \code{CREATE USER dev1 IDENTIFIED BY "Dev1\#2026"}, \code{GRANT CREATE SESSION TO dev1} et
+        \code{ALTER USER rh GRANT CONNECT THROUGH dev1}, la première connexion
+        \code{dev1[rh]/"Dev1\#2026"} échoue avec \code{ORA-01045: Login denied. User RH does not have
+        CREATE SESSION privilege}. C'est bien \textbf{\code{RH}} qui manque du privilège : le proxy ouvre
+        une session \emph{en tant que} RH, qui doit donc lui aussi posséder \code{CREATE SESSION}.
+  \item Après \code{GRANT CREATE SESSION TO rh}, la connexion proxy réussit : \code{USER = RH} et
+        \code{SYS\_CONTEXT('USERENV','PROXY\_USER') = DEV1}. Les tables du schéma courant
+        (\code{user\_tables}) sont \code{DEPARTEMENTS} et \code{EMPLOYES}.
+  \item Intérêt : le schéma \code{RH} n'a pas de mot de passe à voler ; chaque développeur s'authentifie
+        avec son propre compte ; on peut retirer l'accès d'un seul développeur sans toucher au schéma ; et
+        l'audit enregistre \code{PROXY\_USER} (DEV1) en plus de \code{USER} (RH), ce qui assure la
+        traçabilité.
+\end{enumerate}
+
+\subsection{Exercice 1.5 -- Utilisateurs communs et locaux}
+\textbf{Objectif.} Distinguer un utilisateur local d'un utilisateur commun (\code{CONTAINER=ALL}).
+
+\shots{1_5}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Connecté à la racine (\code{SHOW CON\_NAME = CDB\$ROOT}), \code{CREATE USER bob IDENTIFIED BY
+        "Bob\#2026"} \textbf{réussit} dans cet environnement (voir l'écart ci-dessous).
+  \item \code{CREATE USER c##superviseur ... CONTAINER=ALL} puis \code{GRANT CREATE SESSION ...
+        CONTAINER=ALL} réussissent : l'utilisateur existe dans tous les conteneurs.
+  \item De retour dans \code{FREEPDB1}, \code{CREATE USER c##test ...} échoue avec \code{ORA-65094:
+        invalid local user or role name} : un nom réservé aux comptes communs ne peut pas être créé comme
+        utilisateur local dans une PDB.
+  \item \code{DBA\_USERS} : \code{ALI -> COMMON = NO} (local) et \code{C##SUPERVISEUR -> COMMON = YES}
+        (commun).
+\end{enumerate}
+
+\ecart{Le code \code{ORA-65096} attendu sur \code{CREATE USER bob} dans la racine n'est pas apparu : la
+commande a réussi et \code{BOB} a été créé comme utilisateur \emph{commun} (\code{COMMON = YES} dans
+\code{CDB\_USERS}). En 26ai Free de ce conteneur, le paramètre \code{COMMON\_USER\_PREFIX} est vide
+(\code{SHOW PARAMETER common\_user\_prefix} ne renvoie aucune valeur), donc le préfixe \code{C\#\#}
+n'est plus imposé pour créer un compte dans \code{CDB\$ROOT}. Le second contrôle (\code{ORA-65094}) est,
+lui, bien obtenu.}
+
+\subsection{Exercice 1.6 -- Supprimer un utilisateur}
+\textbf{Objectif.} Supprimer un utilisateur qui possède des objets puis gérer une session ouverte.
+
+\shots{1_6}
+\shots{1_6_a}
+\shots{1_6_drop}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DROP USER ali} échoue avec \code{ORA-01922: CASCADE must be specified to drop 'ALI'} car ALI
+        possède la table \code{NOTES} et un quota sur \code{USERS}.
+  \item Une session ALI est maintenue ouverte en parallèle (script \code{1\_6\_a}, \code{SLEEP(120)}). Le
+        \code{DROP USER ali CASCADE} échoue alors avec \code{ORA-01940: cannot drop a user who is currently
+        connected}. La session est identifiée dans \code{V\$SESSION} (\code{SID=221, SERIAL\#=47280}).
+  \item La session est terminée par \code{ALTER SYSTEM KILL SESSION '221,47280' IMMEDIATE} (le bloc
+        signale \code{ORA-00031: session marked for kill}); la session côté utilisateur reçoit
+        \code{ORA-00028: session has been terminated}. Après disparition de la session, \code{DROP USER ali
+        CASCADE} réussit.
+  \item Après suppression : \code{tables\_ali = 0} et \code{quotas\_ali = 0} dans \code{DBA\_TABLES} et
+        \code{DBA\_TS\_QUOTAS}. La table \code{NOTES} et le quota disparaissent donc avec l'utilisateur.
+\end{enumerate}

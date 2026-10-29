@@ -1,0 +1,83 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:51:16 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 1_6_drop.sql : Exercice 1.6 (2/2) -- session ouverte, kill puis DROP CASCADE
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 2. DROP CASCADE alors qu'une session ALI est ouverte (lancee en parallele : 1_6_a)
+SQL> DROP USER ali CASCADE;
+DROP USER ali CASCADE
+*
+ERROR at line 1:
+ORA-01940: cannot drop a user who is currently connected
+Help: https://docs.oracle.com/error-help/db/ora-01940/
+
+
+SQL> 
+SQL> -- 3. Identification puis terminaison de la session
+SQL> COLUMN username FORMAT A12
+SQL> SELECT sid, serial#, status FROM v$session WHERE username = 'ALI';
+
+       SID    SERIAL# STATUS
+---------- ---------- --------
+       221	47280 ACTIVE
+
+1 row selected.
+
+SQL> 
+SQL> BEGIN
+  2    FOR r IN (SELECT sid, serial# FROM v$session WHERE username = 'ALI') LOOP
+  3  	 EXECUTE IMMEDIATE 'ALTER SYSTEM KILL SESSION ''' || r.sid || ',' || r.serial# || ''' IMMEDIATE';
+  4    END LOOP;
+  5  END;
+  6  /
+BEGIN
+*
+ERROR at line 1:
+ORA-00031: session marked for kill
+ORA-06512: at line 3
+ORA-06512: at line 3
+Help: https://docs.oracle.com/error-help/db/ora-00031/
+
+
+SQL> EXEC DBMS_SESSION.SLEEP(3);
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT sid, serial#, status FROM v$session WHERE username = 'ALI';
+
+no rows selected
+
+SQL> 
+SQL> -- Suppression definitive apres liberation de la session
+SQL> DROP USER ali CASCADE;
+
+User dropped.
+
+SQL> 
+SQL> PROMPT === Verifications apres DROP USER ali CASCADE ===
+=== Verifications apres DROP USER ali CASCADE ===
+SQL> SELECT COUNT(*) AS tables_ali FROM dba_tables WHERE owner = 'ALI';
+
+TABLES_ALI
+----------
+	 0
+
+1 row selected.
+
+SQL> SELECT COUNT(*) AS quotas_ali FROM dba_ts_quotas WHERE username = 'ALI';
+
+QUOTAS_ALI
+----------
+	 0
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

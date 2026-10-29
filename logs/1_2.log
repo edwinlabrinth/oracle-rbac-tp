@@ -1,0 +1,90 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:49:42 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 1_2.sql : Exercice 1.2 -- Quotas et création différée
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. Droit de créer des tables pour ALI
+SQL> GRANT CREATE TABLE TO ali;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- 2. Création de la table en ALI (réussit) puis insertion (doit échouer faute de quota)
+SQL> CONNECT ali/"Ali#2026"@//localhost/FREEPDB1
+Connected.
+SQL> CREATE TABLE notes (id NUMBER, texte VARCHAR2(4000));
+
+Table created.
+
+SQL> INSERT INTO notes VALUES (1, 'premiere ligne');
+INSERT INTO notes VALUES (1, 'premiere ligne')
+            *
+ERROR at line 1:
+ORA-01950: The user ALI has insufficient quota on tablespace USERS.
+Help: https://docs.oracle.com/error-help/db/ora-01950/
+
+
+SQL> 
+SQL> -- 3. Attribution d'un quota de 1 Mo sur USERS, puis nouvelle insertion
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> ALTER USER ali QUOTA 1M ON users;
+
+User altered.
+
+SQL> CONNECT ali/"Ali#2026"@//localhost/FREEPDB1
+Connected.
+SQL> INSERT INTO notes VALUES (1, 'premiere ligne apres quota');
+
+1 row created.
+
+SQL> SELECT COUNT(*) AS nb_lignes FROM notes;
+
+ NB_LIGNES
+----------
+	 1
+
+1 row selected.
+
+SQL> 
+SQL> -- 4. Bloc PL/SQL : doit s'arreter sur un depassement de quota
+SQL> BEGIN
+  2    FOR i IN 1..2000 LOOP
+  3  	 INSERT INTO notes VALUES (i, RPAD('x', 4000, 'x'));
+  4    END LOOP;
+  5    COMMIT;
+  6  END;
+  7  /
+BEGIN
+*
+ERROR at line 1:
+ORA-01536: space quota exceeded for tablespace 'USERS'
+ORA-06512: at line 3
+Help: https://docs.oracle.com/error-help/db/ora-01536/
+
+
+SQL> 
+SQL> -- 5. Quota reel d'ALI
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN username FORMAT A12
+SQL> COLUMN tablespace_name FORMAT A16
+SQL> SELECT username, tablespace_name, bytes, max_bytes
+  2    FROM dba_ts_quotas
+  3   WHERE username = 'ALI';
+
+USERNAME     TABLESPACE_NAME	   BYTES  MAX_BYTES
+------------ ---------------- ---------- ----------
+ALI	     USERS		 1048576    1048576
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

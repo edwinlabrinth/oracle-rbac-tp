@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2026.10.29)  29 OCT 2026 00:48
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2026.10.29)  29 OCT 2026 00:51
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -584,7 +584,178 @@ LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <5> on input line 49.
 LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 (Font)              scaled to size 8.80005pt on input line 49.
-) [5] (report/main.aux)
+) (./report/ch1.tex (./screenshots/1_1.tex
+File: screenshots/1_1_1.png Graphic file (type bmp)
+<screenshots/1_1_1.png>
+ [5]
+File: screenshots/1_1_2.png Graphic file (type bmp)
+<screenshots/1_1_2.png>
+) [6]
+Overfull \hbox (29.62129pt too wide) in paragraph at lines 18--21
+[]\TU/DejaVuSansMono(0)/m/n/10.95 DBA\_USERS \TU/lmr/m/n/10.95 affiche : \TU/De
+jaVuSansMono(0)/m/n/10.95 USERNAME = ALI\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(
+0)/m/n/10.95 DEFAULT\_TABLESPACE = USERS\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(
+0)/m/n/10.95 TEMPORARY\_TABLESPACE
+ []
+
+(./screenshots/1_2.tex
+File: screenshots/1_2_1.png Graphic file (type bmp)
+<screenshots/1_2_1.png>
+ [7]
+File: screenshots/1_2_2.png Graphic file (type bmp)
+<screenshots/1_2_2.png>
+ [8]
+File: screenshots/1_2_3.png Graphic file (type bmp)
+<screenshots/1_2_3.png>
+)
+Overfull \hbox (9.91931pt too wide) in paragraph at lines 31--36
+[]\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 GRANT CREATE TABLE TO
+ ali\TU/lmr/m/n/10.95 , ALI crée \TU/DejaVuSansMono(0)/m/n/10.95 notes(id NUMBE
+R, texte VARCHAR2(4000)) \TU/lmr/m/n/10.95 :
+ []
+
+
+Overfull \hbox (4.65831pt too wide) in paragraph at lines 31--36
+\TU/lmr/m/n/10.95 la commande réussit. L’insertion échoue avec \TU/DejaVuSansMo
+no(0)/m/n/10.95 ORA-01950: The user ALI has insufficient
+ []
+
+
+Overfull \hbox (29.32574pt too wide) in paragraph at lines 37--39
+[]\TU/lmr/m/n/10.95 Le bloc PL/SQL de 2000 lignes s’arrête sur \TU/DejaVuSansMo
+no(0)/m/n/10.95 ORA-01536: space quota exceeded for tablespace
+ []
+
+
+Overfull \hbox (6.44197pt too wide) in paragraph at lines 39--42
+[]\TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TS\_QUOTAS \TU/lmr/m/n/10.95 renvoie pou
+r ALI sur \TU/DejaVuSansMono(0)/m/n/10.95 USERS \TU/lmr/m/n/10.95 : \TU/DejaVuS
+ansMono(0)/m/n/10.95 BYTES = 1048576 \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)
+/m/n/10.95 MAX\_BYTES = 1048576\TU/lmr/m/n/10.95 .
+ []
+
+[9] (./screenshots/1_3.tex
+File: screenshots/1_3_1.png Graphic file (type bmp)
+<screenshots/1_3_1.png>
+File: screenshots/1_3_2.png Graphic file (type bmp)
+<screenshots/1_3_2.png>
+) (./screenshots/1_3_chg.tex
+File: screenshots/1_3_chg_1.png Graphic file (type bmp)
+<screenshots/1_3_chg_1.png>
+ [10])
+(./screenshots/1_3_lock.tex
+File: screenshots/1_3_lock_1.png Graphic file (type bmp)
+<screenshots/1_3_lock_1.png>
+ [11] [12]
+File: screenshots/1_3_lock_2.png Graphic file (type bmp)
+<screenshots/1_3_lock_2.png>
+ [13]
+File: screenshots/1_3_lock_3.png Graphic file (type bmp)
+<screenshots/1_3_lock_3.png>
+)
+Overfull \hbox (7.1548pt too wide) in paragraph at lines 54--60
+\TU/DejaVuSansMono(0)/m/n/10.95 has expired. The password must be changed \TU/l
+mr/m/n/10.95 puis propose \TU/DejaVuSansMono(0)/m/n/10.95 Changing password for
+ ali
+ []
+
+[14] (./screenshots/1_4.tex
+File: screenshots/1_4_1.png Graphic file (type bmp)
+<screenshots/1_4_1.png>
+File: screenshots/1_4_2.png Graphic file (type bmp)
+<screenshots/1_4_2.png>
+ [15]
+File: screenshots/1_4_3.png Graphic file (type bmp)
+<screenshots/1_4_3.png>
+)
+Overfull \hbox (8.10785pt too wide) in paragraph at lines 80--85
+[]\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER dev1 IDEN
+TIFIED BY "Dev1\#2026"\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 GRANT
+ CREATE SESSION TO dev1
+ []
+
+
+Overfull \hbox (36.44565pt too wide) in paragraph at lines 80--85
+\TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 ALTER USER rh GRANT CONNEC
+T THROUGH dev1\TU/lmr/m/n/10.95 , la première connexion \TU/DejaVuSansMono(0)/m
+/n/10.95 dev1[rh]/"Dev1\#2026"
+ []
+
+
+Overfull \hbox (32.63583pt too wide) in paragraph at lines 80--85
+\TU/lmr/m/n/10.95 échoue avec \TU/DejaVuSansMono(0)/m/n/10.95 ORA-01045: Login 
+denied. User RH does not have CREATE SESSION privilege\TU/lmr/m/n/10.95 .
+ []
+
+
+Overfull \hbox (157.65965pt too wide) in paragraph at lines 85--88
+[]\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION 
+TO rh\TU/lmr/m/n/10.95 , la connexion proxy réussit : \TU/DejaVuSansMono(0)/m/n
+/10.95 USER = RH \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 SYS\_CONT
+EXT('USERENV','PROXY\_USER')
+ []
+
+[16] (./screenshots/1_5.tex
+File: screenshots/1_5_1.png Graphic file (type bmp)
+<screenshots/1_5_1.png>
+File: screenshots/1_5_2.png Graphic file (type bmp)
+<screenshots/1_5_2.png>
+) [17]
+Overfull \hbox (72.2462pt too wide) in paragraph at lines 103--105
+[]\TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER c####superviseur ... CONTAINER=AL
+L \TU/lmr/m/n/10.95 puis \TU/DejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION .
+.. CONTAINER=ALL
+ []
+
+(./screenshots/1_6.tex
+File: screenshots/1_6_1.png Graphic file (type bmp)
+<screenshots/1_6_1.png>
+ [18]
+File: screenshots/1_6_2.png Graphic file (type bmp)
+<screenshots/1_6_2.png>
+) (./screenshots/1_6_a.tex
+File: screenshots/1_6_a_1.png Graphic file (type bmp)
+<screenshots/1_6_a_1.png>
+)
+(./screenshots/1_6_drop.tex
+File: screenshots/1_6_drop_1.png Graphic file (type bmp)
+<screenshots/1_6_drop_1.png>
+ [19] [20]
+File: screenshots/1_6_drop_2.png Graphic file (type bmp)
+<screenshots/1_6_drop_2.png>
+ [21]
+File: screenshots/1_6_drop_3.png Graphic file (type bmp)
+<screenshots/1_6_drop_3.png>
+)
+Overfull \hbox (2.67044pt too wide) in paragraph at lines 128--130
+[]\TU/DejaVuSansMono(0)/m/n/10.95 DROP USER ali \TU/lmr/m/n/10.95 échoue avec \
+TU/DejaVuSansMono(0)/m/n/10.95 ORA-01922: CASCADE must be specified to drop 'AL
+I' \TU/lmr/m/n/10.95 car
+ []
+
+
+Overfull \hbox (4.84065pt too wide) in paragraph at lines 130--133
+\TU/DejaVuSansMono(0)/m/n/10.95 USER ali CASCADE \TU/lmr/m/n/10.95 échoue alors
+ avec \TU/DejaVuSansMono(0)/m/n/10.95 ORA-01940: cannot drop a user who is curr
+ently
+ []
+
+
+Overfull \hbox (10.19603pt too wide) in paragraph at lines 133--137
+\TU/lmr/m/n/10.95 signale \TU/DejaVuSansMono(0)/m/n/10.95 ORA-00031: session ma
+rked for kill\TU/lmr/m/n/10.95 ) ; la session côté utilisateur reçoit \TU/DejaV
+uSansMono(0)/m/n/10.95 ORA-00028:
+ []
+
+
+Overfull \hbox (36.32364pt too wide) in paragraph at lines 137--139
+[]\TU/lmr/m/n/10.95 Après suppression : \TU/DejaVuSansMono(0)/m/n/10.95 tables\
+_ali = 0 \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 quotas\_ali = 0 \
+TU/lmr/m/n/10.95 dans \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TABLES \TU/lmr/m/n/1
+0.95 et \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TS\_QUOTAS\TU/lmr/m/n/10.95 .
+ []
+
+) [22] (report/main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -594,15 +765,15 @@ L3 programming layer <2024-01-22>
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 529045D602BDD0EC39C81A731EF0960B;780.
+(rerunfilecheck)             Checksum: 51759334E4A728151070503F51D41361;2542.
  ) 
 Here is how much of TeX's memory you used:
- 14879 strings out of 476851
- 290040 string characters out of 5804127
+ 15144 strings out of 476851
+ 296781 string characters out of 5804127
  1925627 words of memory out of 5000000
- 36611 multiletter control sequences out of 15000+600000
- 561408 words of font info for 76 fonts, out of 8000000 for 9000
+ 36820 multiletter control sequences out of 15000+600000
+ 561416 words of font info for 77 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 79i,12n,93p,316b,444s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 79i,12n,93p,350b,451s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report/main.pdf (6 pages).
+Output written on report/main.pdf (23 pages).

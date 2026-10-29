@@ -4,7 +4,7 @@
 | Compte | Mot de passe actuel | Remarque |
 |---|---|---|
 | SYS (PDB FREEPDB1) | Admin#2026 | |
-| ALI | Ali#2026 | devient Ali#2027 à l'ex. 1.3 ; supprimé à l'ex. 1.6 |
+| ALI | Ali#2027 | changé à l'ex. 1.3 ; supprimé à l'ex. 1.6 |
 | DEV1 | Dev1#2026 | créé à l'ex. 1.4 |
 | LECTEUR1 | Lect1#2026 | |
 | OMAR | Omar#2026 | |
@@ -15,7 +15,7 @@
 
 ## Exercices (cocher [x] quand : script, log, image, section LaTeX faits)
 - [x] 0 : 0_init, 0_1
-- [ ] 1.1  [ ] 1.2  [ ] 1.3  [ ] 1.4  [ ] 1.5  [ ] 1.6
+- [x] 1.1  [x] 1.2  [x] 1.3  [x] 1.4  [x] 1.5  [x] 1.6
 - [ ] 2.1  [ ] 2.2  [ ] 2.3  [ ] 2.4  [ ] 2.5  [ ] 2.6
 - [ ] 3.1  [ ] 3.2  [ ] 3.3  [ ] 3.4  [ ] 3.5  [ ] 3.6  [ ] 3.7
 - [ ] 4.1  [ ] 4.2  [ ] 4.3  [ ] 4.4  [ ] 4.5
@@ -29,3 +29,9 @@
   `ORACLE_MAINTAINED=N`). Tables `rh.departements` (4 lignes) et `rh.employes` (8 lignes), vue `rh.v_annuaire`.
 - `DBA_USERS` : 28 comptes `ORACLE_MAINTAINED='Y'`, 2 comptes `'N'` (= `RH` créé par nous + `PDBADMIN` de l'image).
 - Écart 26ai : total des comptes maintenus par Oracle (28) différent de l'énoncé 19c.
+- Chapitre 1 fait. `DEV1` créé (`Dev1#2026`, CREATE SESSION, proxy CONNECT THROUGH RH). `RH` a reçu
+  `CREATE SESSION` (nécessaire au proxy). `ALI` supprimé (`DROP USER ali CASCADE`) : sa table `NOTES` et
+  son quota ont disparu. `C##SUPERVISEUR` créé (`Super#2026`, `CONTAINER=ALL`).
+- Écart 26ai : `CREATE USER bob` dans CDB$ROOT **a réussi** (pas d'ORA-65096) car `COMMON_USER_PREFIX`
+  est vide ; `BOB` est devenu un utilisateur commun (`COMMON=YES`). `ORA-65094` bien obtenu sur `c##test`.
+  `BOB` laissé en place (créé par l'exercice).
