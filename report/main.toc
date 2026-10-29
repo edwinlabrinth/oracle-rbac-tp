@@ -1,0 +1,5 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{Environnement de travail et conventions}{2}{section*.2}%
+\contentsline {section}{\numberline {1}Préparation}{3}{section.1}%
+\contentsline {subsection}{\numberline {1.1}Test de l'outillage}{3}{subsection.1.1}%
+\contentsline {subsection}{\numberline {1.2}Exercice 0.1 -- Vérifier l'environnement}{3}{subsection.1.2}%

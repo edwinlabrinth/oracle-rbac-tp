@@ -1,0 +1,49 @@
+\section{Préparation}
+
+\subsection{Test de l'outillage}
+\textbf{Objectif.} Vérifier que SQL*Plus est opérationnel, que la session est bien ouverte dans la PDB
+\code{FREEPDB1} et que le tablespace \code{USERS} existe avant de commencer le TP.
+
+\shots{0_test}
+
+\textbf{Observations.}
+\begin{enumerate}
+  \item Le script s'exécute via \code{bash tools/sq.sh 0_test < scripts/0\_test.sql}. Le journal
+        \code{logs/0\_test.log} contient bien les commandes echoées (préfixe \code{SQL>}) suivies de
+        leurs résultats : \code{-s} a été retiré de \code{tools/sq.sh} pour obtenir cette trace.
+  \item \code{SHOW CON\_NAME} affiche \code{FREEPDB1} et \code{SELECT USER FROM dual} renvoie \code{SYS} :
+        la connexion \code{AS SYSDBA} se fait bien dans la PDB et non dans \code{CDB\$ROOT}.
+  \item \code{SELECT tablespace\_name FROM dba\_tablespaces} renvoie 5 tablespaces :
+        \code{SYSTEM}, \code{SYSAUX}, \code{UNDOTBS1}, \code{TEMP} et \code{USERS}. Le tablespace
+        \code{USERS} nécessaire au schéma RH est donc présent.
+\end{enumerate}
+
+\subsection{Exercice 0.1 -- Vérifier l'environnement}
+\textbf{Objectif.} Charger le schéma RH puis contrôler son état (volumétrie, type d'authentification,
+origine des comptes de la PDB).
+
+Le script \code{scripts/00-init-rh.sql} (id \code{0\_init}) a été exécuté au préalable : il crée
+l'utilisateur schéma-seul \code{RH} (\code{NO AUTHENTICATION}), les tables \code{departements} et
+\code{employes}, insère 4 départements et 8 employés, puis crée la vue \code{v\_annuaire}. Toutes les
+instructions ont abouti (\code{User created.}, \code{Table created.}, \code{View created.}).
+
+\shots{0_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Nombre de lignes : \code{departements} = \textbf{4} et \code{employes} = \textbf{8}, conformément
+        aux insertions du script d'initialisation.
+  \item Pour le compte \code{RH}, \code{DBA\_USERS} renvoie : \code{AUTHENTICATION\_TYPE = NONE},
+        \code{ACCOUNT\_STATUS = OPEN} et \code{ORACLE\_MAINTAINED = N}. Le type d'authentification vaut
+        donc \textbf{\code{NONE}} : c'est un compte « schéma seul » (schema-only account), sans mot de
+        passe, qui ne peut pas ouvrir de session ; il ne sert qu'à posséder des objets et n'est
+        accessible qu'à travers un proxy ou un utilisateur applicatif.
+  \item La PDB contient \textbf{28} utilisateurs maintenus par Oracle (\code{ORACLE\_MAINTAINED = 'Y'})
+        et \textbf{2} utilisateurs non maintenus (\code{'N'}) : \code{RH}, créé par nous pour ce TP, et
+        \code{PDBADMIN}, créé par le script de création de la PDB de l'image Docker. Ce dernier n'ayant
+        pas été créé par Oracle lui-même, il est compté à part.
+\end{enumerate}
+
+\ecart{Le nombre d'utilisateurs maintenus par Oracle dépend de la version et de l'image. En 26ai Free
+(23.26.3.0.0) on obtient 28 comptes \code{'Y'} ; ce total diffère de celui de l'énoncé 19c. Le compte
+\code{PDBADMIN} livré par l'image explique le second utilisateur non maintenu.}

@@ -1,0 +1,91 @@
+% Compilation (depuis la racine du dépôt) : bash tools/build_report.sh
+\documentclass[11pt,a4paper]{article}
+
+\usepackage{fontspec}
+\setmonofont{DejaVu Sans Mono}[Scale=0.88]
+\usepackage[french]{babel}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{graphicx,float,xcolor,fancyhdr,caption}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{./}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+\captionsetup{font=small,labelfont=bf}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small TP Sécurité Oracle -- RBAC}
+\rhead{\small LACHHAB Mohammed -- GINF2}
+\cfoot{\thepage}
+
+% \code{R_RH_LECTEUR} : identifiants, codes ORA-, commandes (les _ # % sont gérés)
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+% \shots{1_1} : inclut les images produites par tools/shot.py (screenshots/1_1.tex)
+\newcommand{\shots}[1]{\IfFileExists{screenshots/#1.tex}{\input{screenshots/#1.tex}}{\textbf{[capture manquante : #1]}}}
+% \ecart{texte} : encadré « écart 19c / 26ai »
+\newcommand{\ecart}[1]{\par\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small\textbf{Écart par rapport au TP (19c $\to$ 26ai) :} #1}}\par}
+
+\begin{document}
+
+% ------------------------------------------------------------------ PAGE DE GARDE
+\begin{titlepage}
+\centering
+\includegraphics[width=0.32\textwidth]{Ensat.jpg}\par
+\vspace{0.8cm}
+{\large\bfseries École Nationale des Sciences Appliquées de Tanger\par}
+\vspace{0.2cm}
+{\normalsize Université Abdelmalek Essaâdi\par}
+\vspace{2.2cm}
+\rule{\textwidth}{0.8pt}\par
+\vspace{0.5cm}
+{\Huge\bfseries Compte rendu de travaux pratiques\par}
+\vspace{0.6cm}
+{\LARGE Sécurité : contrôle d'accès basé sur les rôles (RBAC)\\[0.2cm] avec Oracle Database\par}
+\vspace{0.5cm}
+\rule{\textwidth}{0.8pt}\par
+\vspace{1.4cm}
+{\large Module : Administration Oracle\par}
+\vfill
+\begin{tabular}{rl}
+  \textbf{Réalisé par :}        & LACHHAB Mohammed \\[0.2cm]
+  \textbf{Filière :}            & GINF2 \\[0.2cm]
+  \textbf{Encadrant :}          & Mr. BADIR Hassan \\[0.2cm]
+  \textbf{Année universitaire :} & 2026/2027
+\end{tabular}
+\vfill
+{\today}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+% ------------------------------------------------------------------ ENVIRONNEMENT
+\section*{Environnement de travail et conventions}
+\addcontentsline{toc}{section}{Environnement de travail et conventions}
+
+Le TP est rédigé pour Oracle Database 19c (CDB \code{ORCL}, PDB \code{ORCLPDB}). Il a été réalisé
+sur \textbf{Oracle AI Database 26ai Free (version 23.26.3.0.0)}, exécutée dans un conteneur Docker
+(image \code{gvenzl/oracle-free:slim}) hébergé dans un GitHub Codespace. Le conteneur est
+une base multitenant (CDB \code{FREE}) ; la PDB utilisée est \textbf{\code{FREEPDB1}}, qui remplace
+\code{ORCLPDB} partout dans l'énoncé. Toutes les connexions se font dans la PDB, sauf l'exercice 1.5
+(racine \code{CDB\$ROOT}).
+
+Les sessions sont exécutées avec SQL*Plus. Les « captures » de ce rapport sont des rendus d'images
+réalisés à partir des journaux (\emph{logs}) réels des sessions ; le nom du journal est rappelé en pied
+de chaque image. Quand le résultat obtenu diffère de ce que l'énoncé (version 19c) annonce, un encadré
+\emph{Écart par rapport au TP} l'indique et l'explique.
+
+\newpage
+
+% ------------------------------------------------------------------ CHAPITRES
+% Chaque fichier report/chN.tex commence par \section{...}. Les fichiers absents sont ignorés.
+\IfFileExists{report/ch0.tex}{\input{report/ch0.tex}}{}
+\IfFileExists{report/ch1.tex}{\input{report/ch1.tex}}{}
+\IfFileExists{report/ch2.tex}{\input{report/ch2.tex}}{}
+\IfFileExists{report/ch3.tex}{\input{report/ch3.tex}}{}
+\IfFileExists{report/ch4.tex}{\input{report/ch4.tex}}{}
+\IfFileExists{report/ch5.tex}{\input{report/ch5.tex}}{}
+\IfFileExists{report/ch6.tex}{\input{report/ch6.tex}}{}
+
+\end{document}
