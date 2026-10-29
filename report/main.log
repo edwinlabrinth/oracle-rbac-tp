@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2026.10.29)  29 OCT 2026 00:51
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2026.10.29)  29 OCT 2026 00:53
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -755,7 +755,106 @@ TU/lmr/m/n/10.95 dans \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TABLES \TU/lmr/m/n/1
 0.95 et \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TS\_QUOTAS\TU/lmr/m/n/10.95 .
  []
 
-) [22] (report/main.aux)
+) (./report/ch2.tex (./screenshots/2_1.tex
+File: screenshots/2_1_1.png Graphic file (type bmp)
+<screenshots/2_1_1.png>
+ [22]
+File: screenshots/2_1_2.png Graphic file (type bmp)
+<screenshots/2_1_2.png>
+) [23] (./screenshots/2_2.tex
+File: screenshots/2_2_1.png Graphic file (type bmp)
+<screenshots/2_2_1.png>
+
+[24]
+File: screenshots/2_2_2.png Graphic file (type bmp)
+<screenshots/2_2_2.png>
+ [25]
+File: screenshots/2_2_3.png Graphic file (type bmp)
+<screenshots/2_2_3.png>
+)
+Overfull \hbox (20.41985pt too wide) in paragraph at lines 31--33
+[]\TU/DejaVuSansMono(0)/m/n/10.95 UPDATE rh.employes SET salaire = 1 \TU/lmr/m/
+n/10.95 échoue avec \TU/DejaVuSansMono(0)/m/n/10.95 ORA-41900: missing UPDATE p
+rivilege
+ []
+
+
+Overfull \hbox (43.62543pt too wide) in paragraph at lines 33--37
+[]\TU/DejaVuSansMono(0)/m/n/10.95 SELECT * FROM rh.departements \TU/lmr/m/n/10.
+95 échoue avec \TU/DejaVuSansMono(0)/m/n/10.95 ORA-00942: table or view "RH"."D
+EPARTEMENTS"
+ []
+
+[26]
+Overfull \hbox (22.26392pt too wide) in paragraph at lines 47--49
+[]\TU/lmr/bx/n/10.95 Objectif. \TU/lmr/m/n/10.95 Autoriser la modification de d
+eux colonnes seulement, comprendre l’effet de \TU/DejaVuSansMono(0)/m/n/10.95 S
+QL92\_SECURITY\TU/lmr/m/n/10.95 ,
+ []
+
+(./screenshots/2_3.tex
+File: screenshots/2_3_1.png Graphic file (type bmp)
+<screenshots/2_3_1.png>
+File: screenshots/2_3_2.png Graphic file (type bmp)
+<screenshots/2_3_2.png>
+ [27]
+File: screenshots/2_3_3.png Graphic file (type bmp)
+<screenshots/2_3_3.png>
+ [28]
+File: screenshots/2_3_4.png Graphic file (type bmp)
+<screenshots/2_3_4.png>
+) (./screenshots/2_3b.tex
+File: screenshots/2_3b_1.png Graphic file (type bmp)
+<screenshots/2_3b_1.png>
+ [29]
+File: screenshots/2_3b_2.png Graphic file (type bmp)
+<screenshots/2_3b_2.png>
+) [30]
+Overfull \hbox (31.19849pt too wide) in paragraph at lines 62--64
+[]\TU/lmr/m/n/10.95 Sans clause \TU/DejaVuSansMono(0)/m/n/10.95 WHERE\TU/lmr/m/
+n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE rh.employes SET poste = 'Archi
+tecte' \TU/lmr/m/n/10.95 réussit (\TU/DejaVuSansMono(0)/m/n/10.95 8 rows update
+d\TU/lmr/m/n/10.95 ) :
+ []
+
+(./screenshots/2_4.tex
+File: screenshots/2_4_1.png Graphic file (type bmp)
+<screenshots/2_4_1.png>
+ [31]
+File: screenshots/2_4_2.png Graphic file (type bmp)
+<screenshots/2_4_2.png>
+) [32]
+Overfull \hbox (32.61078pt too wide) in paragraph at lines 87--90
+[]\TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TAB\_PRIVS \TU/lmr/m/n/10.95 sur \TU/Dej
+aVuSansMono(0)/m/n/10.95 RH.DEPARTEMENTS \TU/lmr/m/n/10.95 montre deux lignes :
+ \TU/DejaVuSansMono(0)/m/n/10.95 A1 / GRANTOR=RH / GRANTABLE=YES
+ []
+
+(./screenshots/2_5.tex
+File: screenshots/2_5_1.png Graphic file (type bmp)
+<screenshots/2_5_1.png>
+ [33]
+File: screenshots/2_5_2.png Graphic file (type bmp)
+<screenshots/2_5_2.png>
+)
+Overfull \hbox (8.03633pt too wide) in paragraph at lines 104--107
+[]\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 REVOKE CREATE VIEW FR
+OM a1\TU/lmr/m/n/10.95 , A2 possède \TU/lmr/m/it/10.95 toujours \TU/DejaVuSansM
+ono(0)/m/n/10.95 CREATE VIEW \TU/lmr/m/n/10.95 : \TU/DejaVuSansMono(0)/m/n/10.9
+5 USER\_SYS\_PRIVS
+ []
+
+[34]
+Underfull \hbox (badness 10000) in paragraph at lines 119--119
+[]\TU/DejaVuSansMono(0)/m/n/10 GRANTOR \TU/lmr/m/n/10 visible dans
+ []
+
+(./screenshots/2_6.tex
+File: screenshots/2_6_1.png Graphic file (type bmp)
+<screenshots/2_6_1.png>
+File: screenshots/2_6_2.png Graphic file (type bmp)
+<screenshots/2_6_2.png>
+) [35]) [36] (report/main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -765,15 +864,15 @@ L3 programming layer <2024-01-22>
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: 51759334E4A728151070503F51D41361;2542.
+(rerunfilecheck)             Checksum: 3A00EBDE791971CB287F558E1D5A5450;4399.
  ) 
 Here is how much of TeX's memory you used:
- 15144 strings out of 476851
- 296781 string characters out of 5804127
- 1925627 words of memory out of 5000000
- 36820 multiletter control sequences out of 15000+600000
+ 15346 strings out of 476851
+ 301632 string characters out of 5804127
+ 1927627 words of memory out of 5000000
+ 36981 multiletter control sequences out of 15000+600000
  561416 words of font info for 77 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 79i,12n,93p,350b,451s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 79i,12n,93p,414b,453s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report/main.pdf (23 pages).
+Output written on report/main.pdf (37 pages).

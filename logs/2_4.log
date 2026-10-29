@@ -1,0 +1,78 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:52:59 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 2_4.sql : Exercice 2.4 -- GRANT OPTION : la cascade
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. A1 et A2, puis SELECT avec droit de retransmission pour A1
+SQL> CREATE USER a1 IDENTIFIED BY "A1#2026";
+
+User created.
+
+SQL> CREATE USER a2 IDENTIFIED BY "A2#2026";
+
+User created.
+
+SQL> GRANT CREATE SESSION TO a1, a2;
+
+Grant succeeded.
+
+SQL> GRANT SELECT ON rh.departements TO a1 WITH GRANT OPTION;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- 2. A1 retransmet la lecture a A2
+SQL> CONNECT a1/"A1#2026"@//localhost/FREEPDB1
+Connected.
+SQL> GRANT SELECT ON rh.departements TO a2;
+
+Grant succeeded.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN grantee FORMAT A10
+SQL> COLUMN grantor FORMAT A10
+SQL> COLUMN table_name FORMAT A16
+SQL> COLUMN privilege FORMAT A10
+SQL> COLUMN grantable FORMAT A4
+SQL> PROMPT === DBA_TAB_PRIVS sur RH.DEPARTEMENTS ===
+=== DBA_TAB_PRIVS sur RH.DEPARTEMENTS ===
+SQL> SELECT grantee, grantor, table_name, privilege, grantable
+  2    FROM dba_tab_privs
+  3   WHERE owner = 'RH' AND table_name = 'DEPARTEMENTS'
+  4   ORDER BY grantee;
+
+GRANTEE    GRANTOR    TABLE_NAME       PRIVILEGE  GRAN
+---------- ---------- ---------------- ---------- ----
+A1	   RH	      DEPARTEMENTS     SELECT	  YES
+A2	   A1	      DEPARTEMENTS     SELECT	  NO
+
+2 rows selected.
+
+SQL> 
+SQL> -- 3. Revocation a A1 : effet sur A2
+SQL> REVOKE SELECT ON rh.departements FROM a1;
+
+Revoke succeeded.
+
+SQL> 
+SQL> CONNECT a2/"A2#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT COUNT(*) AS nb_departements FROM rh.departements;
+SELECT COUNT(*) AS nb_departements FROM rh.departements
+                                           *
+ERROR at line 1:
+ORA-00942: table or view "RH"."DEPARTEMENTS" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

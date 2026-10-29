@@ -10,3 +10,10 @@
 \contentsline {subsection}{\numberline {2.4}Exercice 1.4 -- Compte schéma seul et proxy}{15}{subsection.2.4}%
 \contentsline {subsection}{\numberline {2.5}Exercice 1.5 -- Utilisateurs communs et locaux}{17}{subsection.2.5}%
 \contentsline {subsection}{\numberline {2.6}Exercice 1.6 -- Supprimer un utilisateur}{18}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Privilèges}{23}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Exercice 2.1 -- Le développeur minimal}{23}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Exercice 2.2 -- Lire sans modifier}{24}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Exercice 2.3 -- Droits par colonne, SQL92\_SECURITY et vue}{27}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Exercice 2.4 -- GRANT OPTION : la cascade}{31}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Exercice 2.5 -- ADMIN OPTION : pas de cascade}{33}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Exercice 2.6 -- Le danger des privilèges ANY}{35}{subsection.3.6}%

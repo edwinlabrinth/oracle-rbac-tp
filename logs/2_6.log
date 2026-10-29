@@ -1,0 +1,74 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:53:02 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 2_6.sql : Exercice 2.6 -- Le danger des privileges ANY
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. SELECT ANY TABLE pour A2
+SQL> GRANT SELECT ANY TABLE TO a2;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- 2. En A2 : portee reelle du privilege
+SQL> CONNECT a2/"A2#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT COUNT(*) AS rh_employes FROM rh.employes;
+
+RH_EMPLOYES
+-----------
+	  8
+
+1 row selected.
+
+SQL> SELECT COUNT(*) AS dev1_projets FROM dev1.projets;
+
+DEV1_PROJETS
+------------
+	   0
+
+1 row selected.
+
+SQL> SELECT COUNT(*) AS sys_user_dollar FROM sys.user$;
+SELECT COUNT(*) AS sys_user_dollar FROM sys.user$
+                                            *
+ERROR at line 1:
+ORA-00942: table or view "SYS"."USER$" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> -- 3. Comptes non Oracle detenant un privilege ANY direct
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN username FORMAT A16
+SQL> COLUMN privilege FORMAT A28
+SQL> PROMPT === Comptes non Oracle avec un privilege systeme contenant ANY ===
+=== Comptes non Oracle avec un privilege systeme contenant ANY ===
+SQL> SELECT u.username, p.privilege
+  2    FROM dba_sys_privs p
+  3    JOIN dba_users u ON u.username = p.grantee
+  4   WHERE u.oracle_maintained = 'N'
+  5  	AND p.privilege LIKE '%ANY%'
+  6   ORDER BY u.username, p.privilege;
+
+USERNAME	 PRIVILEGE
+---------------- ----------------------------
+A2		 SELECT ANY TABLE
+
+1 row selected.
+
+SQL> 
+SQL> -- Revocation
+SQL> REVOKE SELECT ANY TABLE FROM a2;
+
+Revoke succeeded.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

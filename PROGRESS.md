@@ -16,7 +16,7 @@
 ## Exercices (cocher [x] quand : script, log, image, section LaTeX faits)
 - [x] 0 : 0_init, 0_1
 - [x] 1.1  [x] 1.2  [x] 1.3  [x] 1.4  [x] 1.5  [x] 1.6
-- [ ] 2.1  [ ] 2.2  [ ] 2.3  [ ] 2.4  [ ] 2.5  [ ] 2.6
+- [x] 2.1  [x] 2.2  [x] 2.3  [x] 2.4  [x] 2.5  [x] 2.6
 - [ ] 3.1  [ ] 3.2  [ ] 3.3  [ ] 3.4  [ ] 3.5  [ ] 3.6  [ ] 3.7
 - [ ] 4.1  [ ] 4.2  [ ] 4.3  [ ] 4.4  [ ] 4.5
 - [ ] 5.1  [ ] 5.2  [ ] 5.3  [ ] 5.4  [ ] 5.5  [ ] 5.6  [ ] 5.7
@@ -35,3 +35,8 @@
 - Écart 26ai : `CREATE USER bob` dans CDB$ROOT **a réussi** (pas d'ORA-65096) car `COMMON_USER_PREFIX`
   est vide ; `BOB` est devenu un utilisateur commun (`COMMON=YES`). `ORA-65094` bien obtenu sur `c##test`.
   `BOB` laissé en place (créé par l'exercice).
+- Chapitre 2 fait. DEV1 : CREATE TABLE/VIEW/SEQUENCE/PROCEDURE + quota 20M, objets `PROJETS`, `SEQ_PROJETS`,
+  `V_PROJETS`. `LECTEUR1` : READ sur `rh.employes`. `OMAR` : droits uniquement via `rh.v_annuaire`
+  (SELECT + UPDATE colonnes poste/dept_id). `A1`, `A2` créés (`A1#2026`, `A2#2026`). `SELECT ANY TABLE` retiré à A2.
+- Écart 26ai : manque de droit DML => `ORA-41900` au lieu de `ORA-01031`. `REVOKE` par colonne refusé
+  (`ORA-01750`) : révocation faite au niveau table.

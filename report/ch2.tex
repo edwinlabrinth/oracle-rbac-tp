@@ -1,0 +1,144 @@
+\section{Privilèges}
+
+\subsection{Exercice 2.1 -- Le développeur minimal}
+\textbf{Objectif.} Donner à DEV1 exactement les privilèges nécessaires pour travailler dans son propre
+schéma, avec un quota borné.
+
+\shots{2_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Les quatre privilèges accordés (\code{CREATE TABLE}, \code{CREATE VIEW}, \code{CREATE SEQUENCE},
+        \code{CREATE PROCEDURE}) plus le quota \code{20M} sur \code{USERS} suffisent. Aucun rôle et aucun
+        privilège \code{ANY} n'ont été donnés.
+  \item \code{SESSION\_PRIVS} en DEV1 liste exactement : \code{CREATE PROCEDURE}, \code{CREATE SEQUENCE},
+        \code{CREATE SESSION}, \code{CREATE TABLE} et \code{CREATE VIEW}. La table \code{PROJETS}, la
+        séquence \code{SEQ\_PROJETS} et la vue \code{V\_PROJETS} sont créées avec succès.
+  \item Il ne faut pas donner \code{UNLIMITED TABLESPACE} : ce privilège système accorde un espace
+        illimité dans \emph{tous} les tablespaces et court-circuite le contrôle de quota. Un quota de 20 Mo
+        sur \code{USERS} borne au contraire la consommation et évite qu'un développeur remplisse le disque.
+\end{enumerate}
+
+\subsection{Exercice 2.2 -- Lire sans modifier}
+\textbf{Objectif.} Comparer les codes d'erreur d'un manque de droit DML et d'une table invisible, puis
+distinguer \code{SELECT} de \code{READ}.
+
+\shots{2_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item En LECTEUR1, \code{SELECT COUNT(*)} sur \code{rh.employes} renvoie 8 : la lecture est autorisée.
+  \item \code{UPDATE rh.employes SET salaire = 1} échoue avec \code{ORA-41900: missing UPDATE privilege on
+        "RH"."EMPLOYES"} : la table est visible mais le droit d'écriture manque.
+  \item \code{SELECT * FROM rh.departements} échoue avec \code{ORA-00942: table or view "RH"."DEPARTEMENTS"
+        does not exist} : sans aucun privilège, la table est \emph{invisible} pour l'utilisateur, comme si
+        elle n'existait pas. La différence est donc : \code{ORA-41900} = objet connu mais droit insuffisant,
+        \code{ORA-00942} = objet non visible faute de privilège.
+  \item Après remplacement de \code{SELECT} par \code{READ}, le \code{SELECT} fonctionne toujours, mais
+        \code{SELECT ... FOR UPDATE} échoue avec \code{ORA-41900: missing SELECT privilege} : \code{READ}
+        n'autorise que la lecture pure et \textbf{pas le verrouillage} des lignes.
+\end{enumerate}
+
+\ecart{Dans cette version, un manque de droit DML renvoie \code{ORA-41900} (« missing UPDATE/SELECT
+privilege ») là où l'énoncé 19c attend \code{ORA-01031} (« insufficient privileges »). \code{ORA-00942}
+reste identique.}
+
+\subsection{Exercice 2.3 -- Droits par colonne, SQL92\_SECURITY et vue}
+\textbf{Objectif.} Autoriser la modification de deux colonnes seulement, comprendre l'effet de
+\code{SQL92\_SECURITY}, puis passer par une vue pour ne jamais exposer les salaires.
+
+\shots{2_3}
+\shots{2_3b}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Avec \code{GRANT UPDATE (poste, dept\_id) ON rh.employes TO omar}, la modification du salaire
+        échoue : \code{ORA-41900: missing UPDATE privilege}.
+  \item \code{UPDATE rh.employes SET poste = 'Architecte' WHERE emp\_id = 3} échoue aussi avec
+        \code{ORA-41900: missing SELECT privilege} alors qu'elle ne touche qu'une colonne autorisée :
+        \code{SHOW PARAMETER sql92\_security} renvoie \code{TRUE}. Avec \code{SQL92\_SECURITY = TRUE}, un
+        \code{UPDATE}/\code{DELETE} comportant une clause \code{WHERE} exige en plus le droit
+        \code{SELECT} sur les colonnes lues dans le \code{WHERE} (ici \code{emp\_id}).
+  \item Sans clause \code{WHERE}, \code{UPDATE rh.employes SET poste = 'Architecte'} réussit
+        (\code{8 rows updated}) : aucune colonne n'est lue pour filtrer. Puis \code{ROLLBACK}.
+  \item Solution : accorder \code{SELECT, UPDATE (poste, dept\_id)} sur la vue \code{rh.v\_annuaire}
+        (qui ne contient pas le salaire), puis retirer les droits sur la table. La modification via la vue
+        réussit (\code{1 row updated}) et la tentative sur \code{salaire} via la vue échoue avec
+        \code{ORA-00904: "SALAIRE": invalid identifier}, la colonne n'existant pas dans la vue.
+  \item État final (\code{DBA\_COL\_PRIVS} / \code{DBA\_TAB\_PRIVS}) : OMAR ne possède plus que
+        \code{UPDATE} sur \code{V\_ANNUAIRE.POSTE} et \code{V\_ANNUAIRE.DEPT\_ID} (privilèges de colonne) et
+        \code{SELECT} sur \code{RH.V\_ANNUAIRE}. Toute modification directe de \code{RH.EMPLOYES} renvoie
+        \code{ORA-00942} (table redevenue invisible).
+\end{enumerate}
+
+\ecart{Le \code{REVOKE UPDATE (poste, dept\_id) ON rh.employes FROM omar} est refusé en 26ai :
+\code{ORA-01750: UPDATE/REFERENCES may only be REVOKEd from the whole table, not by column}. La
+révocation a donc été faite au niveau table (\code{REVOKE UPDATE ON rh.employes FROM omar}), ce qui
+supprime bien les deux privilèges de colonne.}
+
+\subsection{Exercice 2.4 -- GRANT OPTION : la cascade}
+\textbf{Objectif.} Observer la propagation d'un privilège objet avec \code{WITH GRANT OPTION} et sa
+révocation en cascade.
+
+\shots{2_4}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DBA\_TAB\_PRIVS} sur \code{RH.DEPARTEMENTS} montre deux lignes :
+        \code{A1 / GRANTOR=RH / GRANTABLE=YES} et \code{A2 / GRANTOR=A1 / GRANTABLE=NO}. On voit donc qui a
+        accordé quoi et si le bénéficiaire peut le retransmettre.
+  \item Après \code{REVOKE SELECT ON rh.departements FROM a1}, A2 perd l'accès : sa requête renvoie
+        \code{ORA-00942}. La révocation de \code{GRANT OPTION} se propage \textbf{en cascade} aux
+        privilèges dérivés.
+\end{enumerate}
+
+\subsection{Exercice 2.5 -- ADMIN OPTION : pas de cascade}
+\textbf{Objectif.} Montrer que la révocation d'un privilège système avec \code{ADMIN OPTION} ne retire pas
+les privilèges que le bénéficiaire a lui-même accordés.
+
+\shots{2_5}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item A1 accorde \code{CREATE VIEW} à A2 grâce à son \code{ADMIN OPTION}.
+  \item Après \code{REVOKE CREATE VIEW FROM a1}, A2 possède \emph{toujours} \code{CREATE VIEW} :
+        \code{USER\_SYS\_PRIVS} le renvoie et \code{DBA\_SYS\_PRIVS} contient seulement la ligne
+        \code{A2 / CREATE VIEW / NO}. Il n'y a \textbf{pas de cascade} pour les privilèges système.
+\end{enumerate}
+
+\begin{center}
+\small
+\begin{tabular}{|p{3.2cm}|p{4.3cm}|p{4.3cm}|}
+\hline
+ & \textbf{GRANT OPTION} (objet) & \textbf{ADMIN OPTION} (système) \\
+\hline
+Transmission & possible à un autre utilisateur & possible à un autre utilisateur \\
+\hline
+Révocation du grantor & \textbf{cascade} : les droits dérivés tombent & \textbf{pas de cascade} : les droits dérivés restent \\
+\hline
+Traçabilité & \code{GRANTOR} visible dans \code{DBA\_TAB\_PRIVS} & droit « orphelin » plus difficile à retrouver \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{La plus dangereuse pour un auditeur :} l'\code{ADMIN OPTION}, car la révocation ne se propage pas.
+Les privilèges accordés en aval subsistent après la révocation du grantor et deviennent des droits
+« orphelins » difficiles à repérer, alors qu'une révocation de \code{GRANT OPTION} nettoie automatiquement
+toute la chaîne.
+
+\subsection{Exercice 2.6 -- Le danger des privilèges ANY}
+\textbf{Objectif.} Mesurer la portée d'un privilège \code{ANY} et lister les comptes à risque.
+
+\shots{2_6}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Avec \code{SELECT ANY TABLE}, A2 lit \code{rh.employes} (8 lignes) et \code{dev1.projets}
+        (0 ligne) sans aucun grant explicite : le privilège couvre toutes les tables de tous les schémas.
+  \item En revanche \code{SELECT * FROM sys.user\$} échoue avec \code{ORA-00942} : le dictionnaire de
+        données reste protégé (\code{O7\_DICTIONARY\_ACCESSIBILITY = FALSE}), \code{ANY} ne donne pas accès
+        aux tables système.
+  \item La jointure \code{DBA\_SYS\_PRIVS}/\code{DBA\_USERS} avec \code{ORACLE\_MAINTAINED = 'N'} et
+        \code{PRIVILEGE LIKE '\%ANY\%'} ne renvoie qu'un compte : \code{A2} avec \code{SELECT ANY TABLE}.
+        Le privilège est ensuite révoqué (\code{REVOKE SELECT ANY TABLE FROM a2}).
+\end{enumerate}
