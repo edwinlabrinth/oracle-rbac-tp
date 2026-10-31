@@ -64,7 +64,7 @@ Document Class: article 2023/05/17 v1.4n Standard LaTeX document class
 (report/main.aux) (/usr/share/texlive/texmf-dist/tex/latex/base/ts1cmr.fd)
 *geometry* driver: auto-detecting
 *geometry* detected driver: xetex
-(report/main.out) (report/main.out) [1] (report/main.toc) [1] [2] [3]
+(report/main.out) (report/main.out) [1] (report/main.toc [1]) [2] [3]
 (./report/ch0.tex (./screenshots/0_test.tex
 
 LaTeX Font Warning: Font shape `TU/lmr/bx/sc' undefined
@@ -276,11 +276,115 @@ E\_TIME
 Overfull \hbox (3.18477pt too wide) in paragraph at lines 113--117
 []\TU/DejaVuSansMono(0)/m/n/10.95 DROP PROFILE p\_rh\_test CASCADE \TU/lmr/m/n/
 10.95 supprime le profil et réaffecte automatiquement LINA,
-[76]) [77] (report/main.aux)
+[76]) (./report/ch5.tex (./screenshots/5_1.tex [77])
+Overfull \hbox (26.76753pt too wide) in paragraph at lines 12--15
+\TU/lmr/m/n/10.95 prédéfinies, parmi lesquelles \TU/DejaVuSansMono(0)/m/n/10.95
+ ORA\_LOGON\_FAILURES\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 ORA\_A
+CCOUNT\_MGMT\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 ORA\_SECURECONF
+IG\TU/lmr/m/n/10.95 ,
+(./screenshots/5_2.tex [78] [79]) [80]
+Overfull \hbox (6.28061pt too wide) in paragraph at lines 27--28
+[]\TU/lmr/m/n/10.95 Les connexions OMAR/\TU/DejaVuSansMono(0)/m/n/10.95 faux \T
+U/lmr/m/n/10.95 (×2) et PIRATE/\TU/DejaVuSansMono(0)/m/n/10.95 x \TU/lmr/m/n/10
+.95 renvoient \TU/DejaVuSansMono(0)/m/n/10.95 ORA-01017: invalid credential
+
+Overfull \hbox (4.53868pt too wide) in paragraph at lines 28--31
+[]\TU/lmr/m/n/10.95 Dans \TU/DejaVuSansMono(0)/m/n/10.95 UNIFIED\_AUDIT\_TRAIL 
+\TU/lmr/m/n/10.95 (\TU/DejaVuSansMono(0)/m/n/10.95 action\_name = 'LOGON' AND r
+eturn\_code <> 0\TU/lmr/m/n/10.95 ) : trois
+
+Overfull \hbox (39.28047pt too wide) in paragraph at lines 28--31
+\TU/lmr/m/n/10.95 enregistrements (\TU/DejaVuSansMono(0)/m/n/10.95 OMAR\TU/lmr/
+m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 OMAR\TU/lmr/m/n/10.95 , \TU/DejaVuS
+ansMono(0)/m/n/10.95 PIRATE\TU/lmr/m/n/10.95 ) avec \TU/DejaVuSansMono(0)/m/n/1
+0.95 unified\_audit\_policies = ORA\_LOGON\_FAILURES\TU/lmr/m/n/10.95 .
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--36
+[]\TU/lmr/bx/sc/10 Écart par rapport au TP (19c $\OMS/cmsy/m/n/10 !$ \TU/lmr/bx
+/sc/10 26ai) : \TU/lmr/m/n/10 Deux écarts 26ai : (1)
+
+Underfull \hbox (badness 10000) in paragraph at lines 36--36
+\TU/DejaVuSansMono(0)/m/n/10 DBMS\_AUDIT\_MGMT.FLUSH\_UNIFIED\_AUDIT\_TRAIL \TU
+/lmr/m/n/10 renvoie \TU/DejaVuSansMono(0)/m/n/10 PLS-00302: component
+(./screenshots/5_3.tex [81] [82]) [83]
+Overfull \hbox (5.4203pt too wide) in paragraph at lines 49--51
+\TU/lmr/m/n/10.95 contient les 5 enregistrements (\TU/DejaVuSansMono(0)/m/n/10.
+95 CREATE USER\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 GRANT \TU/lmr
+/m/n/10.95 ×2, \TU/DejaVuSansMono(0)/m/n/10.95 REVOKE\TU/lmr/m/n/10.95 , \TU/De
+jaVuSansMono(0)/m/n/10.95 DROP USER\TU/lmr/m/n/10.95 ) avec \TU/DejaVuSansMono(
+0)/m/n/10.95 DBUSERNAME
+(./screenshots/5_4.tex [84] [85] [86] [87]) [88]
+Overfull \hbox (42.04938pt too wide) in paragraph at lines 65--67
+[]\TU/DejaVuSansMono(0)/m/n/10.95 CREATE AUDIT POLICY pol\_rh\_salaires ACTIONS
+ SELECT, UPDATE, DELETE ON rh.employes
+
+Overfull \hbox (0.80563pt too wide) in paragraph at lines 67--69
+[]\TU/lmr/m/n/10.95 SARA (\TU/DejaVuSansMono(0)/m/n/10.95 SET ROLE r\_rh\_paie 
+IDENTIFIED BY "Paie\#2026"\TU/lmr/m/n/10.95 ) : \TU/DejaVuSansMono(0)/m/n/10.95
+ SELECT \TU/lmr/m/n/10.95 sur \TU/DejaVuSansMono(0)/m/n/10.95 rh.employes
+
+Overfull \hbox (35.54474pt too wide) in paragraph at lines 67--69
+\TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE rh.employes SET sal
+aire = salaire * 1.02 WHERE emp\_id = 7 \TU/lmr/m/n/10.95 (\TU/DejaVuSansMono(0
+)/m/n/10.95 1 row updated\TU/lmr/m/n/10.95 )
+(./screenshots/5_5.tex [89] [90] [91] [92] [93] [94] [95])
+Overfull \hbox (16.8864pt too wide) in paragraph at lines 87--89
+[]\TU/DejaVuSansMono(0)/m/n/10.95 SYS\_CONTEXT('USERENV','CLIENT\_PROGRAM\_NAME
+') \TU/lmr/m/n/10.95 renvoie \TU/DejaVuSansMono(0)/m/n/10.95 sqlplus@325ea91971
+6d (TNS
+[96]
+Overfull \hbox (27.94077pt too wide) in paragraph at lines 92--93
+[]\TU/DejaVuSansMono(0)/m/n/10.95 CREATE AUDIT POLICY pol\_dba ROLES dba \TU/lm
+r/m/n/10.95 puis \TU/DejaVuSansMono(0)/m/n/10.95 AUDIT POLICY pol\_dba \TU/lmr/
+m/n/10.95 : \TU/DejaVuSansMono(0)/m/n/10.95 Audit succeeded. 
+
+Overfull \hbox (12.40245pt too wide) in paragraph at lines 93--97
+\TU/DejaVuSansMono(0)/m/n/10.95 USER \TU/lmr/m/n/10.95 par A1 est tracée avec \
+TU/DejaVuSansMono(0)/m/n/10.95 unified\_audit\_policies = ORA\_ACCOUNT\_MGMT, P
+OL\_DBA\TU/lmr/m/n/10.95 .
+
+Underfull \hbox (badness 1997) in paragraph at lines 102--102
+\TU/lmr/m/n/10 voie \TU/DejaVuSansMono(0)/m/n/10 ORA-01756 \TU/lmr/m/n/10 (écar
+t : la syntaxe de la clause \TU/DejaVuSansMono(0)/m/n/10 WHEN \TU/lmr/m/n/10 av
+ec littéral texte n’est pas acceptée).
+
+Overfull \hbox (6.30344pt too wide) in paragraph at lines 105--107
+[]\TU/lmr/bx/n/10.95 Objectif. \TU/lmr/m/n/10.95 Mettre en place une politique 
+FGA sur \TU/DejaVuSansMono(0)/m/n/10.95 rh.employes \TU/lmr/m/n/10.95 (\TU/Deja
+VuSansMono(0)/m/n/10.95 SALAIRE > 30000\TU/lmr/m/n/10.95 , colonne \TU/DejaVuSa
+nsMono(0)/m/n/10.95 SALAIRE\TU/lmr/m/n/10.95 )
+(./screenshots/5_6.tex [97] [98]) [99]
+Overfull \hbox (30.44662pt too wide) in paragraph at lines 113--114
+[]\TU/DejaVuSansMono(0)/m/n/10.95 DBMS\_FGA.ADD\_POLICY(... policy\_name => 'FG
+A\_GROS\_SALAIRES', audit\_condition
+
+Overfull \hbox (64.92859pt too wide) in paragraph at lines 113--114
+\TU/DejaVuSansMono(0)/m/n/10.95 => 'SALAIRE > 30000', audit\_column => 'SALAIRE
+', statement\_types => 'SELECT,UPDATE') \TU/lmr/m/n/10.95 :
+
+Overfull \hbox (12.31519pt too wide) in paragraph at lines 117--119
+[]\TU/DejaVuSansMono(0)/m/n/10.95 UNIFIED\_AUDIT\_TRAIL \TU/lmr/m/n/10.95 (\TU/
+DejaVuSansMono(0)/m/n/10.95 fga\_policy\_name = FGA\_GROS\_SALAIRES\TU/lmr/m/n/
+10.95 ) contient \TU/lmr/bx/n/10.95 une seule
+(./screenshots/5_7.tex [100] [101] [102] [103]) [104]
+Overfull \hbox (14.42598pt too wide) in paragraph at lines 136--137
+[]\TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER auditeur\TU/lmr/m/n/10.95 , \TU/D
+ejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION\TU/lmr/m/n/10.95 , \TU/DejaVuSa
+nsMono(0)/m/n/10.95 GRANT AUDIT\_VIEWER TO auditeur \TU/lmr/m/n/10.95 : créa-
+
+Overfull \hbox (13.27585pt too wide) in paragraph at lines 137--139
+[]\TU/lmr/m/n/10.95 Rapport 24 h : \TU/DejaVuSansMono(0)/m/n/10.95 SELECT dbuse
+rname, action\_name, COUNT(*) ... GROUP BY dbusername,
+
+Overfull \hbox (1.78308pt too wide) in paragraph at lines 139--142
+[]\TU/lmr/m/n/10.95 AUDITEUR tente \TU/DejaVuSansMono(0)/m/n/10.95 DROP AUDIT P
+OLICY pol\_rh\_salaires $\OMS/cmsy/m/n/10.95 !$ \TU/DejaVuSansMono(0)/m/n/10.95
+ ORA-01031: insufficient
+) [105] (report/main.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  )
 (see the transcript file for additional information)
-Output written on report/main.pdf (78 pages).
+Output written on report/main.pdf (106 pages).
 Transcript written on report/main.log.

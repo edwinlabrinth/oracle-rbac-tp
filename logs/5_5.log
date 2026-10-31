@@ -1,0 +1,343 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:08:27 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 5_5.sql : Exercice 5.5 -- Politique conditionnelle et rôle (POL_RH_ADHOC, POL_DBA)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Nettoyage des politiques eventuellement deja presentes (etat propre)
+SQL> PROMPT === Nettoyage des politiques de test ===
+=== Nettoyage des politiques de test ===
+SQL> NOAUDIT POLICY pol_rh_adhoc;
+NOAUDIT POLICY pol_rh_adhoc
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_RH_ADHOC was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> DROP AUDIT POLICY pol_rh_adhoc;
+DROP AUDIT POLICY pol_rh_adhoc
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_RH_ADHOC was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> NOAUDIT POLICY pol_dba;
+
+Noaudit succeeded.
+
+SQL> DROP AUDIT POLICY pol_dba;
+
+Audit Policy dropped.
+
+SQL> 
+SQL> -- Valeur exacte de CLIENT_PROGRAM_NAME pour construire la clause WHEN
+SQL> COLUMN client_program_name FORMAT A40
+SQL> PROMPT === Valeur exacte de CLIENT_PROGRAM_NAME ===
+=== Valeur exacte de CLIENT_PROGRAM_NAME ===
+SQL> SELECT SYS_CONTEXT('USERENV','CLIENT_PROGRAM_NAME') AS client_program_name FROM dual;
+
+CLIENT_PROGRAM_NAME
+----------------------------------------
+sqlplus@325ea919716d (TNS V1-V3)
+
+1 row selected.
+
+SQL> 
+SQL> -- POL_RH_ADHOC : tentative avec clause WHEN (echoue ORA-01756 en 26ai -> ecart documente)
+SQL> PROMPT === POL_RH_ADHOC : tentative avec clause WHEN SYS_CONTEXT (attendu ORA-01756) ===
+=== POL_RH_ADHOC : tentative avec clause WHEN SYS_CONTEXT (attendu ORA-01756) ===
+SQL> CREATE AUDIT POLICY pol_rh_adhoc
+  2    ACTIONS SELECT, UPDATE, DELETE ON rh.employes
+  3    WHEN 'SYS_CONTEXT(''USERENV'',''CLIENT_PROGRAM_NAME'') = ''sqlplus@325ea919716d (TNS V1-V3)'' EVALUATE PER SESSION;
+  WHEN 'SYS_CONTEXT(''USERENV'',''CLIENT_PROGRAM_NAME'') = ''sqlplus@325ea919716d (TNS V1-V3)'' EVALUATE PER SESSION
+       *
+ERROR at line 3:
+ORA-01756: quoted string not properly terminated
+Help: https://docs.oracle.com/error-help/db/ora-01756/
+
+
+SQL> 
+SQL> -- POL_DBA : auditer le rôle DBA (couvre tous ses privilèges)
+SQL> PROMPT === POL_DBA : creation et activation ===
+=== POL_DBA : creation et activation ===
+SQL> CREATE AUDIT POLICY pol_dba ROLES dba;
+
+Audit policy created.
+
+SQL> AUDIT POLICY pol_dba;
+
+Audit succeeded.
+
+SQL> 
+SQL> -- Accorder DBA à A1
+SQL> PROMPT === GRANT dba TO a1 ===
+=== GRANT dba TO a1 ===
+SQL> GRANT dba TO a1;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- A1 se reconnecte, active le rôle DBA, crée un utilisateur temporaire
+SQL> PROMPT === A1 : SET ROLE dba + CREATE USER test_dba ===
+=== A1 : SET ROLE dba + CREATE USER test_dba ===
+SQL> CONNECT a1/"A1#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SET ROLE dba;
+
+Role set.
+
+SQL> CREATE USER test_dba IDENTIFIED BY "Test#2026";
+
+User created.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Retirer DBA à A1 et supprimer l'utilisateur temporaire
+SQL> PROMPT === REVOKE dba FROM a1 puis DROP USER test_dba ===
+=== REVOKE dba FROM a1 puis DROP USER test_dba ===
+SQL> REVOKE dba FROM a1;
+
+Revoke succeeded.
+
+SQL> DROP USER test_dba;
+
+User dropped.
+
+SQL> 
+SQL> -- Lecture de la trace (2 dernières minutes, politique POL_DBA + actions admin)
+SQL> COLUMN event_timestamp FORMAT A22
+SQL> COLUMN dbusername FORMAT A12
+SQL> COLUMN action_name FORMAT A20
+SQL> COLUMN object_name FORMAT A20
+SQL> COLUMN unified_audit_policies FORMAT A22
+SQL> COLUMN sql_text FORMAT A45
+SQL> PROMPt === Traces POL_DBA (role DBA) + actions admin - 2 min ===
+=== Traces POL_DBA (role DBA) + actions admin - 2 min ===
+SQL> SELECT event_timestamp, dbusername, action_name, object_name,
+  2  	    unified_audit_policies, sql_text
+  3    FROM unified_audit_trail
+  4   WHERE (unified_audit_policies LIKE '%POL_DBA%'
+  5  	     OR action_name IN ('CREATE USER','DROP USER','GRANT','REVOKE'))
+  6  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' MINUTE
+  7   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP        DBUSERNAME   ACTION_NAME 	 OBJECT_NAME	      UNIFIED_AUDIT_POLICIES
+---------------------- ------------ -------------------- -------------------- ----------------------
+SQL_TEXT
+---------------------------------------------
+31-OCT-26 04.06.33.407 SYS	    AUDIT		 POL_RH_ADHOC	      ORA$MANDATORY, POL_DBA
+697 PM
+AUDIT POLICY pol_rh_adhoc
+
+31-OCT-26 04.06.33.444 LINA	    LOGON				      ORA_LOGON_FAILURES, PO
+895 PM									      L_DBA
+
+
+31-OCT-26 04.06.33.492 SYS	    CREATE AUDIT POLICY  POL_DBA	      ORA$MANDATORY, POL_DBA
+569 PM
+CREATE AUDIT POLICY pol_dba ROLES dba
+
+31-OCT-26 04.06.33.507 SYS	    AUDIT		 POL_DBA	      ORA$MANDATORY, POL_DBA
+295 PM
+AUDIT POLICY pol_dba
+
+31-OCT-26 04.06.33.510 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+936 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.06.33.511 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+952 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.06.33.545 A1	    LOGON				      ORA_LOGON_FAILURES, PO
+550 PM									      L_DBA
+
+
+31-OCT-26 04.06.33.578 A1	    CREATE USER 	 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+170 PM									      DBA
+CREATE USER test_dba IDENTIFIED BY *
+
+31-OCT-26 04.06.33.627 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+601 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.06.33.628 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+958 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.06.33.677 SYS	    DROP USER		 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+804 PM									      DBA
+DROP USER test_dba
+
+31-OCT-26 04.07.10.521 SYS	    CREATE AUDIT POLICY  POL_RH_ADHOC	      ORA$MANDATORY, POL_DBA
+
+EVENT_TIMESTAMP        DBUSERNAME   ACTION_NAME 	 OBJECT_NAME	      UNIFIED_AUDIT_POLICIES
+---------------------- ------------ -------------------- -------------------- ----------------------
+SQL_TEXT
+---------------------------------------------
+058 PM
+CREATE AUDIT POLICY pol_rh_adhoc ACTIONS SELECT, UPDATE, DEL
+ETE ON rh.employes
+
+31-OCT-26 04.07.10.528 SYS	    AUDIT		 POL_RH_ADHOC	      ORA$MANDATORY, POL_DBA
+830 PM
+AUDIT POLICY pol_rh_adhoc
+
+31-OCT-26 04.07.10.568 SARA	    LOGON				      ORA_LOGON_FAILURES, PO
+950 PM									      L_DBA
+
+
+31-OCT-26 04.07.10.637 SYS	    CREATE AUDIT POLICY  POL_DBA	      ORA$MANDATORY, POL_DBA
+677 PM
+CREATE AUDIT POLICY pol_dba ROLES dba
+
+31-OCT-26 04.07.10.646 SYS	    AUDIT		 POL_DBA	      ORA$MANDATORY, POL_DBA
+349 PM
+AUDIT POLICY pol_dba
+
+31-OCT-26 04.07.10.650 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+738 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.07.10.651 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+463 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.07.10.694 A1	    LOGON				      ORA_LOGON_FAILURES, PO
+988 PM									      L_DBA
+
+
+31-OCT-26 04.07.10.733 A1	    CREATE USER 	 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+247 PM									      DBA
+CREATE USER test_dba IDENTIFIED BY *
+
+31-OCT-26 04.07.10.818 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+274 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.07.10.819 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+863 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.07.10.908 SYS	    DROP USER		 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+
+EVENT_TIMESTAMP        DBUSERNAME   ACTION_NAME 	 OBJECT_NAME	      UNIFIED_AUDIT_POLICIES
+---------------------- ------------ -------------------- -------------------- ----------------------
+SQL_TEXT
+---------------------------------------------
+159 PM									      DBA
+DROP USER test_dba
+
+31-OCT-26 04.07.41.769 SYS	    NOAUDIT		 POL_RH_ADHOC	      ORA$MANDATORY, POL_DBA
+391 PM
+NOAUDIT POLICY pol_rh_adhoc
+
+31-OCT-26 04.07.41.851 SYS	    DROP AUDIT POLICY	 POL_RH_ADHOC	      ORA$MANDATORY, POL_DBA
+713 PM
+DROP AUDIT POLICY pol_rh_adhoc
+
+31-OCT-26 04.07.41.889 SYS	    AUDIT		 POL_DBA	      ORA$MANDATORY, POL_DBA
+949 PM
+AUDIT POLICY pol_dba
+
+31-OCT-26 04.07.41.895 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+185 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.07.41.895 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+719 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.07.41.933 A1	    LOGON				      ORA_LOGON_FAILURES, PO
+389 PM									      L_DBA
+
+
+31-OCT-26 04.07.41.965 A1	    CREATE USER 	 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+790 PM									      DBA
+CREATE USER test_dba IDENTIFIED BY *
+
+31-OCT-26 04.07.42.013 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+907 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.07.42.015 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+386 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.07.42.074 SYS	    DROP USER		 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+982 PM									      DBA
+DROP USER test_dba
+
+31-OCT-26 04.08.27.160 SYS	    NOAUDIT		 POL_RH_ADHOC	      ORA$MANDATORY, POL_DBA
+451 PM
+
+EVENT_TIMESTAMP        DBUSERNAME   ACTION_NAME 	 OBJECT_NAME	      UNIFIED_AUDIT_POLICIES
+---------------------- ------------ -------------------- -------------------- ----------------------
+SQL_TEXT
+---------------------------------------------
+NOAUDIT POLICY pol_rh_adhoc
+
+31-OCT-26 04.08.27.166 SYS	    DROP AUDIT POLICY	 POL_RH_ADHOC	      ORA$MANDATORY, POL_DBA
+093 PM
+DROP AUDIT POLICY pol_rh_adhoc
+
+31-OCT-26 04.08.27.196 SYS	    AUDIT		 POL_DBA	      ORA$MANDATORY, POL_DBA
+309 PM
+AUDIT POLICY pol_dba
+
+31-OCT-26 04.08.27.200 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+718 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.08.27.203 SYS	    GRANT				      ORA_ACCOUNT_MGMT, POL_
+303 PM									      DBA
+GRANT dba TO a1
+
+31-OCT-26 04.08.27.238 A1	    LOGON				      ORA_LOGON_FAILURES, PO
+900 PM									      L_DBA
+
+
+31-OCT-26 04.08.27.282 A1	    CREATE USER 	 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+985 PM									      DBA
+CREATE USER test_dba IDENTIFIED BY *
+
+31-OCT-26 04.08.27.335 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+269 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.08.27.336 SYS	    REVOKE				      ORA_ACCOUNT_MGMT, POL_
+540 PM									      DBA
+REVOKE dba FROM a1
+
+31-OCT-26 04.08.27.395 SYS	    DROP USER		 TEST_DBA	      ORA_ACCOUNT_MGMT, POL_
+728 PM									      DBA
+DROP USER test_dba
+
+
+43 rows selected.
+
+SQL> 
+SQL> COLUMN entity_name FORMAT A30
+SQL> COLUMN success FORMAT A10
+SQL> COLUMN failure FORMAT A10
+SQL> PROMPt === Etat des politiques dans AUDIT_UNIFIED_ENABLED_POLICIES ===
+=== Etat des politiques dans AUDIT_UNIFIED_ENABLED_POLICIES ===
+SQL> SELECT entity_name, success, failure
+  2    FROM audit_unified_enabled_policies
+  3   WHERE entity_name IN ('POL_RH_ADHOC','POL_DBA')
+  4   ORDER BY entity_name;
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,149 @@
+\section{Audit unifié et FGA}
+
+\subsection{Exercice 5.1 -- État de l'audit}
+\textbf{Objectif.} Vérifier le mode d'audit unifié, lister les politiques prédéfinies et celles qui sont activées.
+
+\shots{5_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{V\$OPTION} renvoie \code{Unified Auditing = TRUE} : la base est en mode audit unifié « pur » (26ai).
+  \item \code{AUDIT\_UNIFIED\_ENABLED\_POLICIES} ne renvoie aucune ligne : aucune politique n'est activée par défaut.
+  \item \code{COUNT(DISTINCT policy\_name) FROM audit\_unified\_policies} renvoie 16 politiques prédéfinies, parmi lesquelles
+        \code{ORA\_LOGON\_FAILURES}, \code{ORA\_ACCOUNT\_MGMT}, \code{ORA\_SECURECONFIG}, \code{ORA\_STIG\_RECOMMENDATIONS},
+        \code{ORA\_DV\_SCHEMA\_CHANGES}, etc.
+\end{enumerate}
+\ecart{Aucun. L'état initial (aucune politique activée) est conforme à l'observation sur 26ai.}
+
+\subsection{Exercice 5.2 -- Échecs de connexion}
+\textbf{Objectif.} Activer la politique \code{ORA\_LOGON\_FAILURES}, provoquer des échecs de connexion (OMAR ×2, PIRATE) et
+en retrouver la trace dans \code{UNIFIED\_AUDIT\_TRAIL}.
+
+\shots{5_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{AUDIT POLICY ora\_logon\_failures} : \code{Audit succeeded.}
+  \item Les connexions OMAR/\code{faux} (×2) et PIRATE/\code{x} renvoient \code{ORA-01017: invalid credential or not authorized; logon denied.}
+  \item Dans \code{UNIFIED\_AUDIT\_TRAIL} (\code{action\_name = 'LOGON' AND return\_code <> 0}) : trois enregistrements
+        (\code{OMAR}, \code{OMAR}, \code{PIRATE}) avec \code{unified\_audit\_policies = ORA\_LOGON\_FAILURES}.
+        Le code retour d'un mauvais mot de passe est \code{1017}.
+\end{enumerate}
+\ecart{Deux écarts 26ai : (1) \code{DBMS\_AUDIT\_MGMT.FLUSH\_UNIFIED\_AUDIT\_TRAIL} renvoie
+\code{PLS-00302: component 'FLUSH\_UNIFIED\_AUDIT\_TRAIL' must be declared} (procédure non déclarée), mais les traces
+sont néanmoins écrites directement dans \code{UNIFIED\_AUDIT\_TRAIL} ; (2)
+\code{AUDIT\_UNIFIED\_ENABLED\_POLICIES} n'affiche pas la politique \code{ORA\_LOGON\_FAILURES} alors qu'elle est active
+(les traces le prouvent).}
+
+\subsection{Exercice 5.3 -- Tracer l'administration des comptes}
+\textbf{Objectif.} Activer \code{ORA\_ACCOUNT\_MGMT}, créer l'utilisateur \code{STAGIAIRE}, lui accorder puis retirer
+\code{R\_RH\_LECTEUR}, le supprimer, et reconstituer l'historique depuis la trace.
+
+\shots{5_3}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{AUDIT POLICY ora\_account\_mgmt} : \code{Audit succeeded.}
+  \item Les opérations sont toutes réussies : \code{CREATE USER stagiaire}, \code{GRANT CREATE SESSION},
+        \code{GRANT r\_rh\_lecteur TO stagiaire}, \code{REVOKE r\_rh\_lecteur FROM stagiaire}, \code{DROP USER stagiaire}.
+  \item La trace \code{UNIFIED\_AUDIT\_TRAIL} (\code{unified\_audit\_policies = ORA\_ACCOUNT\_MGMT}) contient les 5
+        enregistrements (\code{CREATE USER}, \code{GRANT} ×2, \code{REVOKE}, \code{DROP USER}) avec \code{DBUSERNAME = SYS}.
+  \item Le mot de passe n'apparaît pas en clair dans \code{SQL\_TEXT} : il est masqué par
+        \code{CREATE USER stagiaire IDENTIFIED BY *}.
+\end{enumerate}
+\ecart{\code{DBMS\_AUDIT\_MGMT.FLUSH\_UNIFIED\_AUDIT\_TRAIL} renvoie \code{PLS-00302} (écart récurrent sur 26ai), mais les
+traces sont présentes sans flush.}
+
+\subsection{Exercice 5.4 -- Politique sur les données sensibles}
+\textbf{Objectif.} Créer et activer une politique \code{pol\_rh\_salaires} sur \code{rh.employes} (\code{SELECT, UPDATE, DELETE}),
+puis vérifier que les accès de SARA (paie), LINA (vue) et OMAR sont tracés.
+
+\shots{5_4}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{CREATE AUDIT POLICY pol\_rh\_salaires ACTIONS SELECT, UPDATE, DELETE ON rh.employes} puis
+        \code{AUDIT POLICY pol\_rh\_salaires} : \code{Audit succeeded.}
+  \item SARA (\code{SET ROLE r\_rh\_paie IDENTIFIED BY "Paie\#2026"}) : \code{SELECT} sur \code{rh.employes} et
+        \code{UPDATE rh.employes SET salaire = salaire * 1.02 WHERE emp\_id = 7} (\code{1 row updated}) sont tracés.
+  \item LINA lit \code{rh.v\_annuaire} : deux enregistrements sont produits, l'un sur \code{OBJECT\_NAME = EMPLOYES}
+        (table de base sous-jacente) et l'autre sur \code{OBJECT\_NAME = V\_ANNUAIRE} (la vue). L'accès via une vue est donc
+        tracé sur la table de base \textbf{et} sur la vue.
+  \item OMAR lit \code{rh.employes} : tracé (\code{OBJECT\_NAME = EMPLOYES}).
+  \item \code{NOAUDIT POLICY pol\_rh\_salaires} puis \code{AUDIT POLICY pol\_rh\_salaires WHENEVER NOT SUCCESSFUL} :
+        la politique passe en mode « échecs seulement ».
+\end{enumerate}
+\ecart{\code{AUDIT\_UNIFIED\_ENABLED\_POLICIES} n'affiche pas \code{pol\_rh\_salaires} après activation (écart d'affichage
+récurrent). \code{FLUSH\_UNIFIED\_AUDIT\_TRAIL} renvoie \code{PLS-00302} (écart récurrent).}
+
+\subsection{Exercice 5.5 -- Politique conditionnelle et rôle}
+\textbf{Objectif.} Tester une politique conditionnelle avec clause \code{WHEN} sur \code{SYS\_CONTEXT}, puis auditer le rôle
+\code{DBA} pour montrer qu'il couvre tous ses privilèges.
+
+\shots{5_5}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{SYS\_CONTEXT('USERENV','CLIENT\_PROGRAM\_NAME')} renvoie
+        \code{sqlplus@325ea919716d (TNS V1-V3)}.
+  \item La création de \code{POL\_RH\_ADHOC} avec une clause \code{WHEN} contenant un littéral de chaîne renvoie
+        \code{ORA-01756: quoted string not properly terminated} : la clause \code{WHEN} avec comparaison sur littéral texte
+        ne passe pas en 26ai (la politique n'est pas créée).
+  \item \code{CREATE AUDIT POLICY pol\_dba ROLES dba} puis \code{AUDIT POLICY pol\_dba} : \code{Audit succeeded.}
+  \item \code{GRANT dba TO a1}, puis A1 active le rôle (\code{SET ROLE dba}) et crée \code{test\_dba} : l'action
+        \code{CREATE USER} par A1 est tracée avec
+        \code{unified\_audit\_policies = ORA\_ACCOUNT\_MGMT, POL\_DBA}. Auditer un rôle couvre donc ses privilèges
+        (ici \code{CREATE USER}) d'un seul coup.
+  \item \code{REVOKE dba FROM a1} et \code{DROP USER test\_dba} sont aussi tracés.
+\end{enumerate}
+\ecart{L'énoncé 19c attend une politique \code{POL\_RH\_ADHOC} avec clause \code{WHEN} sur
+\code{SYS\_CONTEXT(...CLIENT\_PROGRAM\_NAME...)}. En 26ai, cette création renvoie \code{ORA-01756} (écart : la syntaxe de la
+clause \code{WHEN} avec littéral texte n'est pas acceptée). \code{AUDIT\_UNIFIED\_ENABLED\_POLICIES} n'affiche pas les
+politiques activées (écart récurrent).}
+
+\subsection{Exercice 5.6 -- Audit fin des gros salaires (FGA)}
+\textbf{Objectif.} Mettre en place une politique FGA sur \code{rh.employes} (\code{SALAIRE > 30000}, colonne \code{SALAIRE})
+et vérifier qu'un seul accès de SARA est réellement audité.
+
+\shots{5_6}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DBMS\_FGA.ADD\_POLICY(... policy\_name => 'FGA\_GROS\_SALAIRES', audit\_condition => 'SALAIRE > 30000',
+        audit\_column => 'SALAIRE', statement\_types => 'SELECT,UPDATE')} : proc\'edure termin\'ee.
+  \item SARA (\code{SET ROLE r\_rh\_paie}) : (a) \code{SELECT emp\_id, nom} (pas de colonne \code{SALAIRE}) $\to$ pas de
+        d\'eclenchement ; (b) \code{SELECT ... WHERE dept\_id = 40} (Ghazi 7650, Haddad 19000, aucun $> 30000$) $\to$ pas de
+        d\'eclenchement ; (c) \code{SELECT ... WHERE dept\_id = 10} (Alaoui 45000 $> 30000$) $\to$ d\'eclenche l'audit FGA.
+  \item \code{UNIFIED\_AUDIT\_TRAIL} (\code{fga\_policy\_name = FGA\_GROS\_SALAIRES}) contient \textbf{une seule ligne}
+        (la requête de SARA sur le dept 10).
+  \item \code{DBA\_FGA\_AUDIT\_TRAIL} renvoie \code{ORA-00904: "LSQL\_TEXT": invalid identifier} : en 26ai, la vue
+        \code{DBA\_FGA\_AUDIT\_TRAIL} a une structure différente / ne contient pas les enregistrements (ils sont dans
+        \code{UNIFIED\_AUDIT\_TRAIL}).
+  \item \code{DBMS\_FGA.DISABLE\_POLICY('RH','EMPLOYES','FGA\_GROS\_SALAIRES')} : d\'esactiv\'ee.
+\end{enumerate}
+\ecart{Deux écarts 26ai : (1) \code{DBA\_FGA\_AUDIT\_TRAIL} n'est pas remplie / a des colonnes différentes (ORA-00904) :
+les enregistrements FGA sont dans \code{UNIFIED\_AUDIT\_TRAIL} ; (2) \code{FLUSH\_UNIFIED\_AUDIT\_TRAIL} renvoie
+\code{PLS-00302} (écart récurrent).}
+
+\subsection{Exercice 5.7 -- Séparation des tâches et purge}
+\textbf{Objectif.} Créer un utilisateur \code{AUDITEUR} (\code{CREATE SESSION} + \code{AUDIT\_VIEWER}), produire un rapport
+d'audit, vérifier qu'il ne peut pas supprimer une politique, puis purger la trace unifiée.
+
+\shots{5_7}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{CREATE USER auditeur}, \code{GRANT CREATE SESSION}, \code{GRANT AUDIT\_VIEWER TO auditeur} : cr\'eation r\'eussie.
+  \item Rapport 24 h : \code{SELECT dbusername, action\_name, COUNT(*) ... GROUP BY dbusername, action\_name} sur
+        \code{UNIFIED\_AUDIT\_TRAIL} (30 lignes : SYS, LINA, OMAR, SARA, A1, AUDITEUR, PIRATE).
+  \item AUDITEUR tente \code{DROP AUDIT POLICY pol\_rh\_salaires} $\to$ \code{ORA-01031: insufficient privileges}. La
+        s\'eparation des tâches est respectée : \code{AUDIT\_VIEWER} ne permet pas de supprimer une politique (il faut
+        \code{AUDIT\_ADMIN}).
+  \item Suppression des politiques de test (\code{NOAUDIT POLICY} puis \code{DROP AUDIT POLICY}). Le \code{DROP} sur une
+        politique encore activée renvoie \code{ORA-46361} (première exécution) ; il faut d'abord \code{NOAUDIT}.
+  \item Purge : \code{DBMS\_AUDIT\_MGMT.CLEAN\_AUDIT\_TRAIL(...)} termin\'ee. Après purge, la relecture de
+        \code{UNIFIED\_AUDIT\_TRAIL} ne montre plus qu'une trace r\'esiduelle (la purge elle-même, \code{SYS EXECUTE
+        ORA$MANDATORY}) : la trace a bien été vidée.
+\end{enumerate}
+\ecart{\code{DBMS\_AUDIT\_MGMT.FLUSH\_UNIFIED\_AUDIT\_TRAIL} renvoie \code{PLS-00302} (écart récurrent sur 26ai), mais la
+purge \code{CLEAN\_AUDIT\_TRAIL} fonctionne.}

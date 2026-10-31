@@ -19,7 +19,7 @@
 - [x] 2.1  [x] 2.2  [x] 2.3  [x] 2.4  [x] 2.5  [x] 2.6
 - [x] 3.1  [x] 3.2  [x] 3.3  [x] 3.4  [x] 3.5  [x] 3.6  [x] 3.7
 - [x] 4.1  [x] 4.2  [x] 4.3  [x] 4.4  [x] 4.5
-- [ ] 5.1  [ ] 5.2  [ ] 5.3  [ ] 5.4  [ ] 5.5  [ ] 5.6  [ ] 5.7
+- [x] 5.1  [x] 5.2  [x] 5.3  [x] 5.4  [x] 5.5  [x] 5.6  [x] 5.7
 - [ ] 6.1 (T1)  [ ] 6.2 (T2)  [ ] 6.3 (T3)  [ ] 6.4 (T4)  [ ] 6.5 (T5)  [ ] 6.6 (T6)  [ ] 6.7 (T7)  [ ] 6.8
 - [ ] Rapport final compilé (PDF OK)
 
@@ -56,3 +56,11 @@
   ORA12C_VERIFY_FUNCTION associée ; sans REPLACE -> ORA-28221 ; mdp contenant le login -> ORA-28003.
   LINA garde `Lina#2032`. `P_RH_STANDARD` créé (4.5) avec limites production + ORA12C_VERIFY_FUNCTION.
   `DROP PROFILE p_rh_test CASCADE` : LINA/OMAR/SARA retombent sur DEFAULT puis passent sur P_RH_STANDARD.
+- Chapitre 5 fait. Audit unifié : Unified Auditing = TRUE, 16 politiques prédéfinies, aucune activée par défaut.
+  Politiques de test créées puis supprimées (pol_rh_salaires, pol_dba, pol_rh_adhoc) ; ORA_LOGON_FAILURES et
+  ORA_ACCOUNT_MGMT restées activées. Utilisateurs : STAGIAIRE créé/supprimé (5.3), test_dba créé/supprimé (5.5),
+  AUDITEUR créé (Auditeur#2026, CREATE SESSION + AUDIT_VIEWER) (5.7). Séparation des tâches vérifiée (AUDITEUR bloqué
+  ORA-01031). Purge de la trace unifiée (CLEAN_AUDIT_TRAIL) effectuée en fin de 5.7. Écart récurrent 26ai :
+  DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL -> PLS-00302 ; AUDIT_UNIFIED_ENABLED_POLICIES n'affiche pas les politiques
+  activées ; DBA_FGA_AUDIT_TRAIL -> ORA-00904 (FGA dans UNIFIED_AUDIT_TRAIL) ; clause WHEN sur SYS_CONTEXT + littéral
+  -> ORA-01756.

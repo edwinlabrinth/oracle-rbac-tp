@@ -1,0 +1,82 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:03:06 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 5_1.sql : Exercice 5.1 -- Etat de l'audit unifie
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Mode d'audit unifie
+SQL> COLUMN parameter FORMAT A30
+SQL> COLUMN value FORMAT A20
+SQL> PROMPT === Mode d'audit unifie (V$OPTION) ===
+=== Mode d'audit unifie (V$OPTION) ===
+SQL> SELECT parameter, value
+  2    FROM v$option
+  3   WHERE parameter = 'Unified Auditing';
+
+PARAMETER		       VALUE
+------------------------------ --------------------
+Unified Auditing	       TRUE
+
+1 row selected.
+
+SQL> 
+SQL> PROMPT === Politiques d'audit unifie activees ===
+=== Politiques d'audit unifie activees ===
+SQL> COLUMN entity_name FORMAT A30
+SQL> COLUMN success FORMAT A10
+SQL> COLUMN failure FORMAT A10
+SQL> SELECT entity_name, success, failure
+  2    FROM audit_unified_enabled_policies
+  3   ORDER BY entity_name;
+
+no rows selected
+
+SQL> 
+SQL> PROMPT === Nombre de politiques distinctes definies ===
+=== Nombre de politiques distinctes definies ===
+SQL> SELECT COUNT(DISTINCT policy_name) AS nb_politiques
+  2    FROM audit_unified_policies;
+
+NB_POLITIQUES
+-------------
+	   16
+
+1 row selected.
+
+SQL> 
+SQL> PROMPT === Liste des politiques d'audit unifie (noms uniquement) ===
+=== Liste des politiques d'audit unifie (noms uniquement) ===
+SQL> COLUMN policy_name FORMAT A30
+SQL> SELECT DISTINCT policy_name
+  2    FROM audit_unified_policies
+  3   ORDER BY policy_name;
+
+POLICY_NAME
+------------------------------
+ORA$DICTIONARY_SENS_COL_ACCESS
+ORA$DICTIONARY_SNET_RPC_ACCESS
+ORA_ACCOUNT_MGMT
+ORA_ALL_TOPLEVEL_ACTIONS
+ORA_CIS_RECOMMENDATIONS
+ORA_DATABASE_PARAMETER
+ORA_DV_DEFAULT_PROTECTION
+ORA_DV_SCHEMA_CHANGES
+ORA_LOGIN_LOGOUT
+ORA_LOGON_FAILURES
+ORA_LOGON_LOGOFF
+ORA_OLS_SCHEMA_CHANGES
+ORA_RAS_POLICY_MGMT
+ORA_RAS_SESSION_MGMT
+ORA_SECURECONFIG
+ORA_STIG_RECOMMENDATIONS
+
+16 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

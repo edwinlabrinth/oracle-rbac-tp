@@ -31,3 +31,11 @@
 \contentsline {subsection}{\numberline {5.3}Exercice 4.3 -- Expiration, grâce et réutilisation}{67}{subsection.5.3}%
 \contentsline {subsection}{\numberline {5.4}Exercice 4.4 -- Complexité des mots de passe}{71}{subsection.5.4}%
 \contentsline {subsection}{\numberline {5.5}Exercice 4.5 -- Profil de production et synthèse}{74}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Audit unifié et FGA}{77}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Exercice 5.1 -- État de l'audit}{77}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Exercice 5.2 -- Échecs de connexion}{78}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Exercice 5.3 -- Tracer l'administration des comptes}{81}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Exercice 5.4 -- Politique sur les données sensibles}{84}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Exercice 5.5 -- Politique conditionnelle et rôle}{89}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Exercice 5.6 -- Audit fin des gros salaires (FGA)}{97}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}Exercice 5.7 -- Séparation des tâches et purge}{100}{subsection.6.7}%
