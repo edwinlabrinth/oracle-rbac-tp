@@ -1,0 +1,113 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:03:42 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 5_2.sql : Exercice 5.2 -- Echecs de connexion
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Activation de la politique predefinie ORA_LOGON_FAILURES (necessaire en 26ai :
+SQL> -- aucune politique n'est activee par defaut, voir 5.1)
+SQL> PROMPT === Activation de la politique ORA_LOGON_FAILURES ===
+=== Activation de la politique ORA_LOGON_FAILURES ===
+SQL> AUDIT POLICY ora_logon_failures;
+
+Audit succeeded.
+
+SQL> 
+SQL> COLUMN entity_name FORMAT A30
+SQL> COLUMN success FORMAT A10
+SQL> COLUMN failure FORMAT A10
+SQL> PROMPT === Politiques actives apres activation ===
+=== Politiques actives apres activation ===
+SQL> SELECT entity_name, success, failure
+  2    FROM audit_unified_enabled_policies
+  3   WHERE entity_name = 'ORA_LOGON_FAILURES';
+
+no rows selected
+
+SQL> 
+SQL> -- Echecs de connexion : OMAR x2 (mauvais mdp), puis PIRATE (inexistant)
+SQL> PROMPT === Connexion OMAR avec mauvais mot de passe (1/2) ===
+=== Connexion OMAR avec mauvais mot de passe (1/2) ===
+SQL> CONNECT omar/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> PROMPT === Connexion OMAR avec mauvais mot de passe (2/2) ===
+=== Connexion OMAR avec mauvais mot de passe (2/2) ===
+SQL> CONNECT omar/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> PROMPT === Connexion avec utilisateur inexistant PIRATE ===
+=== Connexion avec utilisateur inexistant PIRATE ===
+SQL> CONNECT pirate/"x"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> 
+SQL> -- Flush de la trace unifiee puis lecture
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> EXEC DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL;
+BEGIN DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL; END;
+
+                      *
+ERROR at line 1:
+ORA-06550: line 1, column 23:
+PLS-00302: component 'FLUSH_UNIFIED_AUDIT_TRAIL' must be declared
+ORA-06550: line 1, column 7:
+PL/SQL: Statement ignored
+Help: https://docs.oracle.com/error-help/db/ora-06550/
+
+
+SQL> 
+SQL> COLUMN event_timestamp FORMAT A25
+SQL> COLUMN dbusername FORMAT A12
+SQL> COLUMN userhost FORMAT A25
+SQL> COLUMN client_program_name FORMAT A35
+SQL> COLUMN return_code FORMAT A10
+SQL> COLUMN unified_audit_policies FORMAT A25
+SQL> PROMPT === Traces LOGON echec dans UNIFIED_AUDIT_TRAIL ===
+=== Traces LOGON echec dans UNIFIED_AUDIT_TRAIL ===
+SQL> SELECT event_timestamp, dbusername, userhost, client_program_name,
+  2  	    return_code, unified_audit_policies
+  3    FROM unified_audit_trail
+  4   WHERE action_name = 'LOGON'
+  5  	AND return_code <> 0
+  6  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '10' MINUTE
+  7   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP 	  DBUSERNAME   USERHOST 		 CLIENT_PROGRAM_NAME		     RETURN_CODE
+------------------------- ------------ ------------------------- ----------------------------------- -----------
+UNIFIED_AUDIT_POLICIES
+-------------------------
+31-OCT-26 04.03.44.381299 OMAR	       325ea919716d		 sqlplus@325ea919716d (TNS V1-V3)     ##########
+ PM
+ORA_LOGON_FAILURES
+
+31-OCT-26 04.03.45.461114 OMAR	       325ea919716d		 sqlplus@325ea919716d (TNS V1-V3)     ##########
+ PM
+ORA_LOGON_FAILURES
+
+31-OCT-26 04.03.46.701222 PIRATE       325ea919716d		 sqlplus@325ea919716d (TNS V1-V3)     ##########
+ PM
+ORA_LOGON_FAILURES
+
+
+3 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

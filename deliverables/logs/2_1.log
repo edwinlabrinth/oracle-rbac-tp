@@ -1,0 +1,73 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:52:36 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 2_1.sql : Exercice 2.1 -- Le developpeur minimal
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. Exactement les privileges necessaires, aucun role, aucun privilege ANY
+SQL> GRANT CREATE TABLE, CREATE VIEW, CREATE SEQUENCE, CREATE PROCEDURE TO dev1;
+
+Grant succeeded.
+
+SQL> ALTER USER dev1 QUOTA 20M ON users;
+
+User altered.
+
+SQL> 
+SQL> -- 2. En DEV1 : privileges effectifs et creation d'objets dans son schema
+SQL> CONNECT dev1/"Dev1#2026"@//localhost/FREEPDB1
+Connected.
+SQL> COLUMN privilege FORMAT A24
+SQL> SELECT privilege FROM session_privs ORDER BY privilege;
+
+PRIVILEGE
+------------------------
+CREATE PROCEDURE
+CREATE SEQUENCE
+CREATE SESSION
+CREATE TABLE
+CREATE VIEW
+
+5 rows selected.
+
+SQL> 
+SQL> CREATE TABLE projets (
+  2    projet_id NUMBER PRIMARY KEY,
+  3    nom	 VARCHAR2(60) NOT NULL,
+  4    budget	 NUMBER(12,2));
+
+Table created.
+
+SQL> 
+SQL> CREATE SEQUENCE seq_projets START WITH 1 INCREMENT BY 1;
+
+Sequence created.
+
+SQL> 
+SQL> CREATE VIEW v_projets AS
+  2    SELECT projet_id, nom, budget FROM projets;
+
+View created.
+
+SQL> 
+SQL> COLUMN object_name FORMAT A20
+SQL> COLUMN object_type FORMAT A12
+SQL> SELECT object_name, object_type FROM user_objects ORDER BY object_type, object_name;
+
+OBJECT_NAME	     OBJECT_TYPE
+-------------------- ------------
+SYS_C008723	     INDEX
+SEQ_PROJETS	     SEQUENCE
+PROJETS 	     TABLE
+V_PROJETS	     VIEW
+
+4 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

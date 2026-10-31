@@ -1,0 +1,130 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:55:41 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 3_5.sql : Exercice 3.5 -- Le piege des roles dans le code
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. CREATE PROCEDURE / CREATE VIEW via le role, quota 5 Mo pour OMAR
+SQL> GRANT CREATE PROCEDURE, CREATE VIEW TO r_rh_gestion;
+
+Grant succeeded.
+
+SQL> ALTER USER omar QUOTA 5M ON users;
+
+User altered.
+
+SQL> 
+SQL> -- 2. En OMAR : fonction a droits du definisseur puis vue
+SQL> CONNECT omar/"Omar#2026"@//localhost/FREEPDB1
+Connected.
+SQL> CREATE OR REPLACE FUNCTION nb_employes RETURN NUMBER AS
+  2    n NUMBER;
+  3  BEGIN
+  4    SELECT COUNT(*) INTO n FROM rh.employes;
+  5    RETURN n;
+  6  END;
+  7  /
+
+Warning: Function created with compilation errors.
+
+SQL> SHOW ERRORS
+Errors for FUNCTION NB_EMPLOYES:
+
+LINE/COL ERROR
+-------- -----------------------------------------------------------------
+4/3	 PL/SQL: SQL Statement ignored
+4/34	 PL/SQL: ORA-00942: table or view "RH"."EMPLOYES" does not exist
+SQL> 
+SQL> CREATE VIEW v_effectif AS
+  2    SELECT dept_id, COUNT(*) n FROM rh.employes GROUP BY dept_id;
+  SELECT dept_id, COUNT(*) n FROM rh.employes GROUP BY dept_id
+                                     *
+ERROR at line 2:
+ORA-41904: Missing object privilege on "RH"."EMPLOYES" to create a view.
+Help: https://docs.oracle.com/error-help/db/ora-41904/
+
+
+SQL> 
+SQL> -- Variante AUTHID CURRENT_USER : verification des privileges a l'execution
+SQL> CREATE OR REPLACE FUNCTION nb_employes_cu RETURN NUMBER
+  2    AUTHID CURRENT_USER AS
+  3    n NUMBER;
+  4  BEGIN
+  5    SELECT COUNT(*) INTO n FROM rh.employes;
+  6    RETURN n;
+  7  END;
+  8  /
+
+Warning: Function created with compilation errors.
+
+SQL> SHOW ERRORS
+Errors for FUNCTION NB_EMPLOYES_CU:
+
+LINE/COL ERROR
+-------- -----------------------------------------------------------------
+5/3	 PL/SQL: SQL Statement ignored
+5/34	 PL/SQL: ORA-00942: table or view "RH"."EMPLOYES" does not exist
+SQL> SELECT nb_employes_cu AS nb_via_current_user FROM dual;
+SELECT nb_employes_cu AS nb_via_current_user FROM dual
+       *
+ERROR at line 1:
+ORA-06575: Package or function NB_EMPLOYES_CU is in an invalid state
+Help: https://docs.oracle.com/error-help/db/ora-06575/
+
+
+SQL> 
+SQL> -- 3. Correction la plus restreinte : grant direct d'un seul objet
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> GRANT SELECT ON rh.employes TO omar;
+
+Grant succeeded.
+
+SQL> 
+SQL> CONNECT omar/"Omar#2026"@//localhost/FREEPDB1
+Connected.
+SQL> CREATE OR REPLACE FUNCTION nb_employes RETURN NUMBER AS
+  2    n NUMBER;
+  3  BEGIN
+  4    SELECT COUNT(*) INTO n FROM rh.employes;
+  5    RETURN n;
+  6  END;
+  7  /
+
+Function created.
+
+SQL> SHOW ERRORS
+No errors.
+SQL> SELECT nb_employes AS nb_employes FROM dual;
+
+NB_EMPLOYES
+-----------
+	  8
+
+1 row selected.
+
+SQL> 
+SQL> CREATE VIEW v_effectif AS
+  2    SELECT dept_id, COUNT(*) n FROM rh.employes GROUP BY dept_id;
+
+View created.
+
+SQL> SELECT * FROM v_effectif ORDER BY dept_id;
+
+   DEPT_ID	    N
+---------- ----------
+	10	    1
+	20	    3
+	30	    2
+	40	    2
+
+4 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

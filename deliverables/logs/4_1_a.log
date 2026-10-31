@@ -1,0 +1,24 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 01:25:18 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 4_1_session.sql : Session de fond LINA (conservée ouverte, id 4_1_a et 4_1_b)
+SQL> CONNECT lina/"Lina#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT USER AS session_lina FROM dual;
+
+SESSION_LINA
+------------------------------------------------------------------------------------------------------------------------
+LINA
+
+1 row selected.
+
+SQL> EXEC DBMS_SESSION.SLEEP(130)
+
+PL/SQL procedure successfully completed.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

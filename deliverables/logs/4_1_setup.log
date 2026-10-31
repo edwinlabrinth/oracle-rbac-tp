@@ -1,0 +1,64 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 01:25:13 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 4_1_setup.sql : Exercice 4.1 (partie 1) -- creation du profil P_RH_TEST
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> SHOW PARAMETER resource_limit
+
+NAME				     TYPE	 VALUE
+------------------------------------ ----------- ------------------------------
+resource_limit			     boolean	 TRUE
+SQL> 
+SQL> CREATE PROFILE p_rh_test LIMIT
+  2    SESSIONS_PER_USER 2
+  3    IDLE_TIME 1;
+
+Profile created.
+
+SQL> 
+SQL> ALTER USER lina PROFILE p_rh_test;
+
+User altered.
+
+SQL> 
+SQL> COLUMN profile FORMAT A14
+SQL> COLUMN resource_name FORMAT A30
+SQL> COLUMN limit FORMAT A12
+SQL> PROMPT === Parametres du profil P_RH_TEST ===
+=== Parametres du profil P_RH_TEST ===
+SQL> SELECT profile, resource_name, limit
+  2    FROM dba_profiles
+  3   WHERE profile = 'P_RH_TEST'
+  4   ORDER BY resource_name;
+
+PROFILE        RESOURCE_NAME		      LIMIT
+-------------- ------------------------------ ------------
+P_RH_TEST      COMPOSITE_LIMIT		      DEFAULT
+P_RH_TEST      CONNECT_TIME		      DEFAULT
+P_RH_TEST      CPU_PER_CALL		      DEFAULT
+P_RH_TEST      CPU_PER_SESSION		      DEFAULT
+P_RH_TEST      FAILED_LOGIN_ATTEMPTS	      DEFAULT
+P_RH_TEST      IDLE_TIME		      1
+P_RH_TEST      INACTIVE_ACCOUNT_TIME	      DEFAULT
+P_RH_TEST      LOGICAL_READS_PER_CALL	      DEFAULT
+P_RH_TEST      LOGICAL_READS_PER_SESSION      DEFAULT
+P_RH_TEST      PASSWORD_GRACE_TIME	      DEFAULT
+P_RH_TEST      PASSWORD_LIFE_TIME	      DEFAULT
+P_RH_TEST      PASSWORD_LOCK_TIME	      DEFAULT
+P_RH_TEST      PASSWORD_REUSE_MAX	      DEFAULT
+P_RH_TEST      PASSWORD_REUSE_TIME	      DEFAULT
+P_RH_TEST      PASSWORD_ROLLOVER_TIME	      DEFAULT
+P_RH_TEST      PASSWORD_VERIFY_FUNCTION       DEFAULT
+P_RH_TEST      PRIVATE_SGA		      DEFAULT
+P_RH_TEST      SESSIONS_PER_USER	      2
+
+18 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,71 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:55:50 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 3_6.sql : Exercice 3.6 -- Que contiennent CONNECT et RESOURCE ?
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. Contenu des roles historiques
+SQL> COLUMN role FORMAT A12
+SQL> COLUMN privilege FORMAT A28
+SQL> PROMPT === ROLE_SYS_PRIVS pour CONNECT et RESOURCE ===
+=== ROLE_SYS_PRIVS pour CONNECT et RESOURCE ===
+SQL> SELECT role, privilege, admin_option
+  2    FROM role_sys_privs
+  3   WHERE role IN ('CONNECT','RESOURCE')
+  4   ORDER BY role, privilege;
+
+ROLE	     PRIVILEGE			  ADM
+------------ ---------------------------- ---
+CONNECT      CREATE SESSION		  NO
+CONNECT      SET CONTAINER		  NO
+RESOURCE     CREATE ANALYTIC VIEW	  NO
+RESOURCE     CREATE ATTRIBUTE DIMENSION   NO
+RESOURCE     CREATE CLUSTER		  NO
+RESOURCE     CREATE HIERARCHY		  NO
+RESOURCE     CREATE INDEXTYPE		  NO
+RESOURCE     CREATE MATERIALIZED VIEW	  NO
+RESOURCE     CREATE OPERATOR		  NO
+RESOURCE     CREATE PROCEDURE		  NO
+RESOURCE     CREATE PROPERTY GRAPH	  NO
+RESOURCE     CREATE SEQUENCE		  NO
+RESOURCE     CREATE SYNONYM		  NO
+RESOURCE     CREATE TABLE		  NO
+RESOURCE     CREATE TRIGGER		  NO
+RESOURCE     CREATE TYPE		  NO
+RESOURCE     CREATE VIEW		  NO
+
+17 rows selected.
+
+SQL> 
+SQL> -- 2. TEST_RES avec CONNECT et RESOURCE
+SQL> CREATE USER test_res IDENTIFIED BY "TestRes#2026";
+
+User created.
+
+SQL> GRANT CONNECT, RESOURCE TO test_res;
+
+Grant succeeded.
+
+SQL> 
+SQL> CONNECT test_res/"TestRes#2026"@//localhost/FREEPDB1
+Connected.
+SQL> CREATE TABLE t_res (id NUMBER, libelle VARCHAR2(40));
+
+Table created.
+
+SQL> INSERT INTO t_res VALUES (1, 'ligne');
+INSERT INTO t_res VALUES (1, 'ligne')
+            *
+ERROR at line 1:
+ORA-01950: The user TEST_RES has insufficient quota on tablespace USERS.
+Help: https://docs.oracle.com/error-help/db/ora-01950/
+
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

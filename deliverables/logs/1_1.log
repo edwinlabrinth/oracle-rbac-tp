@@ -1,0 +1,71 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:49:35 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 1_1.sql : Exercice 1.1 -- Premier compte
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. Création de ALI sans aucune autre clause
+SQL> CREATE USER ali IDENTIFIED BY "Ali#2026"
+  2    DEFAULT TABLESPACE users
+  3    TEMPORARY TABLESPACE temp;
+
+User created.
+
+SQL> 
+SQL> -- 2. Tentative de connexion en ALI avant tout privilège
+SQL> CONNECT ali/"Ali#2026"@//localhost/FREEPDB1
+ERROR:
+ORA-01045: Login denied. User ALI does not have CREATE SESSION privilege.
+Help: https://docs.oracle.com/error-help/db/ora-01045/
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> 
+SQL> -- 3. Correction avec le privilège minimal : CREATE SESSION
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> GRANT CREATE SESSION TO ali;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Reconnexion en ALI
+SQL> CONNECT ali/"Ali#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT USER AS utilisateur_courant FROM dual;
+
+UTILISATEUR_COURANT
+------------------------------------------------------------------------------------------------------------------------
+ALI
+
+1 row selected.
+
+SQL> 
+SQL> -- 4. Détails du compte ALI
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN username FORMAT A12
+SQL> COLUMN default_tablespace FORMAT A18
+SQL> COLUMN temporary_tablespace FORMAT A20
+SQL> COLUMN profile FORMAT A12
+SQL> COLUMN account_status FORMAT A16
+SQL> COLUMN created FORMAT A20
+SQL> SELECT username, default_tablespace, temporary_tablespace,
+  2  	    profile, account_status, created
+  3    FROM dba_users
+  4   WHERE username = 'ALI';
+
+USERNAME     DEFAULT_TABLESPACE TEMPORARY_TABLESPACE PROFILE	  ACCOUNT_STATUS   CREATED
+------------ ------------------ -------------------- ------------ ---------------- --------------------
+ALI	     USERS		TEMP		     DEFAULT	  OPEN		   29-OCT-26
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

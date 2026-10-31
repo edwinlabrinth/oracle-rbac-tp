@@ -1,0 +1,37 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:47:37 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 0_test.sql : test de l'outillage (connexion SYS, PDB, tablespaces)
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> SHOW CON_NAME
+
+CON_NAME
+------------------------------
+FREEPDB1
+SQL> SELECT USER FROM dual;
+
+USER
+------------------------------------------------------------------------------------------------------------------------
+SYS
+
+1 row selected.
+
+SQL> SELECT tablespace_name FROM dba_tablespaces;
+
+TABLESPACE_NAME
+------------------------------
+SYSTEM
+SYSAUX
+UNDOTBS1
+TEMP
+USERS
+
+5 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

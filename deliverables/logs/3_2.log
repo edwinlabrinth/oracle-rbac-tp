@@ -1,0 +1,108 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:54:39 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 3_2.sql : Exercice 3.2 -- Lire la hierarchie dans le dictionnaire
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. Roles accordes directement a OMAR
+SQL> COLUMN granted_role FORMAT A20
+SQL> COLUMN default_role FORMAT A12
+SQL> PROMPT === DBA_ROLE_PRIVS pour OMAR ===
+=== DBA_ROLE_PRIVS pour OMAR ===
+SQL> SELECT granted_role, admin_option, default_role
+  2    FROM dba_role_privs WHERE grantee = 'OMAR'
+  3   ORDER BY granted_role;
+
+GRANTED_ROLE	     ADM DEFAULT_ROLE
+-------------------- --- ------------
+R_RH_GESTION	     NO  YES
+
+1 row selected.
+
+SQL> 
+SQL> -- 2. Arbre complet des roles d'OMAR
+SQL> COLUMN arbre FORMAT A40
+SQL> PROMPT === Arbre des roles d'OMAR (CONNECT BY) ===
+=== Arbre des roles d'OMAR (CONNECT BY) ===
+SQL> SELECT LPAD(' ', 2 * (LEVEL - 1)) || granted_role AS arbre
+  2    FROM dba_role_privs
+  3   START WITH grantee = 'OMAR'
+  4   CONNECT BY PRIOR granted_role = grantee;
+
+ARBRE
+----------------------------------------
+R_RH_GESTION
+  R_CONNEXION
+  R_RH_LECTEUR
+    R_CONNEXION
+
+4 rows selected.
+
+SQL> 
+SQL> -- 3. Privileges objet directs ou via les roles de l'arbre
+SQL> COLUMN source FORMAT A8
+SQL> COLUMN grantee FORMAT A16
+SQL> COLUMN owner FORMAT A8
+SQL> COLUMN table_name FORMAT A16
+SQL> COLUMN privilege FORMAT A12
+SQL> COLUMN column_name FORMAT A12
+SQL> PROMPT === Privileges objet d'OMAR (directs + via roles) ===
+=== Privileges objet d'OMAR (directs + via roles) ===
+SQL> WITH roles AS (
+  2    SELECT granted_role AS r
+  3  	 FROM dba_role_privs
+  4  	START WITH grantee = 'OMAR'
+  5  	CONNECT BY PRIOR granted_role = grantee
+  6  )
+  7  SELECT 'TABLE' AS source, grantee, owner, table_name, privilege,
+  8  	    CAST(NULL AS VARCHAR2(30)) AS column_name
+  9    FROM dba_tab_privs
+ 10   WHERE grantee = 'OMAR' OR grantee IN (SELECT r FROM roles)
+ 11  UNION ALL
+ 12  SELECT 'COLONNE', grantee, owner, table_name, privilege, column_name
+ 13    FROM dba_col_privs
+ 14   WHERE grantee = 'OMAR' OR grantee IN (SELECT r FROM roles)
+ 15   ORDER BY 1, 2, 3, 4, 5, 6;
+
+SOURCE	 GRANTEE	  OWNER    TABLE_NAME	    PRIVILEGE	 COLUMN_NAME
+-------- ---------------- -------- ---------------- ------------ ------------
+COLONNE  R_RH_GESTION	  RH	   EMPLOYES	    UPDATE	 DEPT_ID
+COLONNE  R_RH_GESTION	  RH	   EMPLOYES	    UPDATE	 POSTE
+TABLE	 R_RH_GESTION	  RH	   EMPLOYES	    INSERT
+TABLE	 R_RH_GESTION	  RH	   EMPLOYES	    SELECT
+TABLE	 R_RH_LECTEUR	  RH	   DEPARTEMENTS     SELECT
+TABLE	 R_RH_LECTEUR	  RH	   V_ANNUAIRE	    SELECT
+
+6 rows selected.
+
+SQL> 
+SQL> PROMPT === ROLE_TAB_PRIVS pour les roles de l'arbre ===
+=== ROLE_TAB_PRIVS pour les roles de l'arbre ===
+SQL> COLUMN role FORMAT A16
+SQL> SELECT role, owner, table_name, column_name, privilege
+  2    FROM role_tab_privs
+  3   WHERE role IN (
+  4  	SELECT granted_role FROM dba_role_privs
+  5  	 START WITH grantee = 'OMAR'
+  6  	 CONNECT BY PRIOR granted_role = grantee)
+  7   ORDER BY role, table_name, column_name, privilege;
+
+ROLE		 OWNER	  TABLE_NAME	   COLUMN_NAME	PRIVILEGE
+---------------- -------- ---------------- ------------ ------------
+R_RH_GESTION	 RH	  EMPLOYES	   DEPT_ID	UPDATE
+R_RH_GESTION	 RH	  EMPLOYES	   POSTE	UPDATE
+R_RH_GESTION	 RH	  EMPLOYES			INSERT
+R_RH_GESTION	 RH	  EMPLOYES			SELECT
+R_RH_LECTEUR	 RH	  DEPARTEMENTS			SELECT
+R_RH_LECTEUR	 RH	  V_ANNUAIRE			SELECT
+
+6 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

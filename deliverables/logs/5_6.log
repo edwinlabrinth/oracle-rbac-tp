@@ -1,0 +1,153 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:08:50 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 5_6.sql : Exercice 5.6 -- Audit fin des gros salaires (FGA)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Politique FGA sur RH.EMPLOYES : audit quand SALAIRE > 30000, colonne SALAIRE
+SQL> PROMPT === Creation de la politique FGA FGA_GROS_SALAIRES ===
+=== Creation de la politique FGA FGA_GROS_SALAIRES ===
+SQL> BEGIN
+  2    DBMS_FGA.ADD_POLICY(
+  3  	 object_schema	 => 'RH',
+  4  	 object_name	 => 'EMPLOYES',
+  5  	 policy_name	 => 'FGA_GROS_SALAIRES',
+  6  	 audit_condition => 'SALAIRE > 30000',
+  7  	 audit_column	 => 'SALAIRE',
+  8  	 statement_types => 'SELECT,UPDATE',
+  9  	 enable 	 => TRUE);
+ 10  END;
+ 11  /
+
+PL/SQL procedure successfully completed.
+
+SQL> PROMPt === Politiques FGA sur RH.EMPLOYES ===
+=== Politiques FGA sur RH.EMPLOYES ===
+SQL> COLUMN policy_name FORMAT A30
+SQL> COLUMN enable FORMAT A8
+SQL> SELECT policy_name, enable
+  2    FROM dba_audit_policies
+  3   WHERE object_schema = 'RH' AND object_name = 'EMPLOYES';
+SELECT policy_name, enable
+                    *
+ERROR at line 1:
+ORA-00904: "ENABLE": invalid identifier
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+
+
+SQL> 
+SQL> -- SARA : active son rôle paie, trois requêtes
+SQL> PROMPT === SARA : (a) noms seuls (pas de colonne SALAIRE) ===
+=== SARA : (a) noms seuls (pas de colonne SALAIRE) ===
+SQL> CONNECT sara/"Sara#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SET ROLE r_rh_paie IDENTIFIED BY "Paie#2026";
+
+Role set.
+
+SQL> SELECT emp_id, nom FROM rh.employes;
+
+    EMP_ID NOM
+---------- ----------------------------------------
+	 1 Alaoui
+	 2 Bennani
+	 3 Chraibi
+	 4 Drissi
+	 5 El Fassi
+	 6 Filali
+	 7 Ghazi
+	 8 Haddad
+
+8 rows selected.
+
+SQL> 
+SQL> PROMPT === SARA : (b) salaires dept 40 (aucune ligne > 30000) ===
+=== SARA : (b) salaires dept 40 (aucune ligne > 30000) ===
+SQL> SELECT emp_id, nom, salaire FROM rh.employes WHERE dept_id = 40;
+
+    EMP_ID NOM					       SALAIRE
+---------- ---------------------------------------- ----------
+	 7 Ghazi					  7650
+	 8 Haddad					 19000
+
+2 rows selected.
+
+SQL> 
+SQL> PROMPT === SARA : (c) salaires dept 10 (Alaoui 45000 > 30000 -> declenche FGA) ===
+=== SARA : (c) salaires dept 10 (Alaoui 45000 > 30000 -> declenche FGA) ===
+SQL> SELECT emp_id, nom, salaire FROM rh.employes WHERE dept_id = 10;
+
+    EMP_ID NOM					       SALAIRE
+---------- ---------------------------------------- ----------
+	 1 Alaoui					 45000
+
+1 row selected.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Lecture des traces FGA dans UNIFIED_AUDIT_TRAIL et DBA_FGA_AUDIT_TRAIL
+SQL> EXEC DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL;
+BEGIN DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL; END;
+
+                      *
+ERROR at line 1:
+ORA-06550: line 1, column 23:
+PLS-00302: component 'FLUSH_UNIFIED_AUDIT_TRAIL' must be declared
+ORA-06550: line 1, column 7:
+PL/SQL: Statement ignored
+Help: https://docs.oracle.com/error-help/db/ora-06550/
+
+
+SQL> 
+SQL> COLUMN event_timestamp FORMAT A22
+SQL> COLUMN dbusername FORMAT A12
+SQL> COLUMN fga_policy_name FORMAT A25
+SQL> COLUMN sql_text FORMAT A45
+SQL> PROMPT === Traces FGA dans UNIFIED_AUDIT_TRAIL (dernier quart d'heure) ===
+=== Traces FGA dans UNIFIED_AUDIT_TRAIL (dernier quart d'heure) ===
+SQL> SELECT event_timestamp, dbusername, fga_policy_name, sql_text
+  2    FROM unified_audit_trail
+  3   WHERE fga_policy_name = 'FGA_GROS_SALAIRES'
+  4  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '10' MINUTE
+  5   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP        DBUSERNAME   FGA_POLICY_NAME	      SQL_TEXT
+---------------------- ------------ ------------------------- ---------------------------------------------
+31-OCT-26 04.08.50.938 SARA	    FGA_GROS_SALAIRES	      SELECT emp_id, nom, salaire FROM rh.employes WHERE dept_id
+844 PM							       = 10
+
+
+1 row selected.
+
+SQL> 
+SQL> PROMPt === Contenu de DBA_FGA_AUDIT_TRAIL ===
+=== Contenu de DBA_FGA_AUDIT_TRAIL ===
+SQL> COLUMN db_user FORMAT A12
+SQL> COLUMN lsql_text FORMAT A45
+SQL> SELECT db_user, lsql_text
+  2    FROM dba_fga_audit_trail;
+SELECT db_user, lsql_text
+                *
+ERROR at line 1:
+ORA-00904: "LSQL_TEXT": invalid identifier
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+
+
+SQL> 
+SQL> -- Desactivation de la politique FGA
+SQL> PROMPT === Desactivation de FGA_GROS_SALAIRES ===
+=== Desactivation de FGA_GROS_SALAIRES ===
+SQL> EXEC DBMS_FGA.DISABLE_POLICY('RH','EMPLOYES','FGA_GROS_SALAIRES');
+
+PL/SQL procedure successfully completed.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

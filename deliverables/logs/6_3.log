@@ -1,0 +1,132 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:22:25 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_3.sql : Exercice 6.3 (T3) -- Comptes Banque Atlas
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Comptes avec profil P_BQ_AGENT (guichetiers : 1 session)
+SQL> PROMPT === Création de GUI1 et GUI2 (profil P_BQ_AGENT) ===
+=== Création de GUI1 et GUI2 (profil P_BQ_AGENT) ===
+SQL> CREATE USER gui1 IDENTIFIED BY "Gui1#2026" PROFILE p_bq_agent;
+CREATE USER gui1 IDENTIFIED BY "Gui1#2026" PROFILE p_bq_agent
+*
+ERROR at line 1:
+ORA-28003: The password chosen did not meet the required complexity rules set by your organization.
+ORA-20000: password contains the user name
+Help: https://docs.oracle.com/error-help/db/ora-28003/
+
+
+SQL> CREATE USER gui2 IDENTIFIED BY "Gui2#2026" PROFILE p_bq_agent;
+CREATE USER gui2 IDENTIFIED BY "Gui2#2026" PROFILE p_bq_agent
+*
+ERROR at line 1:
+ORA-28003: The password chosen did not meet the required complexity rules set by your organization.
+ORA-20000: password contains the user name
+Help: https://docs.oracle.com/error-help/db/ora-28003/
+
+
+SQL> 
+SQL> -- Conseiller : profil P_BQ_CONSEIL (2 sessions)
+SQL> PROMPT === Création de CONS1 (profil P_BQ_CONSEIL) ===
+=== Création de CONS1 (profil P_BQ_CONSEIL) ===
+SQL> CREATE USER cons1 IDENTIFIED BY "Cons1#2026" PROFILE p_bq_conseil;
+CREATE USER cons1 IDENTIFIED BY "Cons1#2026" PROFILE p_bq_conseil
+*
+ERROR at line 1:
+ORA-28003: The password chosen did not meet the required complexity rules set by your organization.
+ORA-20000: password contains the user name
+Help: https://docs.oracle.com/error-help/db/ora-28003/
+
+
+SQL> 
+SQL> -- Directeur et auditeur : profil P_BQ_SENSIBLE (mot de passe renforcé)
+SQL> PROMPT === Création de DIR1 et AUD1 (profil P_BQ_SENSIBLE) ===
+=== Création de DIR1 et AUD1 (profil P_BQ_SENSIBLE) ===
+SQL> CREATE USER dir1 IDENTIFIED BY "Dir1#Banque2026!" PROFILE p_bq_sensible;
+
+User created.
+
+SQL> CREATE USER aud1 IDENTIFIED BY "Aud1#Banque2026!" PROFILE p_bq_sensible;
+
+User created.
+
+SQL> 
+SQL> -- Batch : profil P_BQ_SERVICE
+SQL> PROMPT === Création de APP_BATCH (profil P_BQ_SERVICE) ===
+=== Création de APP_BATCH (profil P_BQ_SERVICE) ===
+SQL> CREATE USER app_batch IDENTIFIED BY "Batch1#2026" PROFILE p_bq_service;
+CREATE USER app_batch IDENTIFIED BY "Batch1#2026" PROFILE p_bq_service
+*
+ERROR at line 1:
+ORA-28003: The password chosen did not meet the required complexity rules set by your organization.
+ORA-20000: password must contain 2 or more uppercase characters
+Help: https://docs.oracle.com/error-help/db/ora-28003/
+
+
+SQL> 
+SQL> -- Developpeur proxy : pas de profil contraignant (DEFAULT), aucun quota
+SQL> PROMPT === Création de DEV_BQ ===
+=== Création de DEV_BQ ===
+SQL> CREATE USER dev_bq IDENTIFIED BY "Dev1#Banque2026";
+
+User created.
+
+SQL> 
+SQL> -- Proxy DEV_BQ vers le schéma BANQUE (comme RH au chapitre 1)
+SQL> PROMPT === Autorisation du proxy DEV_BQ -> BANQUE ===
+=== Autorisation du proxy DEV_BQ -> BANQUE ===
+SQL> ALTER USER banque GRANT CONNECT THROUGH dev_bq;
+
+User altered.
+
+SQL> 
+SQL> COLUMN username FORMAT A12
+SQL> COLUMN profile FORMAT A14
+SQL> COLUMN account_status FORMAT A12
+SQL> PROMPT === Comptes créés (sans quota) ===
+=== Comptes créés (sans quota) ===
+SQL> SELECT username, profile, account_status
+  2    FROM dba_users
+  3   WHERE username IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ')
+  4   ORDER BY username;
+
+USERNAME     PROFILE	    ACCOUNT_STAT
+------------ -------------- ------------
+AUD1	     P_BQ_SENSIBLE  OPEN
+DEV_BQ	     DEFAULT	    OPEN
+DIR1	     P_BQ_SENSIBLE  OPEN
+
+3 rows selected.
+
+SQL> 
+SQL> PROMPt === Quotas (aucun ne doit apparaître) ===
+=== Quotas (aucun ne doit apparaître) ===
+SQL> COLUMN tablespace_name FORMAT A15
+SQL> COLUMN bytes FORMAT 999999
+SQL> SELECT username, tablespace_name, bytes, max_bytes
+  2    FROM dba_ts_quotas
+  3   WHERE username IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ');
+
+no rows selected
+
+SQL> 
+SQL> PROMPT === Autorisation proxy ===
+=== Autorisation proxy ===
+SQL> COLUMN proxy FORMAT A12
+SQL> COLUMN client FORMAT A12
+SQL> SELECT proxy, client FROM proxy_users WHERE client = 'BANQUE';
+
+PROXY	     CLIENT
+------------ ------------
+DEV_BQ	     BANQUE
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0
