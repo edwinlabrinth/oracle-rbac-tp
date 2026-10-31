@@ -1,0 +1,27 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:37:24 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> ALTER USER sec_kettani ACCOUNT UNLOCK;
+
+User altered.
+
+SQL> SELECT username, account_status FROM dba_users WHERE username = 'SEC_KETTANI';
+
+USERNAME
+------------------------------------------------------------------------------------------------------------------------
+ACCOUNT_STATUS
+--------------------------------
+SEC_KETTANI
+OPEN
+
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

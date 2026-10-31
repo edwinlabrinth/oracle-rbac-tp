@@ -1,0 +1,326 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:27:54 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_4_1.sql : Chapitre 4.2 -- Creation des 9 roles CHU et matrice RBAC
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Etape 1 : retirer les CREATE SESSION accordes directement au chapitre 3
+SQL> PROMPT === Retrait des CREATE SESSION directes (chapitre 3) ===
+=== Retrait des CREATE SESSION directes (chapitre 3) ===
+SQL> REVOKE CREATE SESSION FROM dr_alami, dr_benali, dr_fassi, inf_ghazi,
+  2  				sec_kettani, sec_lahlou, pha_mansouri, cpt_ouazzani,
+  3  				dir_rami, dpo_sbai, app_chu, dev_chu;
+
+Revoke succeeded.
+
+SQL> 
+SQL> -- R_CHU_CONNEXION : CREATE SESSION (base pour tous)
+SQL> PROMPT === Creation du role R_CHU_CONNEXION ===
+=== Creation du role R_CHU_CONNEXION ===
+SQL> CREATE ROLE r_chu_connexion;
+
+Role created.
+
+SQL> GRANT create session TO r_chu_connexion;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_SECRETAIRE : herite R_CHU_CONNEXION + droits secretaire
+SQL> PROMPT === Creation du role R_SECRETAIRE ===
+=== Creation du role R_SECRETAIRE ===
+SQL> CREATE ROLE r_secretaire;
+
+Role created.
+
+SQL> GRANT r_chu_connexion TO r_secretaire;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.v_accueil TO r_secretaire;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.services TO r_secretaire;
+
+Grant succeeded.
+
+SQL> GRANT select, insert ON chu.patients TO r_secretaire;
+
+Grant succeeded.
+
+SQL> GRANT update (telephone, ville, mutuelle) ON chu.patients TO r_secretaire;
+
+Grant succeeded.
+
+SQL> GRANT insert ON chu.sejours TO r_secretaire;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_INFIRMIER : herite R_CHU_CONNEXION + droits infirmier
+SQL> PROMPT === Creation du role R_INFIRMIER ===
+=== Creation du role R_INFIRMIER ===
+SQL> CREATE ROLE r_infirmier;
+
+Role created.
+
+SQL> GRANT r_chu_connexion TO r_infirmier;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.v_soins TO r_infirmier;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.prescriptions TO r_infirmier;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_MEDECIN : herite R_INFIRMIER + droits medecin
+SQL> PROMPT === Creation du role R_MEDECIN ===
+=== Creation du role R_MEDECIN ===
+SQL> CREATE ROLE r_medecin;
+
+Role created.
+
+SQL> GRANT r_infirmier TO r_medecin;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.v_accueil TO r_medecin;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.sejours TO r_medecin;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.patients TO r_medecin;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update ON chu.dossiers_medicaux TO r_medecin;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update ON chu.prescriptions TO r_medecin;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_PHARMACIEN : herite R_CHU_CONNEXION + droits pharmacien
+SQL> PROMPT === Creation du role R_PHARMACIEN ===
+=== Creation du role R_PHARMACIEN ===
+SQL> CREATE ROLE r_pharmacien;
+
+Role created.
+
+SQL> GRANT r_chu_connexion TO r_pharmacien;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.v_accueil TO r_pharmacien;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.prescriptions TO r_pharmacien;
+
+Grant succeeded.
+
+SQL> GRANT update (statut) ON chu.prescriptions TO r_pharmacien;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_COMPTABLE : herite R_CHU_CONNEXION + droits comptable
+SQL> PROMPT === Creation du role R_COMPTABLE ===
+=== Creation du role R_COMPTABLE ===
+SQL> CREATE ROLE r_comptable;
+
+Role created.
+
+SQL> GRANT r_chu_connexion TO r_comptable;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.v_accueil TO r_comptable;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update ON chu.factures TO r_comptable;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_DIRECTION : herite R_CHU_CONNEXION + droits direction
+SQL> PROMPT === Creation du role R_DIRECTION ===
+=== Creation du role R_DIRECTION ===
+SQL> CREATE ROLE r_direction;
+
+Role created.
+
+SQL> GRANT r_chu_connexion TO r_direction;
+
+Grant succeeded.
+
+SQL> GRANT select ON chu.v_stats_services TO r_direction;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_AUDIT : herite R_CHU_CONNEXION + AUDIT_VIEWER + READ journaux AUDIT_CHU
+SQL> PROMPT === Creation du role R_AUDIT ===
+=== Creation du role R_AUDIT ===
+SQL> CREATE ROLE r_audit;
+
+Role created.
+
+SQL> GRANT r_chu_connexion TO r_audit;
+
+Grant succeeded.
+
+SQL> GRANT audit_viewer TO r_audit;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- R_APPLI : herite R_CHU_CONNEXION + droits applicatifs sur 7 tables
+SQL> PROMPT === Creation du role R_APPLI ===
+=== Creation du role R_APPLI ===
+SQL> CREATE ROLE r_appli;
+
+Role created.
+
+SQL> GRANT r_chu_connexion TO r_appli;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update, delete ON chu.services TO r_appli;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update, delete ON chu.personnel TO r_appli;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update, delete ON chu.patients TO r_appli;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update, delete ON chu.sejours TO r_appli;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update, delete ON chu.dossiers_medicaux TO r_appli;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update, delete ON chu.prescriptions TO r_appli;
+
+Grant succeeded.
+
+SQL> GRANT select, insert, update, delete ON chu.factures TO r_appli;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Attribution des roles aux comptes
+SQL> PROMPT === Attribution des roles aux comptes ===
+=== Attribution des roles aux comptes ===
+SQL> GRANT r_medecin TO dr_alami;
+
+Grant succeeded.
+
+SQL> GRANT r_medecin TO dr_benali;
+
+Grant succeeded.
+
+SQL> GRANT r_medecin TO dr_fassi;
+
+Grant succeeded.
+
+SQL> GRANT r_infirmier TO inf_ghazi;
+
+Grant succeeded.
+
+SQL> GRANT r_secretaire TO sec_kettani;
+
+Grant succeeded.
+
+SQL> GRANT r_secretaire TO sec_lahlou;
+
+Grant succeeded.
+
+SQL> GRANT r_pharmacien TO pha_mansouri;
+
+Grant succeeded.
+
+SQL> GRANT r_comptable TO cpt_ouazzani;
+
+Grant succeeded.
+
+SQL> GRANT r_direction TO dir_rami;
+
+Grant succeeded.
+
+SQL> GRANT r_audit TO dpo_sbai;
+
+Grant succeeded.
+
+SQL> GRANT r_appli TO app_chu;
+
+Grant succeeded.
+
+SQL> GRANT r_chu_connexion TO dev_chu;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Delegation : DR_BENALI recoit R_INFIRMIER avec ADMIN OPTION
+SQL> PROMPT === Delegation : R_INFIRMIER a DR_BENALI avec ADMIN OPTION ===
+=== Delegation : R_INFIRMIER a DR_BENALI avec ADMIN OPTION ===
+SQL> GRANT r_infirmier TO dr_benali WITH ADMIN OPTION;
+
+Grant succeeded.
+
+SQL> 
+SQL> COLUMN grantee FORMAT A14
+SQL> COLUMN granted_role FORMAT A18
+SQL> COLUMN admin_option FORMAT A14
+SQL> PROMPT === Roles des comptes CHU ===
+=== Roles des comptes CHU ===
+SQL> SELECT grantee, granted_role, admin_option
+  2    FROM dba_role_privs
+  3   WHERE grantee IN ('DR_ALAMI','DR_BENALI','DR_FASSI','INF_GHAZI',
+  4  			'SEC_KETTANI','SEC_LAHLOU','PHA_MANSOURI','CPT_OUAZZANI',
+  5  			'DIR_RAMI','DPO_SBAI','APP_CHU','DEV_CHU')
+  6   ORDER BY grantee, granted_role;
+
+GRANTEE        GRANTED_ROLE	  ADMIN_OPTION
+-------------- ------------------ --------------
+APP_CHU        R_APPLI		  NO
+CPT_OUAZZANI   R_COMPTABLE	  NO
+DEV_CHU        R_CHU_CONNEXION	  NO
+DIR_RAMI       R_DIRECTION	  NO
+DPO_SBAI       R_AUDIT		  NO
+DR_ALAMI       R_MEDECIN	  NO
+DR_BENALI      R_INFIRMIER	  YES
+DR_BENALI      R_MEDECIN	  NO
+DR_FASSI       R_MEDECIN	  NO
+INF_GHAZI      R_INFIRMIER	  NO
+PHA_MANSOURI   R_PHARMACIEN	  NO
+SEC_KETTANI    R_SECRETAIRE	  NO
+SEC_LAHLOU     R_SECRETAIRE	  NO
+
+13 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

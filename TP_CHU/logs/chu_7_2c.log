@@ -1,0 +1,40 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:33:20 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === (b) dossier 22 confidentiel ===
+=== (b) dossier 22 confidentiel ===
+SQL> SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22;
+SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22
+                           *
+ERROR at line 1:
+ORA-28144: failure to process fine-grained audit handler
+ORA-06550: line 1, column 8:
+PLS-00201: identifier 'SYS.ALERTE_FGA' must be declared
+ORA-06550: line 1, column 8:
+PL/SQL: Statement ignored
+Help: https://docs.oracle.com/error-help/db/ora-28144/
+
+
+SQL> PROMPT === (e) select * confidentiel ===
+=== (e) select * confidentiel ===
+SQL> SELECT * FROM chu.dossiers_medicaux WHERE dossier_id IN (5,22);
+ERROR:
+ORA-28144: failure to process fine-grained audit handler
+ORA-06550: line 1, column 8:
+PLS-00201: identifier 'SYS.ALERTE_FGA' must be declared
+ORA-06550: line 1, column 8:
+PL/SQL: Statement ignored
+Help: https://docs.oracle.com/error-help/db/ora-28144/
+
+
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

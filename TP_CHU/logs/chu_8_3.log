@@ -1,0 +1,142 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:35:29 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_8_3.sql : Chapitre 8.3 -- Trigger controle prescription (E7)
+SQL> -- Seul le prescripteur modifie sa prescription
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Nettoyage
+SQL> PROMPT === Nettoyage ===
+=== Nettoyage ===
+SQL> DROP TRIGGER trg_ctrl_presc;
+DROP TRIGGER trg_ctrl_presc
+*
+ERROR at line 1:
+ORA-04080: trigger 'TRG_CTRL_PRESC' does not exist
+Help: https://docs.oracle.com/error-help/db/ora-04080/
+
+
+SQL> 
+SQL> -- Trigger : avant UPDATE ou DELETE sur PRESCRIPTIONS
+SQL> -- Si l'utilisateur est un medecin (login = SESSION_USER) et n'est pas le prescripteur,
+SQL> -- journaliser REFUS_PRESC puis lever -20010
+SQL> PROMPT === Creation de TRG_CTRL_PRESC ===
+=== Creation de TRG_CTRL_PRESC ===
+SQL> CREATE OR REPLACE TRIGGER trg_ctrl_presc
+  2    BEFORE UPDATE OR DELETE ON chu.prescriptions
+  3    FOR EACH ROW
+  4  DECLARE
+  5    v_fonction   VARCHAR2(12);
+  6    v_pers_id    NUMBER;
+  7    v_is_medecin BOOLEAN := FALSE;
+  8    v_is_prescripteur BOOLEAN := FALSE;
+  9  BEGIN
+ 10    -- Verifier si l'utilisateur courant est un medecin du personnel
+ 11    SELECT fonction, pers_id
+ 12  	 INTO v_fonction, v_pers_id
+ 13  	 FROM chu.personnel
+ 14  	WHERE login = SYS_CONTEXT('USERENV','SESSION_USER');
+ 15  
+ 16    IF v_fonction = 'MEDECIN' THEN
+ 17  	 v_is_medecin := TRUE;
+ 18  	 -- Verifier si ce medecin est le prescripteur de la prescription
+ 19  	 IF :OLD.medecin_id = v_pers_id THEN
+ 20  	   v_is_prescripteur := TRUE;
+ 21  	 END IF;
+ 22    END IF;
+ 23  
+ 24    -- Si medecin mais pas le prescripteur : refuser
+ 25    IF v_is_medecin AND NOT v_is_prescripteur THEN
+ 26  	 audit_chu.log_evt('REFUS_PRESC', 'PRESCRIPTIONS',
+ 27  	   'Medecin ' || SYS_CONTEXT('USERENV','SESSION_USER') ||
+ 28  	   ' tente de modifier la prescription ' || :OLD.presc_id ||
+ 29  	   ' dont le prescripteur est ' || :OLD.medecin_id);
+ 30  	 RAISE_APPLICATION_ERROR(-20010, 'Seul le prescripteur peut modifier sa prescription');
+ 31    END IF;
+ 32  EXCEPTION
+ 33    WHEN NO_DATA_FOUND THEN
+ 34  	 -- L'utilisateur n'est pas dans le personnel (ex: APP_CHU), ne rien faire
+ 35  	 NULL;
+ 36  END;
+ 37  /
+
+Trigger created.
+
+SQL> 
+SQL> -- Test : DR_ALAMI modifie la dose de la prescription 8 (la sienne) puis ROLLBACK
+SQL> CONNECT dr_alami/"Urgences#2026a"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === DR_ALAMI : UPDATE dose prescription 8 (sienne) puis ROLLBACK ===
+=== DR_ALAMI : UPDATE dose prescription 8 (sienne) puis ROLLBACK ===
+SQL> UPDATE chu.prescriptions SET dose = '3 cp/j' WHERE presc_id = 8;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> 
+SQL> -- Test : DR_FASSI tente la meme modification (pas le prescripteur) -> blocage
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === DR_FASSI : UPDATE dose prescription 8 (pas sienne) => -20010 ===
+=== DR_FASSI : UPDATE dose prescription 8 (pas sienne) => -20010 ===
+SQL> UPDATE chu.prescriptions SET dose = '3 cp/j' WHERE presc_id = 8;
+UPDATE chu.prescriptions SET dose = '3 cp/j' WHERE presc_id = 8
+*
+ERROR at line 1:
+ORA-20010: Seul le prescripteur peut modifier sa prescription
+ORA-06512: at "SYS.TRG_CTRL_PRESC", line 27
+ORA-04088: error during execution of trigger 'SYS.TRG_CTRL_PRESC'
+
+
+SQL> 
+SQL> -- Test : PHA_MANSOURI marque la prescription 8 délivree puis ROLLBACK
+SQL> -- (pharmacien, pas medecin => declencheur ne s'applique pas)
+SQL> CONNECT pha_mansouri/"Pharma#2026m"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === PHA_MANSOURI : UPDATE statut prescription 8 (delivree) puis ROLLBACK ===
+=== PHA_MANSOURI : UPDATE statut prescription 8 (delivree) puis ROLLBACK ===
+SQL> UPDATE chu.prescriptions SET statut = 'DELIVREE' WHERE presc_id = 8;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Verifier le journal des evenements
+SQL> COLUMN type_evenement FORMAT A20
+SQL> COLUMN utilisateur FORMAT A15
+SQL> COLUMN objet FORMAT A20
+SQL> COLUMN detail FORMAT A60
+SQL> PROMPt === Contenu de JOURNAL_EVENEMENTS ===
+=== Contenu de JOURNAL_EVENEMENTS ===
+SQL> SELECT evenement_date, type_evenement, utilisateur, objet, detail
+  2    FROM audit_chu.journal_evenements
+  3   ORDER BY evenement_date DESC;
+
+EVENEMENT_DATE	   TYPE_EVENEMENT	UTILISATEUR	OBJET
+------------------ -------------------- --------------- --------------------
+DETAIL
+------------------------------------------------------------
+31-OCT-26	   REFUS_PRESC		DR_FASSI	PRESCRIPTIONS
+Medecin DR_FASSI tente de modifier la prescription 8 dont le
+ prescripteur est 1
+
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

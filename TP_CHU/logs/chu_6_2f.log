@@ -1,0 +1,32 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:31:52 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN entity_name FORMAT A20
+SQL> COLUMN policy_name FORMAT A30
+SQL> COLUMN success FORMAT A10
+SQL> COLUMN failure FORMAT A10
+SQL> SELECT entity_name, policy_name, success, failure
+  2    FROM audit_unified_enabled_policies
+  3   ORDER BY policy_name, entity_name;
+
+ENTITY_NAME	     POLICY_NAME		    SUCCESS    FAILURE
+-------------------- ------------------------------ ---------- ----------
+ALL USERS	     ORA_ACCOUNT_MGMT		    YES        YES
+ALL USERS	     ORA_LOGON_FAILURES 	    YES        YES
+ALL USERS	     POL_BQ_CLIENTS		    YES        YES
+ALL USERS	     POL_BQ_SOLDES		    NO	       YES
+ALL USERS	     POL_BQ_SOLDES_OPS		    NO	       YES
+ALL USERS	     POL_CHU_ADHOC		    YES        YES
+APP_CHU 	     POL_CHU_DOSSIERS		    YES        YES
+ALL USERS	     POL_CHU_GOUVERNANCE	    YES        YES
+
+8 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

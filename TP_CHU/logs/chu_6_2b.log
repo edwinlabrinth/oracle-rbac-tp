@@ -1,0 +1,63 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:31:29 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> -- Test chaque privilige individuellement
+SQL> CREATE AUDIT POLICY test_priv1 PRIVILEGES CREATE TRIGGER;
+
+Audit policy created.
+
+SQL> CREATE AUDIT POLICY test_priv2 PRIVILEGES ALTER TRIGGER;
+CREATE AUDIT POLICY test_priv2 PRIVILEGES ALTER TRIGGER
+                                          *
+ERROR at line 1:
+ORA-46355: The system privilege audit option mentioned is invalid.
+Help: https://docs.oracle.com/error-help/db/ora-46355/
+
+
+SQL> CREATE AUDIT POLICY test_priv3 PRIVILEGES DROP TRIGGER;
+CREATE AUDIT POLICY test_priv3 PRIVILEGES DROP TRIGGER
+                                          *
+ERROR at line 1:
+ORA-46355: The system privilege audit option mentioned is invalid.
+Help: https://docs.oracle.com/error-help/db/ora-46355/
+
+
+SQL> CREATE AUDIT POLICY test_priv4 PRIVILEGES DROP ANY TABLE;
+
+Audit policy created.
+
+SQL> CREATE AUDIT POLICY test_priv5 PRIVILEGES TRUNCATE ANY TABLE;
+CREATE AUDIT POLICY test_priv5 PRIVILEGES TRUNCATE ANY TABLE
+                                          *
+ERROR at line 1:
+ORA-46355: The system privilege audit option mentioned is invalid.
+Help: https://docs.oracle.com/error-help/db/ora-46355/
+
+
+SQL> CREATE AUDIT POLICY test_priv6 PRIVILEGES SELECT ANY TABLE;
+
+Audit policy created.
+
+SQL> CREATE AUDIT POLICY test_priv7 PRIVILEGES ALTER ANY TRIGGER;
+
+Audit policy created.
+
+SQL> SELECT policy_name FROM audit_unified_policies WHERE policy_name LIKE 'TEST_PRIV%';
+
+POLICY_NAME
+------------------------------------------------------------------------------------------------------------------------
+TEST_PRIV1
+TEST_PRIV4
+TEST_PRIV6
+TEST_PRIV7
+
+4 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,50 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:26:48 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_3_3_e.sql : Chapitre 3.3 -- Verrouillage mot de passe SEC_LAHLOU (3 echecs puis bon)
+SQL> CONNECT sec_lahlou/"faux1"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT sec_lahlou/"faux2"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT sec_lahlou/"faux3"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT sec_lahlou/"Accueil#2026l"@//localhost/FREEPDB1
+ERROR:
+ORA-28000: The account is locked; login denied.
+Help: https://docs.oracle.com/error-help/db/ora-28000/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN username FORMAT A14
+SQL> COLUMN account_status FORMAT A20
+SQL> COLUMN lock_date FORMAT A20
+SQL> PROMPt === Etat SEC_LAHLOU apres verrouillage ===
+=== Etat SEC_LAHLOU apres verrouillage ===
+SQL> SELECT username, account_status, lock_date FROM dba_users WHERE username = 'SEC_LAHLOU';
+
+USERNAME       ACCOUNT_STATUS	    LOCK_DATE
+-------------- -------------------- --------------------
+SEC_LAHLOU     LOCKED(TIMED)	    31-OCT-26
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

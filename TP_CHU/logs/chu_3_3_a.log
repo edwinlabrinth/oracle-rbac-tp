@@ -1,0 +1,25 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:22:28 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_3_3_a.sql : Chapitre 3.3 -- Test limites de sessions (SEC_LAHLOU : 1 session max)
+SQL> -- Session 1 de SEC_LAHLOU (garde ouverte)
+SQL> CONNECT sec_lahlou/"Accueil#2026l"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT USER AS session_sec_lahlou_1 FROM dual;
+
+SESSION_SEC_LAHLOU_1
+------------------------------------------------------------------------------------------------------------------------
+SEC_LAHLOU
+
+1 row selected.
+
+SQL> EXEC DBMS_SESSION.SLEEP(120);
+
+PL/SQL procedure successfully completed.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,65 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{fontspec}
+\setmonofont{DejaVu Sans Mono}[Scale=0.88]
+\usepackage[french]{babel}
+\usepackage[a4paper,margin=2.2cm]{geometry}
+\usepackage{graphicx,float,xcolor,fancyhdr,caption}
+\usepackage[hidelinks]{hyperref}
+\graphicspath{{./}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.6em}
+
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small TP Audit Oracle -- CHU Al Majd}
+\rhead{\small LACHHAB Mohammed -- GINF2}
+\cfoot{\thepage}
+
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\shots}[1]{\IfFileExists{screenshots_chu/#1.tex}{\input{screenshots_chu/#1.tex}}{\textbf{[capture manquante : #1]}}}
+\newcommand{\ecart}[1]{\par\noindent\fbox{\parbox{\dimexpr\linewidth-2\fboxsep-2\fboxrule\relax}{\small\textbf{Écart :} #1}}\par}
+
+\begin{document}
+
+\begin{titlepage}
+\centering
+\vspace*{2cm}
+{\Huge\bfseries Compte rendu de travaux pratiques\par}
+\vspace{0.5cm}
+{\LARGE Audit et sécurité des accès\\[0.2cm] avec Oracle Database\par}
+\vspace{0.5cm}
+{\large Étude de cas : CHU Al Majd de Tanger\par}
+\vfill
+\begin{tabular}{rl}
+  \textbf{Réalisé par :}        & LACHHAB Mohammed \\[0.2cm]
+  \textbf{Filière :}            & GINF2 \\[0.2cm]
+  \textbf{Encadrant :}          & Mr. BADIR Hassan \\[0.2cm]
+  \textbf{Année universitaire :} & 2026/2027
+\end{tabular}
+\vfill
+{\today}
+\end{titlepage}
+
+\tableofcontents
+\newpage
+
+\section*{Environnement}
+\addcontentsline{toc}{section}{Environnement}
+
+Le TP est réalisé sur \textbf{Oracle Database 26ai Free (23.26.3.0.0)} dans un conteneur Docker.
+La PDB utilisée est \code{FREEPDB1} (l'énoncé mentionne ORCLPDB). Toutes les connexions se font dans la PDB.
+
+\newpage
+
+\input{report/chu_2.tex}
+\input{report/chu_3.tex}
+\input{report/chu_4.tex}
+\input{report/chu_5.tex}
+\input{report/chu_6.tex}
+\input{report/chu_7.tex}
+\input{report/chu_8.tex}
+\input{report/chu_9.tex}
+\input{report/chu_10.tex}
+
+\end{document}

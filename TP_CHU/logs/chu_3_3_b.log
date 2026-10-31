@@ -1,0 +1,17 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:22:29 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_3_3_b.sql : Chapitre 3.3 -- Session 2 de SEC_LAHLOU (doit echouer, 1 session max)
+SQL> CONNECT sec_lahlou/"Accueil#2026l"@//localhost/FREEPDB1
+ERROR:
+ORA-02391: exceeded simultaneous SESSIONS_PER_USER limit
+Help: https://docs.oracle.com/error-help/db/ora-02391/
+
+
+SQL> SELECT USER AS session_sec_lahlou_2 FROM dual;
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> EXIT

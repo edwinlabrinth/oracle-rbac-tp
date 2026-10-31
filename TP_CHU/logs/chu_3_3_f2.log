@@ -1,0 +1,55 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:27:08 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_3_3_f2.sql : Chapitre 3.3 -- Changement de mot de passe CPT_OUAZZANI (mot de passe conforme)
+SQL> CONNECT cpt_ouazzani/"Compta#2026o"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === Changement sans REPLACE (attendu ORA-28221) ===
+=== Changement sans REPLACE (attendu ORA-28221) ===
+SQL> ALTER USER cpt_ouazzani IDENTIFIED BY "Finance2027x!";
+ALTER USER cpt_ouazzani IDENTIFIED BY "Finance2027x!"
+*
+ERROR at line 1:
+ORA-28221: REPLACE clause not specified
+Help: https://docs.oracle.com/error-help/db/ora-28221/
+
+
+SQL> PROMPT === Changement avec REPLACE (attendu OK) ===
+=== Changement avec REPLACE (attendu OK) ===
+SQL> ALTER USER cpt_ouazzani IDENTIFIED BY "Finance2027x!" REPLACE "Compta#2026o";
+
+User altered.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> PROMPt === SYS tente de redonner l'ancien mot de passe Compta#2026o (attendu echec reuse) ===
+=== SYS tente de redonner l'ancien mot de passe Compta#2026o (attendu echec reuse) ===
+SQL> ALTER USER cpt_ouazzani IDENTIFIED BY "Compta#2026o";
+ALTER USER cpt_ouazzani IDENTIFIED BY "Compta#2026o"
+*
+ERROR at line 1:
+ORA-28007: The password cannot be reused.
+Help: https://docs.oracle.com/error-help/db/ora-28007/
+
+
+SQL> 
+SQL> COLUMN username FORMAT A14
+SQL> COLUMN account_status FORMAT A20
+SQL> COLUMN expiry_date FORMAT A20
+SQL> PROMPt === Etat CPT_OUAZZANI ===
+=== Etat CPT_OUAZZANI ===
+SQL> SELECT username, account_status, expiry_date FROM dba_users WHERE username = 'CPT_OUAZZANI';
+
+USERNAME       ACCOUNT_STATUS	    EXPIRY_DATE
+-------------- -------------------- --------------------
+CPT_OUAZZANI   OPEN		    30-DEC-26
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

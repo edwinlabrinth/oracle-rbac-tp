@@ -1,0 +1,35 @@
+\section{Audit standard (Chapitre 5)}
+
+\subsection{5.1 État de l'audit standard}
+\textbf{Objectif.} Vérifier \code{AUDIT\_TRAIL}, \code{AUDIT\_SYS\_OPERATIONS} et \code{AUDIT\_FILE\_DEST}.
+
+\shots{chu_5_1c}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{AUDIT\_TRAIL} vaut \code{NONE} par défaut.
+  \item \code{AUDIT\_SYS\_OPERATIONS} vaut \code{FALSE}.
+  \item \code{AUDIT\_FILE\_DEST} pointe vers le répertoire d'audit du conteneur.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{5.2 Configuration de l'audit standard}
+\textbf{Objectif.} Configurer l'audit standard avec les commandes \code{AUDIT}.
+
+\shots{chu_5_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Toutes les commandes \code{AUDIT} (SESSION, NOT EXISTS, objet, système) renvoient \code{ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use unified auditing in its place.}
+  \item L'audit standard traditionnel n'est pas disponible en 26ai Free même avec \code{AUDIT\_TRAIL = DB, EXTENDED}.
+\end{enumerate}
+\ecart{Écart majeur 19c→26ai : l'audit standard traditionnel (\code{AUDIT}/\code{NOAUDIT} commandes) est désupporté (\code{ORA-46401}). L'audit unifié est le seul mécanisme fonctionnel.}
+
+\subsection{5.3 Lecture de la trace}
+\textbf{Objectif.} Lire les enregistrements d'audit.
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Comme l'audit standard est inopérant, aucune trace n'est générée via \code{DBA\_AUDIT\_TRAIL}. L'audit unifié (chapitre 6) est utilisé à la place.
+\end{enumerate}
+\ecart{L'audit standard ne produit aucune trace en 26ai (voir écart 5.2).}

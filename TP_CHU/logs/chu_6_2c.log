@@ -1,0 +1,96 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:31:36 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> -- Nettoyage test policies
+SQL> NOAUDIT POLICY test_priv1; DROP AUDIT POLICY test_priv1;
+NOAUDIT POLICY test_priv1; DROP AUDIT POLICY test_priv1
+                           *
+ERROR at line 1:
+ORA-03405: End of query reached; no additional text should follow.
+Help: https://docs.oracle.com/error-help/db/ora-03405/
+
+
+SQL> NOAUDIT POLICY test_priv4; DROP AUDIT POLICY test_priv4;
+NOAUDIT POLICY test_priv4; DROP AUDIT POLICY test_priv4
+                           *
+ERROR at line 1:
+ORA-03405: End of query reached; no additional text should follow.
+Help: https://docs.oracle.com/error-help/db/ora-03405/
+
+
+SQL> NOAUDIT POLICY test_priv6; DROP AUDIT POLICY test_priv6;
+NOAUDIT POLICY test_priv6; DROP AUDIT POLICY test_priv6
+                           *
+ERROR at line 1:
+ORA-03405: End of query reached; no additional text should follow.
+Help: https://docs.oracle.com/error-help/db/ora-03405/
+
+
+SQL> NOAUDIT POLICY test_priv7; DROP AUDIT POLICY test_priv7;
+NOAUDIT POLICY test_priv7; DROP AUDIT POLICY test_priv7
+                           *
+ERROR at line 1:
+ORA-03405: End of query reached; no additional text should follow.
+Help: https://docs.oracle.com/error-help/db/ora-03405/
+
+
+SQL> -- Recréer POL_CHU_GOUVERNANCE avec privilèges valides
+SQL> NOAUDIT POLICY pol_chu_gouvernance;
+NOAUDIT POLICY pol_chu_gouvernance
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_GOUVERNANCE was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> DROP AUDIT POLICY pol_chu_gouvernance;
+DROP AUDIT POLICY pol_chu_gouvernance
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_GOUVERNANCE was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> CREATE AUDIT POLICY pol_chu_gouvernance
+  2    PRIVILEGES CREATE TRIGGER, DROP ANY TABLE, SELECT ANY TABLE, ALTER ANY TRIGGER;
+
+Audit policy created.
+
+SQL> AUDIT POLICY pol_chu_gouvernance;
+
+Audit succeeded.
+
+SQL> -- Vérifier
+SQL> COLUMN policy_name FORMAT A30
+SQL> COLUMN audit_option FORMAT A25
+SQL> SELECT policy_name, audit_option
+  2    FROM audit_unified_policies
+  3   WHERE policy_name = 'POL_CHU_GOUVERNANCE'
+  4   ORDER BY policy_name, audit_option;
+
+POLICY_NAME		       AUDIT_OPTION
+------------------------------ -------------------------
+POL_CHU_GOUVERNANCE	       ALTER ANY TRIGGER
+POL_CHU_GOUVERNANCE	       CREATE TRIGGER
+POL_CHU_GOUVERNANCE	       DROP ANY TABLE
+POL_CHU_GOUVERNANCE	       SELECT ANY TABLE
+
+4 rows selected.
+
+SQL> COLUMN entity_name FORMAT A30
+SQL> COLUMN success FORMAT A10
+SQL> COLUMN failure FORMAT A10
+SQL> SELECT entity_name, success, failure
+  2    FROM audit_unified_enabled_policies
+  3   WHERE entity_name = 'POL_CHU_GOUVERNANCE';
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

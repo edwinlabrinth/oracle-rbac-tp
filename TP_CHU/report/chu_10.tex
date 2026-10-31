@@ -1,0 +1,35 @@
+\section{Synthèse (Chapitre 10)}
+
+\subsection{10.1 Questions de synthèse}
+
+\textbf{1. Pourquoi les privilèges, rôles et profils n'ont-ils empêché ni l'incident 3 ni l'incident 6 ?}
+
+L'incident 3 (Dr Fassi lit les dossiers VIP) n'est pas empêché car Dr Fassi a le privilège \code{SELECT} sur \code{dossiers\_medicaux} via son rôle \code{R\_MEDECIN}. Les privilèges contrôlent l'accès, pas l'usage légitime d'un accès autorisé. Un médecin peut lire n'importe quel dossier médical, y compris ceux de patients VIP d'un autre service, sans violer aucun privilège.
+
+L'incident 6 (délégation de Dr Benali) n'est pas empêché car Dr Benali a l'\code{ADMIN OPTION} sur \code{R\_INFIRMIER} : il peut légalement déléguer ce rôle. Le problème n'est pas le privilège en lui-même mais l'absence de contrôle sur qui reçoit le rôle.
+
+Pour être « parfaits », il faudrait : (1) une politique VPD limitant l'accès aux dossiers aux patients du médecin ou de son service, (2) une validation double pour toute délégation de rôle. Ces mécanismes dépassent le simple RBAC statique.
+
+\textbf{2. Sur le dossier 5 : audit standard, audit unifié et trigger de valeurs.}
+
+L'audit standard est inopérant en 26ai (\code{ORA-46401}). L'audit unifié trace que Dr Alami a fait un \code{UPDATE} sur \code{dossiers\_medicaux} (via \code{POL\_CHU\_DOSSIERS}), mais ne dit pas quelles colonnes ni quelles valeurs. Le trigger de valeurs (chapitre 8.2) journalise l'ancien et le nouveau valeur de \code{diagnostic} et \code{traitement} dans \code{JOURNAL\_DOSSIERS}, avec l'identifiant du dossier. Seul le trigger permet de savoir exactement ce qui a changé.
+
+\textbf{3. Pourquoi les journaux sont dans \code{AUDIT\_CHU} et non dans \code{CHU} ?}
+
+Les journaux sont dans \code{AUDIT\_CHU} pour les isoler du schéma applicatif. Ainsi, même si un utilisateur compromet le schéma \code{CHU} (ou le compte applicatif \code{APP\_CHU}), il ne peut pas modifier ni supprimer les journaux d'audit. \code{AUDIT\_CHU} est un schéma sans authentification (\code{NO AUTHENTICATION}) : aucun humain ne peut s'y connecter directement. Seul le compte \code{SYS} ou le \code{DBA} pourrait modifier les journaux, et ces modifications sont elles-mêmes tracées (séparation des tâches).
+
+\textbf{4. Le Dr Fassi justifie ses lectures par un avis cardiologique. Comment distinguer un accès justifié d'un accès de curiosité ?}
+
+Il faudrait mettre en place : (1) une politique VPD limitant l'accès aux dossiers des patients dont le médecin est le médecin traitant du séjour, (2) une revue périodique des accès aux dossiers confidentiels comparés à la liste des séjours dont le médecin est responsable, (3) une politique d'accès « besoin d'en savoir » avec justification obligatoire pour les dossiers hors de son service. L'audit seul ne peut pas distinguer l'intention ; il faut un contrôle préventif (VPD) en complément.
+
+\textbf{5. Durée de conservation des traces et procédure d'archivage/purge.}
+
+Durée de conservation recommandée : 12 mois en ligne (accès immédiat pour enquêtes), puis archivage sur support externe pendant 5 ans (exigence légale CNDP/loi 09-08 pour les données de santé), puis destruction sécurisée.
+
+Procédure : utiliser \code{DBMS\_AUDIT\_MGMT.SET\_LAST\_ARCHIVE\_TIMESTAMP} pour marquer l'archivage, puis \code{DBMS\_AUDIT\_MGMT.CLEAN\_AUDIT\_TRAIL} pour purger. La purge est elle-même tracée dans \code{UNIFIED\_AUDIT\_TRAIL} pour garantir l'intégrité.
+
+\textbf{6. Deux améliorations de la politique de sécurité de l'agence.}
+
+1. \textbf{Authentification forte et centralisée} : remplacer l'authentification par mot de passe par une authentification multifactorielle (MFA) et centraliser la gestion des comptes via un annuaire LDAP/Active Directory, évitant la prolifération de mots de passe locaux et permettant la révocation immédiate en cas de départ.
+
+2. \textbf{Chiffrement et contrôle d'accès granulaire} : activer le chiffrement TDE (Transparent Data Encryption) sur les tables sensibles (\code{dossiers\_medicaux}, \code{patients}) et mettre en place Oracle Label Security ou VPD pour un contrôle d'accès au niveau des lignes (un médecin ne voit que ses propres patients, un secrétaire ne voit que ses dossiers d'agence).

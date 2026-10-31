@@ -1,0 +1,40 @@
+\section{Audit unifié (Chapitre 6)}
+
+\subsection{6.1 État de l'audit unifié}
+\textbf{Objectif.} Vérifier le mode d'audit unifié et lister les politiques actives.
+
+\shots{chu_6_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{Unified Auditing = TRUE} : la base est en mode audit unifié pur.
+  \item 19 politiques prédéfinies sont définies, 5 sont déjà actives (ORA\_ACCOUNT\_MGMT, ORA\_LOGON\_FAILURES, etc.).
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{6.2 Création des politiques CHU}
+\textbf{Objectif.} Créer et activer 4 politiques : \code{POL\_CHU\_DOSSIERS}, \code{POL\_CHU\_ADHOC}, \code{POL\_CHU\_GOUVERNANCE}, et activer \code{ORA\_ACCOUNT\_MGMT}.
+
+\shots{chu_6_2} \shots{chu_6_2d}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{POL\_CHU\_DOSSIERS} : \code{SELECT, INSERT, UPDATE, DELETE} sur \code{chu.dossiers\_medicaux} + \code{SELECT} sur \code{chu.v\_soins}, activée pour tous sauf \code{APP\_CHU} (\code{EXCEPT app\_chu}).
+  \item \code{POL\_CHU\_ADHOC} : \code{INSERT, UPDATE, DELETE} sur \code{PATIENTS}, \code{PRESCRIPTIONS}, \code{FACTURES}, avec clause \code{WHEN} sur \code{CLIENT\_PROGRAM\_NAME} (\code{EVALUATE PER SESSION}).
+  \item \code{POL\_CHU\_GOUVERNANCE} : \code{CREATE TRIGGER}, \code{DROP ANY TABLE}, \code{SELECT ANY TABLE}, \code{ALTER ANY TRIGGER}. Les privilèges \code{ALTER TRIGGER}, \code{DROP TRIGGER}, \code{TRUNCATE ANY TABLE} renvoient \code{ORA-46355} (non auditable en unifié).
+  \item \code{ORA\_ACCOUNT\_MGMT} activée : trace CREATE USER, GRANT, REVOKE, DROP USER.
+\end{enumerate}
+\ecart{Trois privilèges (\code{ALTER TRIGGER}, \code{DROP TRIGGER}, \code{TRUNCATE ANY TABLE}) ne sont pas auditable via l'audit unifié (\code{ORA-46355}). Seuls \code{CREATE TRIGGER}, \code{DROP ANY TABLE}, \code{SELECT ANY TABLE}, \code{ALTER ANY TRIGGER} le sont.}
+
+\subsection{6.3 La DPO, auditrice}
+\textbf{Objectif.} Séparation des tâches : \code{R\_AUDIT} lit les traces, \code{DPO\_SBAI} ne peut pas modifier les politiques.
+
+\shots{chu_6_3}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{GRANT SELECT ON dba\_audit\_trail TO r\_audit} et \code{GRANT SELECT ON dba\_fga\_audit\_trail TO r\_audit} réussissent.
+  \item \code{DPO\_SBAI} tente \code{NOAUDIT POLICY pol\_chu\_dossiers} → \code{ORA-01031: insufficient privileges}. La séparation des tâches est respectée.
+  \item \code{DPO\_SBAI} tente \code{SELECT * FROM chu.dossiers\_medicaux} → \code{ORA-00942}. La DPO n'a pas accès aux données médicales (conforme à E10).
+\end{enumerate}
+\ecart{Aucun.}

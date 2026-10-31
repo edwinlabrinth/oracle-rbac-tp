@@ -1,0 +1,24 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:24:44 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_3_3_c4.sql : DR_FASSI session 3 (garde ouverte 120s)
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT USER AS dr_fassi_s3 FROM dual;
+
+DR_FASSI_S3
+------------------------------------------------------------------------------------------------------------------------
+DR_FASSI
+
+1 row selected.
+
+SQL> EXEC DBMS_SESSION.SLEEP(120);
+
+PL/SQL procedure successfully completed.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

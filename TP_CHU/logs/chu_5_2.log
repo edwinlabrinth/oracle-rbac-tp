@@ -1,0 +1,150 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:29:47 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_5_2.sql : Chapitre 5.2 -- Configuration de l'audit standard
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. Connexions echouees
+SQL> PROMPT === 1. Audit des connexions echouees ===
+=== 1. Audit des connexions echouees ===
+SQL> AUDIT SESSION WHENEVER NOT SUCCESSFUL;
+AUDIT SESSION WHENEVER NOT SUCCESSFUL
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> 
+SQL> -- 2. Ordres echouant car objet inexistant ou invisible
+SQL> PROMPT === 2. Audit NOT EXISTS ===
+=== 2. Audit NOT EXISTS ===
+SQL> AUDIT NOT EXISTS;
+AUDIT NOT EXISTS
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> 
+SQL> -- 3. Toutes lectures/modifications/suppressions des dossiers medicaux, BY ACCESS
+SQL> PROMPT === 3. Audit dossiers_medicaux (SELECT, INSERT, UPDATE, DELETE) BY ACCESS ===
+=== 3. Audit dossiers_medicaux (SELECT, INSERT, UPDATE, DELETE) BY ACCESS ===
+SQL> AUDIT SELECT, INSERT, UPDATE, DELETE ON chu.dossiers_medicaux BY ACCESS;
+AUDIT SELECT, INSERT, UPDATE, DELETE ON chu.dossiers_medicaux BY ACCESS
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> 
+SQL> -- 4. Suppressions de patients, UPDATE de factures qui echouent
+SQL> PROMPT === 4. Audit DELETE patients et UPDATE factures WHENEVER NOT SUCCESSFUL ===
+=== 4. Audit DELETE patients et UPDATE factures WHENEVER NOT SUCCESSFUL ===
+SQL> AUDIT DELETE ON chu.patients;
+AUDIT DELETE ON chu.patients
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> AUDIT UPDATE ON chu.factures WHENEVER NOT SUCCESSFUL;
+AUDIT UPDATE ON chu.factures WHENEVER NOT SUCCESSFUL
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> 
+SQL> -- 5. Gestion des utilisateurs, des rôles, et GRANT/REVOKE de privilèges système et de rôles
+SQL> PROMPT === 5. Audit USER, ROLE, SYSTEM GRANT ===
+=== 5. Audit USER, ROLE, SYSTEM GRANT ===
+SQL> AUDIT USER;
+AUDIT USER
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> AUDIT ROLE;
+AUDIT ROLE
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> AUDIT SYSTEM GRANT;
+AUDIT SYSTEM GRANT
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> 
+SQL> -- 6. Tout accès à la table SYS.AUD$ elle-même
+SQL> PROMPT === 6. Audit SELECT sur SYS.AUD$ ===
+=== 6. Audit SELECT sur SYS.AUD$ ===
+SQL> AUDIT SELECT ON sys.aud$;
+AUDIT SELECT ON sys.aud$
+      *
+ERROR at line 1:
+ORA-46401: No new traditional AUDIT configuration is allowed. Traditional auditing is desupported, and you should use
+unified auditing in its place.
+Help: https://docs.oracle.com/error-help/db/ora-46401/
+
+
+SQL> 
+SQL> COLUMN user_name FORMAT A15
+SQL> COLUMN privilege FORMAT A30
+SQL> COLUMN object_name FORMAT A30
+SQL> COLUMN option_name FORMAT A20
+SQL> PROMPt === Verification dans DBA_STMT_AUDIT_OPTS ===
+=== Verification dans DBA_STMT_AUDIT_OPTS ===
+SQL> SELECT user_name, privilege, option_name
+  2    FROM dba_stmt_audit_opts
+  3   WHERE user_name IS NULL OR user_name IN ('SYS')
+  4   ORDER BY privilege, option_name;
+SELECT user_name, privilege, option_name
+                             *
+ERROR at line 1:
+ORA-00904: "OPTION_NAME": invalid identifier
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+
+
+SQL> 
+SQL> PROMPt === Verification dans DBA_OBJ_AUDIT_OPTS ===
+=== Verification dans DBA_OBJ_AUDIT_OPTS ===
+SQL> SELECT object_owner, object_name, column_name, sel, ins, upd, del
+  2    FROM dba_obj_audit_opts
+  3   WHERE object_owner IN ('CHU','SYS')
+  4   ORDER BY object_owner, object_name;
+ WHERE object_owner IN ('CHU','SYS')
+       *
+ERROR at line 3:
+ORA-00904: "OBJECT_OWNER": invalid identifier
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

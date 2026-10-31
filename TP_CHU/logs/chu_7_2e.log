@@ -1,0 +1,33 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:34:26 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === (b) dossier 22 confidentiel ===
+=== (b) dossier 22 confidentiel ===
+SQL> SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22;
+
+DIAGNOSTIC
+--------------------------------------------------------------------------------
+Déshydratation
+
+1 row selected.
+
+SQL> PROMPT === (e) select confidentiels ===
+=== (e) select confidentiels ===
+SQL> SELECT dossier_id, diagnostic FROM chu.dossiers_medicaux WHERE confidentiel = 'O' AND ROWNUM <= 3;
+
+DOSSIER_ID DIAGNOSTIC
+---------- --------------------------------------------------------------------------------
+	 3 Lymphome
+	 7 Cancer du sein
+	11 Cancer colorectal
+
+3 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

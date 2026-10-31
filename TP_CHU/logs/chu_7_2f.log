@@ -1,0 +1,97 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:34:30 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN utilisateur FORMAT A15
+SQL> COLUMN poste FORMAT A20
+SQL> COLUMN programme FORMAT A25
+SQL> COLUMN objet FORMAT A20
+SQL> COLUMN politique FORMAT A20
+SQL> PROMPt === Alertes FGA dans AUDIT_CHU.ALERTES ===
+=== Alertes FGA dans AUDIT_CHU.ALERTES ===
+SQL> SELECT alerte_date, utilisateur, poste, programme, objet, politique
+  2    FROM audit_chu.alertes
+  3   ORDER BY alerte_date DESC;
+
+ALERTE_DATE	   UTILISATEUR	   POSTE		PROGRAMME		  OBJET
+------------------ --------------- -------------------- ------------------------- --------------------
+POLITIQUE
+--------------------
+31-OCT-26	   DR_FASSI	   325ea919716d 	sqlplus@325ea919716d (TNS DOSSIERS_MEDICAUX
+							 V1-V3)
+FGA_CHU_CONFIDENTIEL
+
+31-OCT-26	   DR_FASSI	   325ea919716d 	sqlplus@325ea919716d (TNS DOSSIERS_MEDICAUX
+							 V1-V3)
+FGA_CHU_CONFIDENTIEL
+
+
+2 rows selected.
+
+SQL> 
+SQL> COLUMN fga_policy_name FORMAT A25
+SQL> COLUMN sql_text FORMAT A45
+SQL> PROMPt === Enregistrements FGA dans UNIFIED_AUDIT_TRAIL ===
+=== Enregistrements FGA dans UNIFIED_AUDIT_TRAIL ===
+SQL> SELECT event_timestamp, dbusername, fga_policy_name, sql_text
+  2    FROM unified_audit_trail
+  3   WHERE fga_policy_name = 'FGA_CHU_CONFIDENTIEL'
+  4   ORDER BY event_timestamp DESC;
+
+EVENT_TIMESTAMP
+---------------------------------------------------------------------------
+DBUSERNAME
+------------------------------------------------------------------------------------------------------------------------
+FGA_POLICY_NAME 	  SQL_TEXT
+------------------------- ---------------------------------------------
+31-OCT-26 06.34.26.690240 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT dossier_id, diagnostic FROM chu.dossiers_medicaux WHE
+			  RE confidentiel = 'O' AND ROWNUM <= 3
+
+
+31-OCT-26 06.34.26.357886 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_i
+			  d = 22
+
+31-OCT-26 06.33.36.795766 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT dossier_id, diagnostic FROM chu.dossiers_medicaux WHE
+			  RE confidentiel = 'O' AND ROWNUM <= 3
+
+
+31-OCT-26 06.33.36.781631 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_i
+			  d = 22
+
+31-OCT-26 06.33.20.784233 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT * FROM chu.dossiers_medicaux WHERE dossier_id IN (5,2
+			  2)
+
+31-OCT-26 06.33.20.687950 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_i
+			  d = 22
+
+31-OCT-26 06.33.03.234408 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT * FROM chu.dossiers_medicaux
+
+31-OCT-26 06.33.02.871863 PM
+DR_FASSI
+FGA_CHU_CONFIDENTIEL	  SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_i
+			  d = 22
+
+
+8 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

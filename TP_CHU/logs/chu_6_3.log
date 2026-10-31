@@ -1,0 +1,102 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:32:16 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_6_3.sql : Chapitre 6.3 -- DPO, separation des tâches
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Donner a R_AUDIT la lecture de DBA_AUDIT_TRAIL et DBA_FGA_AUDIT_TRAIL
+SQL> PROMPT === R_AUDIT : lecture DBA_AUDIT_TRAIL et DBA_FGA_AUDIT_TRAIL ===
+=== R_AUDIT : lecture DBA_AUDIT_TRAIL et DBA_FGA_AUDIT_TRAIL ===
+SQL> GRANT SELECT ON dba_audit_trail TO r_audit;
+
+Grant succeeded.
+
+SQL> GRANT SELECT ON dba_fga_audit_trail TO r_audit;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Lire les 10 derniers enregistrements de UNIFIED_AUDIT_TRAIL
+SQL> COLUMN event_timestamp FORMAT A25
+SQL> COLUMN dbusername FORMAT A15
+SQL> COLUMN action_name FORMAT A25
+SQL> COLUMN object_name FORMAT A25
+SQL> COLUMN return_code FORMAT 999999
+SQL> PROMPt === 10 derniers enregistrements UNIFIED_AUDIT_TRAIL ===
+=== 10 derniers enregistrements UNIFIED_AUDIT_TRAIL ===
+SQL> SELECT event_timestamp, dbusername, action_name, object_name, return_code
+  2    FROM unified_audit_trail
+  3   ORDER BY event_timestamp DESC
+  4   FETCH FIRST 10 ROWS ONLY;
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  ACTION_NAME		    OBJECT_NAME 	      RETURN_CODE
+------------------------- --------------- ------------------------- ------------------------- -----------
+31-OCT-26 06.32.16.771818 SYS		  GRANT 		    DBA_FGA_AUDIT_TRAIL 		0
+ PM
+
+31-OCT-26 06.32.16.692876 SYS		  GRANT 		    DBA_AUDIT_TRAIL			0
+ PM
+
+31-OCT-26 06.32.16.356690 SYS		  LOGON 							0
+ PM
+
+31-OCT-26 06.31.52.412632 SYS		  SELECT		    AUDIT_UNIFIED_ENABLED_POL		0
+ PM								    ICIES
+
+31-OCT-26 06.31.52.411304 SYS		  SELECT		    INT$AUDIT_UNIFIED_ENABLED		0
+ PM								    _POL
+
+31-OCT-26 06.31.52.393081 SYS		  LOGON 							0
+ PM
+
+31-OCT-26 06.31.46.599216 SYS		  SELECT		    AUDIT_UNIFIED_ENABLED_POL		0
+ PM								    ICIES
+
+31-OCT-26 06.31.46.596355 SYS		  SELECT		    INT$AUDIT_UNIFIED_ENABLED		0
+ PM								    _POL
+
+31-OCT-26 06.31.46.587506 SYS		  LOGON 							0
+ PM
+
+31-OCT-26 06.31.40.752527 SYS		  SELECT		    AUDIT_UNIFIED_ENABLED_POL		0
+ PM								    ICIES
+
+
+10 rows selected.
+
+SQL> 
+SQL> -- Test separation des tâches : DPO tente NOAUDIT POLICY pol_chu_dossiers (doit echouer)
+SQL> CONNECT dpo_sbai/"Protection##DPO26"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPt === DPO tente NOAUDIT POLICY pol_chu_dossiers (attendu echec) ===
+=== DPO tente NOAUDIT POLICY pol_chu_dossiers (attendu echec) ===
+SQL> NOAUDIT POLICY pol_chu_dossiers;
+NOAUDIT POLICY pol_chu_dossiers
+                              *
+ERROR at line 1:
+ORA-01031: insufficient privileges
+Help: https://docs.oracle.com/error-help/db/ora-01031/
+
+
+SQL> 
+SQL> PROMPt === DPO tente SELECT sur chu.dossiers_medicaux (attendu echec) ===
+=== DPO tente SELECT sur chu.dossiers_medicaux (attendu echec) ===
+SQL> SELECT * FROM chu.dossiers_medicaux;
+SELECT * FROM chu.dossiers_medicaux
+                  *
+ERROR at line 1:
+ORA-00942: table or view "CHU"."DOSSIERS_MEDICAUX" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

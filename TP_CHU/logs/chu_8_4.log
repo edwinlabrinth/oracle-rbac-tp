@@ -1,0 +1,67 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:36:06 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_8_4.sql : Chapitre 8.4 -- Trigger de connexion (E8, E10)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Nettoyage
+SQL> PROMPT === Nettoyage ===
+=== Nettoyage ===
+SQL> DROP TRIGGER trg_logon;
+
+Trigger dropped.
+
+SQL> 
+SQL> -- Trigger AFTER LOGON ON DATABASE
+SQL> PROMPT === Creation de TRG_LOGON ===
+=== Creation de TRG_LOGON ===
+SQL> CREATE OR REPLACE TRIGGER trg_logon
+  2    AFTER LOGON ON DATABASE
+  3  DECLARE
+  4    v_count NUMBER;
+  5  BEGIN
+  6    -- Journaliser LOGON pour les comptes du personnel et APP_CHU
+  7    SELECT COUNT(*) INTO v_count FROM chu.personnel WHERE login = SYS_CONTEXT('USERENV','SESSION_USER');
+  8  
+  9    IF v_count > 0 OR SYS_CONTEXT('USERENV','SESSION_USER') = 'APP_CHU' THEN
+ 10  	 audit_chu.log_evt('LOGON', 'DATABASE',
+ 11  	   'Connexion de ' || SYS_CONTEXT('USERENV','SESSION_USER'));
+ 12  
+ 13  	 -- Refuser APP_CHU depuis sqlplus ou SQL Developer
+ 14  	 IF SYS_CONTEXT('USERENV','SESSION_USER') = 'APP_CHU' THEN
+ 15  	   IF SYS_CONTEXT('USERENV','CLIENT_PROGRAM_NAME') LIKE '%sqlplus%'
+ 16  	      OR SYS_CONTEXT('USERENV','CLIENT_PROGRAM_NAME') LIKE '%sqldeveloper%' THEN
+ 17  	     audit_chu.log_evt('REFUS_LOGON', 'APP_CHU',
+ 18  	       'Refus connexion APP_CHU depuis ' || SYS_CONTEXT('USERENV','CLIENT_PROGRAM_NAME'));
+ 19  	     RAISE_APPLICATION_ERROR(-20020, 'Connexion APP_CHU interdite depuis cet outil');
+ 20  	   END IF;
+ 21  	 END IF;
+ 22    END IF;
+ 23  EXCEPTION
+ 24    WHEN OTHERS THEN
+ 25  	 NULL;
+ 26  END;
+ 27  /
+
+Trigger created.
+
+SQL> 
+SQL> -- Test : DR_ALAMI se connecte (journalise LOGON)
+SQL> CONNECT dr_alami/"Urgences#2026a"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT USER AS dr_alami_connecte FROM dual;
+
+DR_ALAMI_CONNECTE
+------------------------------------------------------------------------------------------------------------------------
+DR_ALAMI
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

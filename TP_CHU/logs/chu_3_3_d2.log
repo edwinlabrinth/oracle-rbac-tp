@@ -1,0 +1,17 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:24:45 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_3_3_d2.sql : DR_FASSI session 4 (doit echouer ORA-02391)
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+ERROR:
+ORA-02391: exceeded simultaneous SESSIONS_PER_USER limit
+Help: https://docs.oracle.com/error-help/db/ora-02391/
+
+
+SQL> SELECT USER AS dr_fassi_s4 FROM dual;
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> EXIT

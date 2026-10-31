@@ -1,0 +1,556 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:38:33 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_9_investigation.sql : Chapitre 9 -- Enquete sur les 8 incidents
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT ============================================
+============================================
+SQL> PROMPT === ENQUETE SUR LES 8 INCIDENTS DE LA NUIT ===
+=== ENQUETE SUR LES 8 INCIDENTS DE LA NUIT ===
+SQL> PROMPT ============================================
+============================================
+SQL> 
+SQL> COLUMN event_timestamp FORMAT A25
+SQL> COLUMN dbusername FORMAT A15
+SQL> COLUMN dbproxy_username FORMAT A15
+SQL> COLUMN action_name FORMAT A20
+SQL> COLUMN object_name FORMAT A25
+SQL> COLUMN return_code FORMAT 999999
+SQL> COLUMN unified_audit_policies FORMAT A30
+SQL> COLUMN fga_policy_name FORMAT A25
+SQL> COLUMN sql_text FORMAT A50
+SQL> 
+SQL> -- 9.1 Les connexions
+SQL> PROMPT === 9.1.1 : Echecs de connexion dans UNIFIED_AUDIT_TRAIL (ORA_LOGON_FAILURES) ===
+=== 9.1.1 : Echecs de connexion dans UNIFIED_AUDIT_TRAIL (ORA_LOGON_FAILURES) ===
+SQL> SELECT event_timestamp, dbusername, return_code, client_program_name, unified_audit_policies
+  2    FROM unified_audit_trail
+  3   WHERE action_name = 'LOGON'
+  4  	AND return_code <> 0
+  5  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' HOUR
+  6   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  RETURN_CODE
+------------------------- --------------- -----------
+CLIENT_PROGRAM_NAME								     UNIFIED_AUDIT_POLICIES
+------------------------------------------------------------------------------------ ------------------------------
+31-OCT-26 06.22.30.044442 SEC_LAHLOU		 2391
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.24.45.616593 DR_FASSI		 2391
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.26.50.205403 SEC_LAHLOU		 1017
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.26.51.252723 SEC_LAHLOU		 1017
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.26.52.301872 SEC_LAHLOU		 1017
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.26.52.346949 SEC_LAHLOU		28000
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.37.29.580667 SEC_KETTANI		 1017
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.37.30.654342 SEC_KETTANI		 1017
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.37.31.702715 SEC_KETTANI		 1017
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.37.31.746281 SEC_KETTANI		28000
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+31-OCT-26 06.37.32.359332 SEC_LAHLOU		28000
+ PM
+sqlplus@325ea919716d (TNS V1-V3)						     ORA_LOGON_FAILURES
+
+
+11 rows selected.
+
+SQL> 
+SQL> PROMPT === 9.1.2 : Etat des comptes dans DBA_USERS ===
+=== 9.1.2 : Etat des comptes dans DBA_USERS ===
+SQL> COLUMN username FORMAT A15
+SQL> COLUMN account_status FORMAT A20
+SQL> COLUMN lock_date FORMAT A20
+SQL> SELECT username, account_status, lock_date
+  2    FROM dba_users
+  3   WHERE username IN ('SEC_KETTANI','SEC_LAHLOU','APP_CHU')
+  4   ORDER BY username;
+
+USERNAME	ACCOUNT_STATUS	     LOCK_DATE
+--------------- -------------------- --------------------
+APP_CHU 	OPEN
+SEC_KETTANI	LOCKED(TIMED)	     31-OCT-26
+SEC_LAHLOU	LOCKED(TIMED)	     31-OCT-26
+
+3 rows selected.
+
+SQL> 
+SQL> PROMPT === 9.1.3 : Le compte applicatif APP_CHU a-t-il ete utilise ? ===
+=== 9.1.3 : Le compte applicatif APP_CHU a-t-il ete utilise ? ===
+SQL> SELECT event_timestamp, dbusername, action_name, return_code, client_program_name
+  2    FROM unified_audit_trail
+  3   WHERE dbusername = 'APP_CHU'
+  4  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' HOUR
+  5   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  ACTION_NAME	       RETURN_CODE
+------------------------- --------------- -------------------- -----------
+CLIENT_PROGRAM_NAME
+------------------------------------------------------------------------------------
+31-OCT-26 06.37.32.405249 APP_CHU	  LOGON 			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.408463 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.410094 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.413415 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.413992 APP_CHU	  INSERT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.414470 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.414981 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.416041 APP_CHU	  INSERT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+
+8 rows selected.
+
+SQL> 
+SQL> -- 9.2 Les acces aux donnees medicales
+SQL> PROMPT === 9.2.1 : Acces non-medecin aux dossiers (INF_GHAZI) ===
+=== 9.2.1 : Acces non-medecin aux dossiers (INF_GHAZI) ===
+SQL> SELECT event_timestamp, dbusername, action_name, object_name, return_code,
+  2  	    unified_audit_policies, fga_policy_name
+  3    FROM unified_audit_trail
+  4   WHERE dbusername = 'INF_GHAZI'
+  5  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' HOUR
+  6   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  ACTION_NAME	       OBJECT_NAME		 RETURN_CODE
+------------------------- --------------- -------------------- ------------------------- -----------
+UNIFIED_AUDIT_POLICIES	       FGA_POLICY_NAME
+------------------------------ -------------------------
+31-OCT-26 06.28.16.420541 INF_GHAZI	  LOGON 						   0
+ PM
+ORA_LOGON_FAILURES
+
+31-OCT-26 06.28.16.446864 INF_GHAZI	  UPDATE	       PRESCRIPTIONS			2004
+ PM
+POL_BQ_CLIENTS, POL_BQ_SOLDES,
+ POL_BQ_SOLDES_OPS
+
+31-OCT-26 06.37.31.794855 INF_GHAZI	  LOGON 						   0
+ PM
+ORA_LOGON_FAILURES
+
+31-OCT-26 06.37.31.798063 INF_GHAZI	  SELECT	       PERSONNEL			   0
+ PM
+POL_CHU_DOSSIERS
+
+31-OCT-26 06.37.31.799718 INF_GHAZI	  SELECT	       DUAL				   0
+ PM
+POL_CHU_DOSSIERS
+
+31-OCT-26 06.37.31.803194 INF_GHAZI	  SELECT	       ISEQ$$_73491			   0
+ PM
+POL_CHU_DOSSIERS
+
+31-OCT-26 06.37.31.803797 INF_GHAZI	  INSERT	       JOURNAL_EVENEMENTS		   0
+ PM
+POL_BQ_CLIENTS, POL_CHU_ADHOC,
+ POL_CHU_DOSSIERS
+
+31-OCT-26 06.37.31.807929 INF_GHAZI	  SELECT	       DUAL				   0
+ PM
+POL_CHU_DOSSIERS
+
+31-OCT-26 06.37.31.819054 INF_GHAZI	  SELECT	       DOSSIERS_MEDICAUX		2004
+ PM
+POL_CHU_DOSSIERS
+
+
+9 rows selected.
+
+SQL> 
+SQL> PROMPT === 9.2.2 : Alertes de confidentialite FGA (AUDIT_CHU.ALERTES) ===
+=== 9.2.2 : Alertes de confidentialite FGA (AUDIT_CHU.ALERTES) ===
+SQL> COLUMN alerte_date FORMAT A25
+SQL> COLUMN utilisateur FORMAT A15
+SQL> COLUMN poste FORMAT A20
+SQL> COLUMN programme FORMAT A25
+SQL> COLUMN objet FORMAT A20
+SQL> COLUMN politique FORMAT A20
+SQL> SELECT alerte_date, utilisateur, poste, programme, objet, politique
+  2    FROM audit_chu.alertes
+  3   ORDER BY alerte_date DESC;
+
+ALERTE_DATE		  UTILISATEUR	  POSTE 	       PROGRAMME		 OBJET
+------------------------- --------------- -------------------- ------------------------- --------------------
+POLITIQUE
+--------------------
+31-OCT-26		  DR_FASSI	  325ea919716d	       sqlplus@325ea919716d (TNS DOSSIERS_MEDICAUX
+								V1-V3)
+FGA_CHU_CONFIDENTIEL
+
+31-OCT-26		  DR_FASSI	  325ea919716d	       sqlplus@325ea919716d (TNS DOSSIERS_MEDICAUX
+								V1-V3)
+FGA_CHU_CONFIDENTIEL
+
+31-OCT-26		  DR_FASSI	  325ea919716d	       sqlplus@325ea919716d (TNS DOSSIERS_MEDICAUX
+								V1-V3)
+FGA_CHU_CONFIDENTIEL
+
+
+3 rows selected.
+
+SQL> 
+SQL> PROMPT === 9.2.3 : Traces FGA dans UNIFIED_AUDIT_TRAIL ===
+=== 9.2.3 : Traces FGA dans UNIFIED_AUDIT_TRAIL ===
+SQL> SELECT event_timestamp, dbusername, fga_policy_name, sql_text
+  2    FROM unified_audit_trail
+  3   WHERE fga_policy_name = 'FGA_CHU_CONFIDENTIEL'
+  4  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' HOUR
+  5   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  FGA_POLICY_NAME	    SQL_TEXT
+------------------------- --------------- ------------------------- --------------------------------------------------
+31-OCT-26 06.33.02.871863 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT diagnostic FROM chu.dossiers_medicaux WHERE d
+ PM								    ossier_id = 22
+
+31-OCT-26 06.33.03.234408 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT * FROM chu.dossiers_medicaux
+ PM
+
+31-OCT-26 06.33.20.687950 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT diagnostic FROM chu.dossiers_medicaux WHERE d
+ PM								    ossier_id = 22
+
+31-OCT-26 06.33.20.784233 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT * FROM chu.dossiers_medicaux WHERE dossier_id
+ PM								     IN (5,22)
+
+31-OCT-26 06.33.36.781631 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT diagnostic FROM chu.dossiers_medicaux WHERE d
+ PM								    ossier_id = 22
+
+31-OCT-26 06.33.36.795766 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT dossier_id, diagnostic FROM chu.dossiers_medi
+ PM								    caux WHERE confidentiel = 'O' AND ROWNUM <= 3
+
+
+31-OCT-26 06.34.26.357886 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT diagnostic FROM chu.dossiers_medicaux WHERE d
+ PM								    ossier_id = 22
+
+31-OCT-26 06.34.26.690240 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT dossier_id, diagnostic FROM chu.dossiers_medi
+ PM								    caux WHERE confidentiel = 'O' AND ROWNUM <= 3
+
+
+31-OCT-26 06.37.32.100545 DR_FASSI	  FGA_CHU_CONFIDENTIEL	    SELECT p.nom, p.prenom, d.diagnostic, d.traitement
+ PM								    FROM   chu.dossiers_medicaux d
+								    JOIN   chu.sejours	s ON s.sejour_id  = d.sejour_id
+								    JOIN   chu.patients p ON p.patient_id = s.pati
+								    ent_id
+								    WHERE  p.vip = 'O'
+
+
+9 rows selected.
+
+SQL> 
+SQL> -- 9.3 Les modifications
+SQL> PROMPT === 9.3.1 : Dossier modifie (DR_ALAMI, dossier 5) - Journal des dossiers ===
+=== 9.3.1 : Dossier modifie (DR_ALAMI, dossier 5) - Journal des dossiers ===
+SQL> COLUMN journal_date FORMAT A25
+SQL> COLUMN ancien_traitement FORMAT A25
+SQL> COLUMN nouveau_traitement FORMAT A25
+SQL> COLUMN ancien_confidentiel FORMAT A15
+SQL> COLUMN nouveau_confidentiel FORMAT A15
+SQL> SELECT journal_date, utilisateur, dossier_id,
+  2  	    ancien_diagnostic, nouveau_diagnostic,
+  3  	    ancien_traitement, nouveau_traitement,
+  4  	    ancien_confidentiel, nouveau_confidentiel
+  5    FROM audit_chu.journal_dossiers
+  6   ORDER BY journal_date DESC;
+
+JOURNAL_DATE		  UTILISATEUR	  DOSSIER_ID
+------------------------- --------------- ----------
+ANCIEN_DIAGNOSTIC
+--------------------------------------------------------------------------------
+NOUVEAU_DIAGNOSTIC								 ANCIEN_TRAITEMENT
+-------------------------------------------------------------------------------- -------------------------
+NOUVEAU_TRAITEMENT	  ANCIEN_CONFIDEN NOUVEAU_CONFIDE
+------------------------- --------------- ---------------
+31-OCT-26		  DR_ALAMI		   5
+HTA
+Hypotension                                                                      IEC + bêtabloquant
+Arret des IEC		  N		  N
+
+31-OCT-26		  DR_FASSI		   5
+HTA
+HTA										 IEC
+IEC + bêtabloquant        N               N
+
+
+2 rows selected.
+
+SQL> 
+SQL> PROMPT === 9.3.2 : Verification : DR_ALAMI est-il le medecin du sejour 5 ? ===
+=== 9.3.2 : Verification : DR_ALAMI est-il le medecin du sejour 5 ? ===
+SQL> COLUMN nom FORMAT A20
+SQL> COLUMN prenom FORMAT A15
+SQL> COLUMN fonction FORMAT A15
+SQL> SELECT p.nom, p.prenom, per.fonction, s.sejour_id, s.medecin_id
+  2    FROM chu.dossiers_medicaux d
+  3    JOIN chu.sejours s ON s.sejour_id = d.sejour_id
+  4    JOIN chu.personnel per ON per.pers_id = s.medecin_id
+  5   WHERE d.dossier_id = 5;
+SELECT p.nom, p.prenom, per.fonction, s.sejour_id, s.medecin_id
+              *
+ERROR at line 1:
+ORA-00904: "P"."PRENOM": invalid identifier
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+
+
+SQL> 
+SQL> PROMPT === 9.3.3 : Prescription : tentative de modification refusee (DR_BENALI) ===
+=== 9.3.3 : Prescription : tentative de modification refusee (DR_BENALI) ===
+SQL> SELECT event_timestamp, dbusername, action_name, object_name, return_code,
+  2  	    unified_audit_policies, sql_text
+  3    FROM unified_audit_trail
+  4   WHERE dbusername = 'DR_BENALI'
+  5  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' HOUR
+  6   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  ACTION_NAME	       OBJECT_NAME		 RETURN_CODE
+------------------------- --------------- -------------------- ------------------------- -----------
+UNIFIED_AUDIT_POLICIES	       SQL_TEXT
+------------------------------ --------------------------------------------------
+31-OCT-26 06.37.32.222243 DR_BENALI	  LOGON 						   0
+ PM
+ORA_LOGON_FAILURES
+
+31-OCT-26 06.37.32.226271 DR_BENALI	  SELECT	       PERSONNEL			   0
+ PM
+POL_CHU_DOSSIERS	       SELECT COUNT(*) FROM CHU.PERSONNEL WHERE LOGIN = SYS_CONTEXT
+			       ('USERENV','SESSION_USER')
+
+
+31-OCT-26 06.37.32.227783 DR_BENALI	  SELECT	       DUAL				   0
+ PM
+POL_CHU_DOSSIERS	       SELECT SYS_CONTEXT('USERENV','SESSION_USER'), SYS_CONTEXT('U
+			       SERENV','PROXY_USER'), SYS_CONTEXT('USER
+			       ENV','HOST'), SYS_CONTEXT('USERENV','CLI
+			       ENT_PROGRAM_NAME') FROM DUAL
+
+
+31-OCT-26 06.37.32.230736 DR_BENALI	  SELECT	       ISEQ$$_73491			   0
+ PM
+POL_CHU_DOSSIERS	       INSERT INTO AUDIT_CHU.JOURNAL_EVENEMENTS (TYPE_EVENEMENT, UT
+			       ILISATEUR, UTILISATEUR_PROXY, POSTE, PRO
+			       GRAMME, OBJET, DETAIL) VALUES (:B7 , :B6
+				, :B5 , :B4 , :B3 , :B2 , :B1 )
+
+
+31-OCT-26 06.37.32.231402 DR_BENALI	  INSERT	       JOURNAL_EVENEMENTS		   0
+ PM
+POL_BQ_CLIENTS, POL_CHU_ADHOC, INSERT INTO AUDIT_CHU.JOURNAL_EVENEMENTS (TYPE_EVENEMENT, UT
+ POL_CHU_DOSSIERS	       ILISATEUR, UTILISATEUR_PROXY, POSTE, PRO
+			       GRAMME, OBJET, DETAIL) VALUES (:B7 , :B6
+				, :B5 , :B4 , :B3 , :B2 , :B1 )
+
+
+31-OCT-26 06.37.32.236333 DR_BENALI	  SELECT	       DUAL				   0
+ PM
+POL_CHU_DOSSIERS	       SELECT DECODE(USER, 'XS$NULL',  XS_SYS_CONTEXT('XS$SESSION',
+			       'USERNAME'), USER) FROM SYS.DUAL
+
+
+31-OCT-26 06.37.32.243715 DR_BENALI	  SELECT	       PERSONNEL			   0
+ PM
+POL_CHU_DOSSIERS	       SELECT FONCTION, PERS_ID FROM CHU.PERSONNEL WHERE LOGIN = SY
+			       S_CONTEXT('USERENV','SESSION_USER')
+
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  ACTION_NAME	       OBJECT_NAME		 RETURN_CODE
+------------------------- --------------- -------------------- ------------------------- -----------
+UNIFIED_AUDIT_POLICIES	       SQL_TEXT
+------------------------------ --------------------------------------------------
+
+31-OCT-26 06.37.32.244387 DR_BENALI	  SELECT	       DUAL				   0
+ PM
+POL_CHU_DOSSIERS	       SELECT SYS_CONTEXT('USERENV','SESSION_USER'), SYS_CONTEXT('U
+			       SERENV','PROXY_USER'), SYS_CONTEXT('USER
+			       ENV','HOST'), SYS_CONTEXT('USERENV','CLI
+			       ENT_PROGRAM_NAME') FROM DUAL
+
+
+31-OCT-26 06.37.32.245533 DR_BENALI	  SELECT	       ISEQ$$_73491			   0
+ PM
+POL_CHU_DOSSIERS	       INSERT INTO AUDIT_CHU.JOURNAL_EVENEMENTS (TYPE_EVENEMENT, UT
+			       ILISATEUR, UTILISATEUR_PROXY, POSTE, PRO
+			       GRAMME, OBJET, DETAIL) VALUES (:B7 , :B6
+				, :B5 , :B4 , :B3 , :B2 , :B1 )
+
+
+31-OCT-26 06.37.32.245947 DR_BENALI	  INSERT	       JOURNAL_EVENEMENTS		   0
+ PM
+POL_BQ_CLIENTS, POL_CHU_ADHOC, INSERT INTO AUDIT_CHU.JOURNAL_EVENEMENTS (TYPE_EVENEMENT, UT
+ POL_CHU_DOSSIERS	       ILISATEUR, UTILISATEUR_PROXY, POSTE, PRO
+			       GRAMME, OBJET, DETAIL) VALUES (:B7 , :B6
+				, :B5 , :B4 , :B3 , :B2 , :B1 )
+
+
+31-OCT-26 06.37.32.248966 DR_BENALI	  UPDATE	       PRESCRIPTIONS		       20010
+ PM
+POL_BQ_CLIENTS, POL_BQ_SOLDES, UPDATE chu.prescriptions SET dose = '4 cp/j' WHERE presc_id
+ POL_BQ_SOLDES_OPS, POL_CHU_AD = 8
+HOC, POL_CHU_DOSSIERS
+
+31-OCT-26 06.37.32.249231 DR_BENALI	  SELECT	       PRESCRIPTIONS		       20010
+ PM
+POL_CHU_DOSSIERS	       UPDATE chu.prescriptions SET dose = '4 cp/j' WHERE presc_id
+			       = 8
+
+
+12 rows selected.
+
+SQL> 
+SQL> PROMPT === 9.3.4 : Journal des evenements (REFUS_PRESC de DR_BENALI) ===
+=== 9.3.4 : Journal des evenements (REFUS_PRESC de DR_BENALI) ===
+SQL> SELECT evenement_date, type_evenement, utilisateur, objet, detail
+  2    FROM audit_chu.journal_evenements
+  3   WHERE type_evenement = 'REFUS_PRESC'
+  4   ORDER BY evenement_date DESC;
+
+EVENEMENT_DATE	   TYPE_EVENEMENT		  UTILISATEUR	  OBJET
+------------------ ------------------------------ --------------- --------------------
+DETAIL
+------------------------------------------------------------------------------------------------------------------------
+31-OCT-26	   REFUS_PRESC			  DR_BENALI	  PRESCRIPTIONS
+Medecin DR_BENALI tente de modifier la prescription 8 dont le prescripteur est 1
+
+31-OCT-26	   REFUS_PRESC			  DR_FASSI	  PRESCRIPTIONS
+Medecin DR_FASSI tente de modifier la prescription 8 dont le prescripteur est 1
+
+
+2 rows selected.
+
+SQL> 
+SQL> PROMPT === 9.3.5 : Operation de structure tentee (DEV_CHU TRUNCATE) ===
+=== 9.3.5 : Operation de structure tentee (DEV_CHU TRUNCATE) ===
+SQL> SELECT event_timestamp, dbusername, action_name, return_code, sql_text
+  2    FROM unified_audit_trail
+  3   WHERE (dbusername = 'DEV_CHU' OR dbusername = 'CHU')
+  4  	AND action_name IN ('TRUNCATE','DROP')
+  5  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' HOUR
+  6   ORDER BY event_timestamp;
+
+no rows selected
+
+SQL> 
+SQL> PROMPT === 9.3.6 : Journal REFUS_DDL ===
+=== 9.3.6 : Journal REFUS_DDL ===
+SQL> SELECT evenement_date, type_evenement, utilisateur, objet, detail
+  2    FROM audit_chu.journal_evenements
+  3   WHERE type_evenement = 'REFUS_DDL'
+  4   ORDER BY evenement_date DESC;
+
+EVENEMENT_DATE	   TYPE_EVENEMENT		  UTILISATEUR	  OBJET
+------------------ ------------------------------ --------------- --------------------
+DETAIL
+------------------------------------------------------------------------------------------------------------------------
+31-OCT-26	   REFUS_DDL			  CHU		  OBJET_DDL
+Tentative DDL sur schma CHU par CHU
+
+31-OCT-26	   REFUS_DDL			  CHU		  OBJET_DDL
+Tentative DDL sur schma CHU par CHU
+
+
+2 rows selected.
+
+SQL> 
+SQL> -- 9.3.7 : Connexion APP_CHU directe
+SQL> PROMPT === 9.3.7 : Connexion APP_CHU directe ===
+=== 9.3.7 : Connexion APP_CHU directe ===
+SQL> SELECT event_timestamp, dbusername, action_name, return_code, client_program_name
+  2    FROM unified_audit_trail
+  3   WHERE dbusername = 'APP_CHU'
+  4  	AND event_timestamp > SYSTIMESTAMP - INTERVAL '2' HOUR
+  5   ORDER BY event_timestamp;
+
+EVENT_TIMESTAMP 	  DBUSERNAME	  ACTION_NAME	       RETURN_CODE
+------------------------- --------------- -------------------- -----------
+CLIENT_PROGRAM_NAME
+------------------------------------------------------------------------------------
+31-OCT-26 06.37.32.405249 APP_CHU	  LOGON 			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.408463 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.410094 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.413415 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.413992 APP_CHU	  INSERT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.414470 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.414981 APP_CHU	  SELECT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+31-OCT-26 06.37.32.416041 APP_CHU	  INSERT			 0
+ PM
+sqlplus@325ea919716d (TNS V1-V3)
+
+
+8 rows selected.
+
+SQL> 
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,132 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:33:02 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === (a) dossier 5 ===
+=== (a) dossier 5 ===
+SQL> SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 5;
+
+DIAGNOSTIC
+--------------------------------------------------------------------------------
+HTA
+
+1 row selected.
+
+SQL> PROMPT === (b) dossier 22 ===
+=== (b) dossier 22 ===
+SQL> SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22;
+SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22
+                           *
+ERROR at line 1:
+ORA-28144: failure to process fine-grained audit handler
+ORA-06550: line 1, column 8:
+PLS-00201: identifier 'SYS.AUDIT_CHU' must be declared
+ORA-06550: line 1, column 8:
+PL/SQL: Statement ignored
+Help: https://docs.oracle.com/error-help/db/ora-28144/
+
+
+SQL> PROMPT === (c) count confidentiel ===
+=== (c) count confidentiel ===
+SQL> SELECT COUNT(*) FROM chu.dossiers_medicaux WHERE confidentiel = 'O';
+
+  COUNT(*)
+----------
+	19
+
+1 row selected.
+
+SQL> PROMPT === (d) dossier_id, maj_le ===
+=== (d) dossier_id, maj_le ===
+SQL> SELECT dossier_id, maj_le FROM chu.dossiers_medicaux;
+
+DOSSIER_ID MAJ_LE
+---------- ------------------
+	 1 06-AUG-26
+	 2 10-AUG-26
+	 3 14-AUG-26
+	 4 18-AUG-26
+	 5 22-AUG-26
+	 6 26-AUG-26
+	 7 30-AUG-26
+	 8 26-AUG-26
+	 9 28-AUG-26
+	10 03-SEP-26
+	11 07-SEP-26
+	12 11-SEP-26
+	13 15-SEP-26
+	14 19-SEP-26
+	15 23-SEP-26
+	16 19-SEP-26
+	17 23-SEP-26
+	18 24-SEP-26
+	19 07-AUG-26
+	20 11-AUG-26
+	21 15-AUG-26
+	22 19-AUG-26
+	23 23-AUG-26
+	24 19-AUG-26
+	25 23-AUG-26
+	26 27-AUG-26
+	27 27-AUG-26
+	28 04-SEP-26
+	29 08-SEP-26
+	30 12-SEP-26
+	31 16-SEP-26
+	32 12-SEP-26
+	33 16-SEP-26
+	34 20-SEP-26
+	35 24-SEP-26
+	36 23-SEP-26
+	37 08-AUG-26
+	38 12-AUG-26
+	39 16-AUG-26
+	40 12-AUG-26
+	41 16-AUG-26
+	42 20-AUG-26
+	43 24-AUG-26
+	44 28-AUG-26
+	45 26-AUG-26
+	46 05-SEP-26
+	47 09-SEP-26
+
+DOSSIER_ID MAJ_LE
+---------- ------------------
+	48 05-SEP-26
+	49 09-SEP-26
+	50 13-SEP-26
+	51 17-SEP-26
+	52 21-SEP-26
+	53 25-SEP-26
+	54 22-SEP-26
+	55 09-AUG-26
+	56 05-AUG-26
+	57 09-AUG-26
+	58 13-AUG-26
+	59 17-AUG-26
+	60 21-AUG-26
+
+60 rows selected.
+
+SQL> PROMPT === (e) select * ===
+=== (e) select * ===
+SQL> SELECT * FROM chu.dossiers_medicaux;
+ERROR:
+ORA-28144: failure to process fine-grained audit handler
+ORA-06550: line 1, column 8:
+PLS-00201: identifier 'SYS.AUDIT_CHU' must be declared
+ORA-06550: line 1, column 8:
+PL/SQL: Statement ignored
+Help: https://docs.oracle.com/error-help/db/ora-28144/
+
+
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

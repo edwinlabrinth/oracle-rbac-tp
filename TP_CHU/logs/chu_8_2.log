@@ -1,0 +1,105 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:35:09 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_8_2.sql : Chapitre 8.2 -- Trigger de valeurs sur DOSSIERS_MEDICAUX (E6)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Nettoyage eventuel
+SQL> PROMPt === Nettoyage ===
+=== Nettoyage ===
+SQL> DROP TRIGGER trg_aud_dossiers;
+DROP TRIGGER trg_aud_dossiers
+*
+ERROR at line 1:
+ORA-04080: trigger 'TRG_AUD_DOSSIERS' does not exist
+Help: https://docs.oracle.com/error-help/db/ora-04080/
+
+
+SQL> 
+SQL> -- Trigger : apres UPDATE sur diagnostic, traitement ou confidentialite, pour chaque ligne
+SQL> PROMPT === Creation de TRG_AUD_DOSSIERS ===
+=== Creation de TRG_AUD_DOSSIERS ===
+SQL> CREATE OR REPLACE TRIGGER trg_aud_dossiers
+  2    AFTER UPDATE OF diagnostic, traitement, confidentiel ON chu.dossiers_medicaux
+  3    FOR EACH ROW
+  4    WHEN (OLD.diagnostic <> NEW.diagnostic OR OLD.traitement <> NEW.traitement OR OLD.confidentiel <> NEW.confidentiel)
+  5  BEGIN
+  6    INSERT INTO audit_chu.journal_dossiers
+  7  	 (utilisateur, utilisateur_proxy, poste, programme,
+  8  	  dossier_id,
+  9  	  ancien_diagnostic, nouveau_diagnostic,
+ 10  	  ancien_traitement, nouveau_traitement,
+ 11  	  ancien_confidentiel, nouveau_confidentiel)
+ 12    VALUES
+ 13  	 (SYS_CONTEXT('USERENV','SESSION_USER'),
+ 14  	  SYS_CONTEXT('USERENV','PROXY_USER'),
+ 15  	  SYS_CONTEXT('USERENV','HOST'),
+ 16  	  SYS_CONTEXT('USERENV','CLIENT_PROGRAM_NAME'),
+ 17  	  :NEW.dossier_id,
+ 18  	  :OLD.diagnostic, :NEW.diagnostic,
+ 19  	  :OLD.traitement, :NEW.traitement,
+ 20  	  :OLD.confidentiel, :NEW.confidentiel);
+ 21  END;
+ 22  /
+
+Trigger created.
+
+SQL> 
+SQL> -- Test : DR_FASSI modifie le traitement du dossier 5 (son patient) puis ROLLBACK
+SQL> -- DR_ALAMI est le medecin du sejour 5 (patient 26, sejour 5, medecin_id 6 = DR_ALAMI)
+SQL> -- Donc DR_FASSI n'est pas le medecin du sejour, mais le trigger 8.2 ne bloque pas,
+SQL> -- il journalise seulement (le blocage est au trigger 8.3 pour prescriptions)
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === DR_FASSI : UPDATE traitement dossier 5 puis ROLLBACK ===
+=== DR_FASSI : UPDATE traitement dossier 5 puis ROLLBACK ===
+SQL> UPDATE chu.dossiers_medicaux SET traitement = 'IEC + bêtabloquant' WHERE dossier_id = 5;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> 
+SQL> PROMPT === DR_FASSI : UPDATE traitement dossier 5 puis COMMIT ===
+=== DR_FASSI : UPDATE traitement dossier 5 puis COMMIT ===
+SQL> UPDATE chu.dossiers_medicaux SET traitement = 'IEC + bêtabloquant' WHERE dossier_id = 5;
+
+1 row updated.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Verifier le journal
+SQL> COLUMN utilisateur FORMAT A15
+SQL> COLUMN ancien_diagnostic FORMAT A20
+SQL> COLUMN nouveau_diagnostic FORMAT A20
+SQL> COLUMN ancien_traitement FORMAT A20
+SQL> COLUMN nouveau_traitement FORMAT A20
+SQL> PROMPt === Contenu de JOURNAL_DOSSIERS ===
+=== Contenu de JOURNAL_DOSSIERS ===
+SQL> SELECT journal_date, utilisateur, dossier_id,
+  2  	    ancien_traitement, nouveau_traitement
+  3    FROM audit_chu.journal_dossiers
+  4   ORDER BY journal_date DESC;
+
+JOURNAL_DATE	   UTILISATEUR	   DOSSIER_ID ANCIEN_TRAITEMENT    NOUVEAU_TRAITEMENT
+------------------ --------------- ---------- -------------------- --------------------
+31-OCT-26          DR_FASSI                 5 IEC                  IEC + bêtabloquant
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

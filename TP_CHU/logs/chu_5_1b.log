@@ -1,0 +1,34 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:28:49 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT / AS SYSDBA
+Connected.
+SQL> ALTER SYSTEM SET audit_trail = DB, EXTENDED SCOPE = SPFILE;
+
+System altered.
+
+SQL> ALTER SYSTEM SET audit_sys_operations = TRUE SCOPE = SPFILE;
+
+System altered.
+
+SQL> SELECT name, value FROM v$parameter WHERE name IN ('audit_trail','audit_sys_operations');
+
+NAME
+--------------------------------------------------------------------------------
+VALUE
+------------------------------------------------------------------------------------------------------------------------
+audit_sys_operations
+FALSE
+
+audit_trail
+NONE
+
+
+2 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,26 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:29:34 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN name FORMAT A30
+SQL> COLUMN value FORMAT A20
+SQL> SELECT name, value FROM v$parameter WHERE name IN ('audit_trail','audit_sys_operations','audit_file_dest');
+
+NAME			       VALUE
+------------------------------ --------------------
+audit_sys_operations	       TRUE
+audit_file_dest 	       /opt/oracle/product/
+			       26ai/dbhomeFree/rdbm
+			       s/audit
+
+audit_trail		       DB, EXTENDED
+
+3 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

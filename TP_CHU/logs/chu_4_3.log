@@ -1,0 +1,170 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:28:15 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_4_3.sql : Chapitre 4.3 -- Campagne de tests des droits (matrice RBAC)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> 
+SQL> PROMPT === TEST 1 : SEC_KETTANI SELECT v_accueil (attendu 60 lignes) ===
+=== TEST 1 : SEC_KETTANI SELECT v_accueil (attendu 60 lignes) ===
+SQL> CONNECT sec_kettani/"Accueil#2026k"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT COUNT(*) AS nb_lignes FROM chu.v_accueil;
+
+ NB_LIGNES
+----------
+	60
+
+1 row selected.
+
+SQL> 
+SQL> PROMPT === TEST 2 : SEC_KETTANI SELECT dossiers_medicaux (attendu ORA-00942) ===
+=== TEST 2 : SEC_KETTANI SELECT dossiers_medicaux (attendu ORA-00942) ===
+SQL> SELECT * FROM chu.dossiers_medicaux;
+SELECT * FROM chu.dossiers_medicaux
+                  *
+ERROR at line 1:
+ORA-00942: table or view "CHU"."DOSSIERS_MEDICAUX" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> PROMPT === TEST 3 : SEC_KETTANI UPDATE patients.cin (attendu ORA-01031) ===
+=== TEST 3 : SEC_KETTANI UPDATE patients.cin (attendu ORA-01031) ===
+SQL> UPDATE chu.patients SET cin = 'X' WHERE patient_id = 1;
+UPDATE chu.patients SET cin = 'X' WHERE patient_id = 1
+           *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "CHU"."PATIENTS"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> PROMPT === TEST 4 : INF_GHAZI SELECT COUNT(*) v_soins (attendu 41) ===
+=== TEST 4 : INF_GHAZI SELECT COUNT(*) v_soins (attendu 41) ===
+SQL> CONNECT inf_ghazi/"Soins#2026g"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT COUNT(*) AS nb_soins FROM chu.v_soins;
+
+  NB_SOINS
+----------
+	41
+
+1 row selected.
+
+SQL> 
+SQL> PROMPT === TEST 5 : INF_GHAZI UPDATE prescriptions.statut (attendu ORA-01031) ===
+=== TEST 5 : INF_GHAZI UPDATE prescriptions.statut (attendu ORA-01031) ===
+SQL> UPDATE chu.prescriptions SET statut = 'DELIVREE' WHERE presc_id = 8;
+UPDATE chu.prescriptions SET statut = 'DELIVREE' WHERE presc_id = 8
+           *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "CHU"."PRESCRIPTIONS"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT === TEST 6 : CPT_OUAZZANI SELECT v_soins (attendu ORA-00942) ===
+=== TEST 6 : CPT_OUAZZANI SELECT v_soins (attendu ORA-00942) ===
+SQL> CONNECT cpt_ouazzani/"Finance2027x!"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT * FROM chu.v_soins;
+SELECT * FROM chu.v_soins
+                  *
+ERROR at line 1:
+ORA-00942: table or view "CHU"."V_SOINS" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> PROMPT === TEST 7 : DIR_RAMI SELECT v_stats_services (attendu 6 lignes) ===
+=== TEST 7 : DIR_RAMI SELECT v_stats_services (attendu 6 lignes) ===
+SQL> CONNECT dir_rami/"Direction##CHU26"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT COUNT(*) AS nb_services FROM chu.v_stats_services;
+
+NB_SERVICES
+-----------
+	  6
+
+1 row selected.
+
+SQL> 
+SQL> PROMPT === TEST 8 : DIR_RAMI SELECT patients (attendu ORA-00942) ===
+=== TEST 8 : DIR_RAMI SELECT patients (attendu ORA-00942) ===
+SQL> SELECT * FROM chu.patients;
+SELECT * FROM chu.patients
+                  *
+ERROR at line 1:
+ORA-00942: table or view "CHU"."PATIENTS" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> PROMPT === TEST 9 : DR_FASSI SELECT diagnostic dossier 22 (attendu succes) ===
+=== TEST 9 : DR_FASSI SELECT diagnostic dossier 22 (attendu succes) ===
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22;
+
+DIAGNOSTIC
+--------------------------------------------------------------------------------
+Déshydratation
+
+1 row selected.
+
+SQL> 
+SQL> PROMPT === TEST 10 : PHA_MANSOURI UPDATE prescriptions.statut (attendu 1 ligne + ROLLBACK) ===
+=== TEST 10 : PHA_MANSOURI UPDATE prescriptions.statut (attendu 1 ligne + ROLLBACK) ===
+SQL> CONNECT pha_mansouri/"Pharma#2026m"@//localhost/FREEPDB1
+Connected.
+SQL> UPDATE chu.prescriptions SET statut = 'DELIVREE' WHERE presc_id = 8;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT === TEST 11 : Delegation - DR_BENALI accorde R_INFIRMIER a un nouveau compte ===
+=== TEST 11 : Delegation - DR_BENALI accorde R_INFIRMIER a un nouveau compte ===
+SQL> -- Verifier que DR_BENALI a l'ADMIN OPTION sur R_INFIRMIER
+SQL> SELECT grantee, granted_role, admin_option
+  2    FROM dba_role_privs
+  3   WHERE grantee = 'DR_BENALI' AND granted_role = 'R_INFIRMIER';
+
+GRANTEE
+------------------------------------------------------------------------------------------------------------------------
+GRANTED_ROL ADM
+----------- ---
+DR_BENALI
+R_INFIRMIER YES
+
+
+1 row selected.
+
+SQL> 
+SQL> PROMPT === Verification : aucun privilege systeme direct aux comptes metier ===
+=== Verification : aucun privilege systeme direct aux comptes metier ===
+SQL> COLUMN grantee FORMAT A14
+SQL> COLUMN privilege FORMAT A30
+SQL> SELECT grantee, privilege
+  2    FROM dba_sys_privs
+  3   WHERE grantee IN ('DR_ALAMI','DR_BENALI','DR_FASSI','INF_GHAZI',
+  4  			'SEC_KETTANI','SEC_LAHLOU','PHA_MANSOURI','CPT_OUAZZANI',
+  5  			'DIR_RAMI','DPO_SBAI','APP_CHU','DEV_CHU');
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

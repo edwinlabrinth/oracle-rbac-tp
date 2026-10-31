@@ -1,0 +1,41 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:28:45 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_5_1.sql : Chapitre 5.1 -- Etat de l'audit standard
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT / AS SYSDBA
+Connected.
+SQL> SHOW CON_NAME
+
+CON_NAME
+------------------------------
+CDB$ROOT
+SQL> -- Monter dans la PDB si besoin
+SQL> ALTER SESSION SET CONTAINER = FREEPDB1;
+
+Session altered.
+
+SQL> 
+SQL> COLUMN name FORMAT A30
+SQL> COLUMN value FORMAT A20
+SQL> PROMPT === AUDIT_TRAIL, AUDIT_SYS_OPERATIONS, AUDIT_FILE_DEST ===
+=== AUDIT_TRAIL, AUDIT_SYS_OPERATIONS, AUDIT_FILE_DEST ===
+SQL> SELECT name, value FROM v$parameter WHERE name IN ('audit_trail','audit_sys_operations','audit_file_dest');
+
+NAME			       VALUE
+------------------------------ --------------------
+audit_sys_operations	       FALSE
+audit_file_dest 	       /opt/oracle/product/
+			       26ai/dbhomeFree/rdbm
+			       s/audit
+
+audit_trail		       NONE
+
+3 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

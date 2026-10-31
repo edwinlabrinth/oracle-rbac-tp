@@ -1,0 +1,35 @@
+\babel@toc {french}{}\relax 
+\contentsline {section}{Environnement}{3}{section*.2}%
+\contentsline {section}{\numberline {1}Jeu de données (Chapitre 2)}{4}{section.1}%
+\contentsline {subsection}{\numberline {1.1}2.1 Charger et contrôler le jeu de données}{4}{subsection.1.1}%
+\contentsline {section}{\numberline {2}Utilisateurs et profils (Chapitre 3)}{49}{section.2}%
+\contentsline {subsection}{\numberline {2.1}3.1 Quatre profils}{49}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}3.2 Les comptes}{54}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}3.3 Tester les profils}{58}{subsection.2.3}%
+\contentsline {section}{\numberline {3}Privilèges et rôles (Chapitre 4)}{62}{section.3}%
+\contentsline {subsection}{\numberline {3.1}4.1 Création des rôles et matrice RBAC}{62}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}4.3 Campagne de tests des droits}{74}{subsection.3.2}%
+\contentsline {section}{\numberline {4}Audit standard (Chapitre 5)}{78}{section.4}%
+\contentsline {subsection}{\numberline {4.1}5.1 État de l'audit standard}{78}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}5.2 Configuration de l'audit standard}{78}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}5.3 Lecture de la trace}{82}{subsection.4.3}%
+\contentsline {section}{\numberline {5}Audit unifié (Chapitre 6)}{82}{section.5}%
+\contentsline {subsection}{\numberline {5.1}6.1 État de l'audit unifié}{82}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}6.2 Création des politiques CHU}{84}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}6.3 La DPO, auditrice}{88}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Audit fin (FGA) (Chapitre 7)}{91}{section.6}%
+\contentsline {subsection}{\numberline {6.1}7.1 Politique FGA avec gestionnaire d'alerte}{91}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}7.2 Tests de déclenchement}{94}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Triggers d'audit (Chapitre 8)}{98}{section.7}%
+\contentsline {subsection}{\numberline {7.1}8.1 Tables de journal et procédure LOG\_EVT}{98}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}8.2 Trigger de valeurs sur les dossiers (E6)}{101}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}8.3 Trigger de règle métier (E7)}{104}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}8.4 Trigger de connexion (E8)}{107}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}8.5 Trigger de protection de structure (E9)}{108}{subsection.7.5}%
+\contentsline {section}{\numberline {8}Enquête sur les incidents de la nuit (Chapitre 9)}{111}{section.8}%
+\contentsline {subsection}{\numberline {8.1}9.1 Les connexions}{111}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}9.2 Les accès aux données médicales}{128}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}9.3 Les modifications}{129}{subsection.8.3}%
+\contentsline {subsection}{\numberline {8.4}9.4 Rapport d'enquête : 8 fiches incidents}{129}{subsection.8.4}%
+\contentsline {section}{\numberline {9}Synthèse (Chapitre 10)}{130}{section.9}%
+\contentsline {subsection}{\numberline {9.1}10.1 Questions de synthèse}{130}{subsection.9.1}%

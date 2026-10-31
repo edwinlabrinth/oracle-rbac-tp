@@ -1,0 +1,17 @@
+\section{Jeu de données (Chapitre 2)}
+
+\subsection{2.1 Charger et contrôler le jeu de données}
+\textbf{Objectif.} Charger le schéma CHU avec le script fourni et vérifier l'intégrité du chargement.
+
+\shots{chu_2_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Le compte \code{CHU} est créé avec \code{AUTHENTICATION\_TYPE = NONE} et \code{ACCOUNT\_STATUS = OPEN}. Ce choix de compte schéma sans authentification empêche toute connexion directe : personne ne peut se connecter en tant que \code{CHU} avec un mot de passe. Les applications accèdent aux données via des comptes applicatifs dédiés (\code{APP\_CHU}) ou par proxy (\code{DEV\_CHU} vers \code{CHU}).
+  \item Nombre de lignes par table : \code{SERVICES = 6}, \code{PERSONNEL = 20}, \code{PATIENTS = 40}, \code{SEJOURS = 60}, \code{DOSSIERS\_MEDICAUX = 60}, \code{PRESCRIPTIONS = 120}, \code{FACTURES = 60}. Ces valeurs sont conformes à la figure attendue du TP.
+  \item \code{19} dossiers médicaux sont confidentiels (\code{confidentiel = 'O'}).
+  \item \code{4} patients VIP (\code{vip = 'O'}) : Naji Kenza, Cherkaoui Malak, Tounsi Salma (deux séjours pour Naji). Tous sont suivis par le Dr Chraibi (service de Pédiatrie).
+  \item \code{6} séjours sont en cours (sans \code{date\_sortie}).
+  \item \code{V\_SOINS} renvoie 41 lignes (dossiers non confidentiels uniquement), \code{V\_ACCUEIL} renvoie 60 lignes (tous les séjours avec identité). La vue \code{V\_SOINS} filtre sur \code{confidentiel = 'N'}, d'où le nombre inférieur.
+\end{enumerate}
+\ecart{Aucun. Le chargement s'est déroulé sans erreur et tous les compteurs correspondent à l'énoncé.}

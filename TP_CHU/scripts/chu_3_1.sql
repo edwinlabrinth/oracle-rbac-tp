@@ -1,0 +1,77 @@
+-- chu_3_1.sql : Chapitre 3.1 -- Quatre profils CHU
+SET LINESIZE 120 PAGESIZE 50
+CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+
+-- Vérifier RESOURCE_LIMIT
+COLUMN name FORMAT A25
+COLUMN value FORMAT A15
+PROMPT === Valeur de RESOURCE_LIMIT ===
+SHOW PARAMETER resource_limit
+
+-- Vérifier l'existence des fonctions de vérification
+COLUMN object_name FORMAT A35
+COLUMN object_type FORMAT A15
+PROMPT === Fonctions de verification de complexite ===
+SELECT object_name, object_type
+  FROM dba_objects
+ WHERE owner = 'SYS'
+   AND object_name LIKE 'ORA12C%VERIFY%'
+ ORDER BY object_name;
+
+-- P_SOIGNANT : 3 sessions, idle 30 min, 5 échecs, verrou 15 min, vie 90j, grâce 7j, reuse 365/10, verify standard
+PROMPT === Creation du profil P_SOIGNANT ===
+CREATE PROFILE p_soignant LIMIT
+  SESSIONS_PER_USER 3
+  IDLE_TIME 30
+  FAILED_LOGIN_ATTEMPTS 5
+  PASSWORD_LOCK_TIME 15/1440
+  PASSWORD_LIFE_TIME 90
+  PASSWORD_GRACE_TIME 7
+  PASSWORD_REUSE_TIME 365
+  PASSWORD_REUSE_MAX 10
+  PASSWORD_VERIFY_FUNCTION ORA12C_VERIFY_FUNCTION;
+
+-- P_ADMINISTRATIF : 1 session, idle 15 min, 3 échecs, verrou 30 min, vie 60j, grâce 5j, reuse 365/10, verify standard
+PROMPT === Creation du profil P_ADMINISTRATIF ===
+CREATE PROFILE p_administratif LIMIT
+  SESSIONS_PER_USER 1
+  IDLE_TIME 15
+  FAILED_LOGIN_ATTEMPTS 3
+  PASSWORD_LOCK_TIME 30/1440
+  PASSWORD_LIFE_TIME 60
+  PASSWORD_GRACE_TIME 5
+  PASSWORD_REUSE_TIME 365
+  PASSWORD_REUSE_MAX 10
+  PASSWORD_VERIFY_FUNCTION ORA12C_VERIFY_FUNCTION;
+
+-- P_SENSIBLE : 1 session, idle 10 min, 3 échecs, verrou 1 jour, vie 60j, grâce 5j, reuse 365/12, verify forte
+PROMPT === Creation du profil P_SENSIBLE ===
+CREATE PROFILE p_sensible LIMIT
+  SESSIONS_PER_USER 1
+  IDLE_TIME 10
+  FAILED_LOGIN_ATTEMPTS 3
+  PASSWORD_LOCK_TIME 1
+  PASSWORD_LIFE_TIME 60
+  PASSWORD_GRACE_TIME 5
+  PASSWORD_REUSE_TIME 365
+  PASSWORD_REUSE_MAX 12
+  PASSWORD_VERIFY_FUNCTION ORA12C_STRONG_VERIFY_FUNCTION;
+
+-- P_APPLI : 30 sessions, idle UNLIMITED, 10 échecs, vie UNLIMITED, verify forte
+PROMPT === Creation du profil P_APPLI ===
+CREATE PROFILE p_appli LIMIT
+  SESSIONS_PER_USER 30
+  IDLE_TIME UNLIMITED
+  FAILED_LOGIN_ATTEMPTS 10
+  PASSWORD_LIFE_TIME UNLIMITED
+  PASSWORD_VERIFY_FUNCTION ORA12C_STRONG_VERIFY_FUNCTION;
+
+COLUMN profile FORMAT A20
+COLUMN resource_name FORMAT A30
+COLUMN limit FORMAT A20
+PROMPt === Parametres des quatre profils CHU ===
+SELECT profile, resource_name, limit
+  FROM dba_profiles
+ WHERE profile IN ('P_SOIGNANT','P_ADMINISTRATIF','P_SENSIBLE','P_APPLI')
+ ORDER BY profile, resource_name;
+EXIT

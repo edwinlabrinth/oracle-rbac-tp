@@ -1,0 +1,44 @@
+\section{Utilisateurs et profils (Chapitre 3)}
+
+\subsection{3.1 Quatre profils}
+\textbf{Objectif.} Créer quatre profils (\code{P\_SOIGNANT}, \code{P\_ADMINISTRATIF}, \code{P\_SENSIBLE}, \code{P\_APPLI}) avec des limites adaptées à chaque population.
+
+\shots{chu_3_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{RESOURCE\_LIMIT} vaut \code{TRUE} : les limites de profil sont appliquées.
+  \item Les fonctions de vérification \code{ORA12C\_VERIFY\_FUNCTION} (standard) et \code{ORA12C\_STRONG\_VERIFY\_FUNCTION} (forte) existent bien dans le schéma \code{SYS}.
+  \item \code{P\_SOIGNANT} : 3 sessions, inactivité 30 min, 5 échecs, verrou 15 min, vie 90 j, grâce 7 j, réutilisation 365 j/10, vérification standard.
+  \item \code{P\_ADMINISTRATIF} : 1 session, inactivité 15 min, 3 échecs, verrou 30 min, vie 60 j, grâce 5 j, réutilisation 365 j/10, vérification standard.
+  \item \code{P\_SENSIBLE} : 1 session, inactivité 10 min, 3 échecs, verrou 1 j, vie 60 j, grâce 5 j, réutilisation 365 j/12, vérification forte.
+  \item \code{P\_APPLI} : 30 sessions, inactivité illimitée, 10 échecs, vie illimitée, vérification forte. Le \code{PASSWORD\_LIFE\_TIME UNLIMITED} évite qu'une expiration ne bloque l'application ; la contrepartie est un verrouillage après 10 échecs et une fonction de mot de passe forte pour limiter les risques.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{3.2 Les comptes}
+\textbf{Objectif.} Créer les 12 comptes avec leur profil et mot de passe imposés, créer le schéma \code{AUDIT\_CHU}, et configurer le proxy \code{DEV\_CHU} vers \code{CHU}.
+
+\shots{chu_3_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Les 12 comptes sont créés avec leur profil respectif et leur mot de passe imposé. Aucun quota n'est attribué (sauf \code{CHU} qui a l'illimité depuis le chapitre 2, et \code{AUDIT\_CHU} avec 200 Mo).
+  \item \code{CHU} a besoin du privilège \code{CREATE SESSION} pour être la cible du proxy (comme \code{RH} au TP RBAC).
+  \item \code{AUDIT\_CHU} est créé avec \code{NO AUTHENTICATION} et 200 Mo sur \code{USERS} : il recevra les journaux d'audit applicatifs sans qu'aucun humain ne puisse s'y connecter.
+  \item Le proxy \code{DEV\_CHU} vers \code{CHU} est autorisé via \code{ALTER USER chu GRANT CONNECT THROUGH dev\_chu}.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{3.3 Tester les profils}
+\textbf{Objectif.} Vérifier en pratique les limites de sessions, le verrouillage après échecs et la complexité des mots de passe.
+
+\shots{chu_3_3_a} \shots{chu_3_3_b} \shots{chu_3_3_c} \shots{chu_3_3_d} \shots{chu_3_3_e} \shots{chu_3_3_f2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{SEC\_LAHLOU} (\code{P\_ADMINISTRATIF}, 1 session max) : la 2ème session renvoie \code{ORA-02391}. \code{DR\_FASSI} (\code{P\_SOIGNANT}, 3 sessions max) : les 3 premières sessions passent, la 4ème renvoie \code{ORA-02391}.
+  \item \code{SEC\_LAHLOU} : 3 mauvais mots de passe (\code{ORA-01017}) puis le bon renvoie \code{ORA-28000} (compte verrouillé). \code{ACCOUNT\_STATUS = LOCKED(TIMED)}.
+  \item \code{CPT\_OUAZZANI} : changement sans \code{REPLACE} renvoie \code{ORA-28221}. Changement avec \code{REPLACE} et mot de passe conforme réussit. \code{SYS} tentant de redonner l'ancien mot de passe renvoie \code{ORA-28007} (pas de réutilisation immédiate).
+\end{enumerate}
+\ecart{Aucun.}

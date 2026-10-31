@@ -1,0 +1,27 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:31:40 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> AUDIT POLICY pol_chu_gouvernance;
+
+Audit succeeded.
+
+SQL> COLUMN entity_name FORMAT A30
+SQL> COLUMN success FORMAT A10
+SQL> COLUMN failure FORMAT A10
+SQL> PROMPt === Politiques activees ===
+=== Politiques activees ===
+SQL> SELECT entity_name, success, failure
+  2    FROM audit_unified_enabled_policies
+  3   WHERE entity_name IN ('POL_CHU_DOSSIERS','POL_CHU_ADHOC','POL_CHU_GOUVERNANCE','ORA_ACCOUNT_MGMT')
+  4   ORDER BY entity_name;
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

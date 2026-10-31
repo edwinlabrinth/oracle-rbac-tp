@@ -1,0 +1,154 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:34:54 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_8_1.sql : Chapitre 8.1 -- Tables de journal et procedure LOG_EVT dans AUDIT_CHU
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- AUDIT_CHU a besoin de lire CHU.PERSONNEL (directement, pas via un rôle, car les
+SQL> -- triggers s'exécutent avec les privilèges du définisseur et les rôles sont désactivés)
+SQL> PROMPT === AUDIT_CHU : lecture CHU.PERSONNEL ===
+=== AUDIT_CHU : lecture CHU.PERSONNEL ===
+SQL> GRANT SELECT ON chu.personnel TO audit_chu;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Table JOURNAL_DOSSIERS
+SQL> PROMPT === Creation de JOURNAL_DOSSIERS ===
+=== Creation de JOURNAL_DOSSIERS ===
+SQL> CREATE TABLE audit_chu.journal_dossiers (
+  2    journal_id	NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  3    journal_date	DATE DEFAULT SYSDATE,
+  4    utilisateur	VARCHAR2(30),
+  5    utilisateur_proxy VARCHAR2(30),
+  6    poste	     VARCHAR2(60),
+  7    programme	VARCHAR2(60),
+  8    dossier_id	NUMBER,
+  9    ancien_diagnostic  VARCHAR2(80),
+ 10    nouveau_diagnostic VARCHAR2(80),
+ 11    ancien_traitement  VARCHAR2(80),
+ 12    nouveau_traitement VARCHAR2(80),
+ 13    ancien_confidentiel CHAR(1),
+ 14    nouveau_confidentiel CHAR(1)
+ 15  );
+
+Table created.
+
+SQL> 
+SQL> -- Table JOURNAL_EVENEMENTS
+SQL> PROMPT === Creation de JOURNAL_EVENEMENTS ===
+=== Creation de JOURNAL_EVENEMENTS ===
+SQL> CREATE TABLE audit_chu.journal_evenements (
+  2    evenement_id	NUMBER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  3    evenement_date DATE DEFAULT SYSDATE,
+  4    type_evenement VARCHAR2(30),
+  5    utilisateur	VARCHAR2(30),
+  6    utilisateur_proxy VARCHAR2(30),
+  7    poste	     VARCHAR2(60),
+  8    programme	VARCHAR2(60),
+  9    objet	     VARCHAR2(30),
+ 10    detail	     VARCHAR2(4000)
+ 11  );
+
+Table created.
+
+SQL> 
+SQL> -- Procedure LOG_EVT (transaction autonome)
+SQL> PROMPT === Creation de LOG_EVT ===
+=== Creation de LOG_EVT ===
+SQL> CREATE OR REPLACE PROCEDURE audit_chu.log_evt (
+  2    p_type	    VARCHAR2,
+  3    p_objet	    VARCHAR2,
+  4    p_detail     VARCHAR2
+  5  ) AS
+  6    PRAGMA AUTONOMOUS_TRANSACTION;
+  7    v_utilisateur VARCHAR2(30);
+  8    v_proxy	     VARCHAR2(30);
+  9    v_poste	     VARCHAR2(60);
+ 10    v_programme	VARCHAR2(60);
+ 11  BEGIN
+ 12    SELECT SYS_CONTEXT('USERENV','SESSION_USER'),
+ 13  	      SYS_CONTEXT('USERENV','PROXY_USER'),
+ 14  	      SYS_CONTEXT('USERENV','HOST'),
+ 15  	      SYS_CONTEXT('USERENV','CLIENT_PROGRAM_NAME')
+ 16  	 INTO v_utilisateur, v_proxy, v_poste, v_programme
+ 17  	 FROM dual;
+ 18    INSERT INTO audit_chu.journal_evenements
+ 19  	 (type_evenement, utilisateur, utilisateur_proxy, poste, programme, objet, detail)
+ 20    VALUES (p_type, v_utilisateur, v_proxy, v_poste, v_programme, p_objet, p_detail);
+ 21    COMMIT;
+ 22  END;
+ 23  /
+
+Procedure created.
+
+SQL> 
+SQL> -- Donner a R_AUDIT la lecture des deux journaux
+SQL> PROMPT === R_AUDIT : lecture des journaux ===
+=== R_AUDIT : lecture des journaux ===
+SQL> GRANT SELECT ON audit_chu.journal_dossiers TO r_audit;
+
+Grant succeeded.
+
+SQL> GRANT SELECT ON audit_chu.journal_evenements TO r_audit;
+
+Grant succeeded.
+
+SQL> 
+SQL> COLUMN table_name FORMAT A30
+SQL> COLUMN object_type FORMAT A15
+SQL> PROMPt === Objets crees dans AUDIT_CHU ===
+=== Objets crees dans AUDIT_CHU ===
+SQL> SELECT object_name, object_type
+  2    FROM dba_objects
+  3   WHERE owner = 'AUDIT_CHU'
+  4   ORDER BY object_name;
+
+OBJECT_NAME
+------------------------------------------------------------------------------------------------------------------------
+OBJECT_TYPE
+---------------
+ALERTES
+TABLE
+
+ALERTE_FGA
+PROCEDURE
+
+ISEQ$$_73482
+SEQUENCE
+
+ISEQ$$_73488
+SEQUENCE
+
+ISEQ$$_73491
+SEQUENCE
+
+JOURNAL_DOSSIERS
+TABLE
+
+JOURNAL_EVENEMENTS
+TABLE
+
+LOG_EVT
+PROCEDURE
+
+SYS_C008783
+INDEX
+
+SYS_C008785
+INDEX
+
+SYS_C008787
+INDEX
+
+
+11 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

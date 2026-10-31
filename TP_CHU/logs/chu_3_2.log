@@ -1,0 +1,177 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:22:11 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_3_2.sql : Chapitre 3.2 -- Douze comptes CHU, schema AUDIT_CHU, proxy DEV_CHU->CHU
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- CHU a besoin de CREATE SESSION pour etre cible du proxy (comme RH au TP precedent)
+SQL> PROMPT === CHU : octroi de CREATE SESSION (cible du proxy) ===
+=== CHU : octroi de CREATE SESSION (cible du proxy) ===
+SQL> GRANT CREATE SESSION TO chu;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Schema AUDIT_CHU : sans authentification, 200 Mo sur USERS (recevra les journaux)
+SQL> PROMPT === Creation du schema AUDIT_CHU (NO AUTHENTICATION, 200 Mo) ===
+=== Creation du schema AUDIT_CHU (NO AUTHENTICATION, 200 Mo) ===
+SQL> CREATE USER audit_chu NO AUTHENTICATION DEFAULT TABLESPACE users QUOTA 200M ON users;
+
+User created.
+
+SQL> 
+SQL> -- Les 12 comptes avec leur profil et mot de passe imposes
+SQL> PROMPT === Creation des comptes soignants (P_SOIGNANT) ===
+=== Creation des comptes soignants (P_SOIGNANT) ===
+SQL> CREATE USER dr_alami IDENTIFIED BY "Urgences#2026a" PROFILE p_soignant DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> CREATE USER dr_benali IDENTIFIED BY "Cardio#2026b" PROFILE p_soignant DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> CREATE USER dr_fassi IDENTIFIED BY "Cardio#2026f" PROFILE p_soignant DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> CREATE USER inf_ghazi IDENTIFIED BY "Soins#2026g" PROFILE p_soignant DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> 
+SQL> PROMPT === Creation des comptes administratifs (P_ADMINISTRATIF) ===
+=== Creation des comptes administratifs (P_ADMINISTRATIF) ===
+SQL> CREATE USER sec_kettani IDENTIFIED BY "Accueil#2026k" PROFILE p_administratif DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> CREATE USER sec_lahlou IDENTIFIED BY "Accueil#2026l" PROFILE p_administratif DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> CREATE USER pha_mansouri IDENTIFIED BY "Pharma#2026m" PROFILE p_administratif DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> CREATE USER cpt_ouazzani IDENTIFIED BY "Compta#2026o" PROFILE p_administratif DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> 
+SQL> PROMPT === Creation des comptes sensibles (P_SENSIBLE) ===
+=== Creation des comptes sensibles (P_SENSIBLE) ===
+SQL> CREATE USER dir_rami IDENTIFIED BY "Direction##CHU26" PROFILE p_sensible DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> CREATE USER dpo_sbai IDENTIFIED BY "Protection##DPO26" PROFILE p_sensible DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> 
+SQL> PROMPT === Creation du compte applicatif (P_APPLI) ===
+=== Creation du compte applicatif (P_APPLI) ===
+SQL> CREATE USER app_chu IDENTIFIED BY "ChuApp##Prod2026" PROFILE p_appli DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> 
+SQL> PROMPT === Creation du compte developpeur (P_ADMINISTRATIF) ===
+=== Creation du compte developpeur (P_ADMINISTRATIF) ===
+SQL> CREATE USER dev_chu IDENTIFIED BY "Deploi#2026d" PROFILE p_administratif DEFAULT TABLESPACE users;
+
+User created.
+
+SQL> 
+SQL> -- Chaque compte a besoin de CREATE SESSION pour se connecter
+SQL> PROMPt === Octroi de CREATE SESSION aux 12 comptes ===
+=== Octroi de CREATE SESSION aux 12 comptes ===
+SQL> GRANT CREATE SESSION TO dr_alami, dr_benali, dr_fassi, inf_ghazi,
+  2  				sec_kettani, sec_lahlou, pha_mansouri, cpt_ouazzani,
+  3  				dir_rami, dpo_sbai, app_chu, dev_chu;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Proxy : DEV_CHU se connecte a travers CHU
+SQL> PROMPT === Autorisation du proxy DEV_CHU -> CHU ===
+=== Autorisation du proxy DEV_CHU -> CHU ===
+SQL> ALTER USER chu GRANT CONNECT THROUGH dev_chu;
+
+User altered.
+
+SQL> 
+SQL> COLUMN username FORMAT A14
+SQL> COLUMN profile FORMAT A20
+SQL> COLUMN account_status FORMAT A14
+SQL> COLUMN authentication_type FORMAT A18
+SQL> PROMPT === Comptes creer (verification) ===
+=== Comptes creer (verification) ===
+SQL> SELECT username, profile, account_status, authentication_type
+  2    FROM dba_users
+  3   WHERE username IN ('DR_ALAMI','DR_BENALI','DR_FASSI','INF_GHAZI',
+  4  			 'SEC_KETTANI','SEC_LAHLOU','PHA_MANSOURI','CPT_OUAZZANI',
+  5  			 'DIR_RAMI','DPO_SBAI','APP_CHU','DEV_CHU','CHU','AUDIT_CHU')
+  6   ORDER BY username;
+
+USERNAME       PROFILE		    ACCOUNT_STATUS AUTHENTICATION_TYP
+-------------- -------------------- -------------- ------------------
+APP_CHU        P_APPLI		    OPEN	   PASSWORD
+AUDIT_CHU      DEFAULT		    OPEN	   NONE
+CHU	       DEFAULT		    OPEN	   NONE
+CPT_OUAZZANI   P_ADMINISTRATIF	    OPEN	   PASSWORD
+DEV_CHU        P_ADMINISTRATIF	    OPEN	   PASSWORD
+DIR_RAMI       P_SENSIBLE	    OPEN	   PASSWORD
+DPO_SBAI       P_SENSIBLE	    OPEN	   PASSWORD
+DR_ALAMI       P_SOIGNANT	    OPEN	   PASSWORD
+DR_BENALI      P_SOIGNANT	    OPEN	   PASSWORD
+DR_FASSI       P_SOIGNANT	    OPEN	   PASSWORD
+INF_GHAZI      P_SOIGNANT	    OPEN	   PASSWORD
+PHA_MANSOURI   P_ADMINISTRATIF	    OPEN	   PASSWORD
+SEC_KETTANI    P_ADMINISTRATIF	    OPEN	   PASSWORD
+SEC_LAHLOU     P_ADMINISTRATIF	    OPEN	   PASSWORD
+
+14 rows selected.
+
+SQL> 
+SQL> PROMPt === Quotas (aucun quota innecesaire, sauf AUDIT_CHU 200M) ===
+=== Quotas (aucun quota innecesaire, sauf AUDIT_CHU 200M) ===
+SQL> COLUMN username FORMAT A14
+SQL> COLUMN tablespace_name FORMAT A15
+SQL> COLUMN max_bytes FORMAT 99999999999
+SQL> SELECT username, tablespace_name, max_bytes
+  2    FROM dba_ts_quotas
+  3   WHERE username IN ('CHU','AUDIT_CHU','DR_ALAMI','DR_BENALI','DR_FASSI','INF_GHAZI',
+  4  			 'SEC_KETTANI','SEC_LAHLOU','PHA_MANSOURI','CPT_OUAZZANI',
+  5  			 'DIR_RAMI','DPO_SBAI','APP_CHU','DEV_CHU')
+  6   ORDER BY username;
+
+USERNAME       TABLESPACE_NAME	  MAX_BYTES
+-------------- --------------- ------------
+AUDIT_CHU      USERS		  209715200
+CHU	       USERS			 -1
+
+2 rows selected.
+
+SQL> 
+SQL> PROMPT === Autorisation proxy ===
+=== Autorisation proxy ===
+SQL> COLUMN proxy FORMAT A12
+SQL> COLUMN client FORMAT A12
+SQL> SELECT proxy, client FROM proxy_users WHERE client = 'CHU';
+
+PROXY	     CLIENT
+------------ ------------
+DEV_CHU      CHU
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

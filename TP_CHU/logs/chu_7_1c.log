@@ -1,0 +1,60 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:33:32 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> -- Recréer la procédure dans SYS
+SQL> CREATE OR REPLACE PROCEDURE sys.alerte_fga (
+  2    p_schema  VARCHAR2,
+  3    p_objet	 VARCHAR2,
+  4    p_politique VARCHAR2
+  5  ) AS
+  6    PRAGMA AUTONOMOUS_TRANSACTION;
+  7    v_utilisateur VARCHAR2(30);
+  8    v_poste	     VARCHAR2(60);
+  9    v_programme	VARCHAR2(60);
+ 10  BEGIN
+ 11    SELECT SYS_CONTEXT('USERENV','SESSION_USER'),
+ 12  	      SYS_CONTEXT('USERENV','HOST'),
+ 13  	      SYS_CONTEXT('USERENV','CLIENT_PROGRAM_NAME')
+ 14  	 INTO v_utilisateur, v_poste, v_programme
+ 15  	 FROM dual;
+ 16    INSERT INTO audit_chu.alertes (utilisateur, poste, programme, objet, politique)
+ 17    VALUES (v_utilisateur, v_poste, v_programme, p_objet, p_politique);
+ 18    COMMIT;
+ 19  END;
+ 20  /
+
+Procedure created.
+
+SQL> -- Recréer la politique FGA avec handler sys.alerte_fga
+SQL> BEGIN
+  2    DBMS_FGA.DISABLE_POLICY('CHU','DOSSIERS_MEDICAUX','FGA_CHU_CONFIDENTIEL');
+  3    DBMS_FGA.DROP_POLICY('CHU','DOSSIERS_MEDICAUX','FGA_CHU_CONFIDENTIEL');
+  4  EXCEPTION WHEN OTHERS THEN NULL;
+  5  END;
+  6  /
+
+PL/SQL procedure successfully completed.
+
+SQL> BEGIN
+  2    DBMS_FGA.ADD_POLICY(
+  3  	 object_schema	 => 'CHU',
+  4  	 object_name	 => 'DOSSIERS_MEDICAUX',
+  5  	 policy_name	 => 'FGA_CHU_CONFIDENTIEL',
+  6  	 audit_condition => 'confidentiel = ''O''',
+  7  	 audit_column	 => 'DIAGNOSTIC,ANTECEDENTS,TRAITEMENT',
+  8  	 statement_types => 'SELECT,UPDATE',
+  9  	 handler_module  => 'sys.alerte_fga',
+ 10  	 enable 	 => TRUE);
+ 11  END;
+ 12  /
+
+PL/SQL procedure successfully completed.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

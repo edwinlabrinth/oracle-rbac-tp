@@ -1,0 +1,174 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:31:19 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_6_2.sql : Chapitre 6.2 -- Creation et activation des politiques d'audit unifie CHU
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Nettoyage eventuel
+SQL> PROMPT === Nettoyage politiques eventuelles ===
+=== Nettoyage politiques eventuelles ===
+SQL> NOAUDIT POLICY pol_chu_dossiers;
+NOAUDIT POLICY pol_chu_dossiers
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_DOSSIERS was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> DROP AUDIT POLICY pol_chu_dossiers;
+DROP AUDIT POLICY pol_chu_dossiers
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_DOSSIERS was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> NOAUDIT POLICY pol_chu_adhoc;
+NOAUDIT POLICY pol_chu_adhoc
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_ADHOC was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> DROP AUDIT POLICY pol_chu_adhoc;
+DROP AUDIT POLICY pol_chu_adhoc
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_ADHOC was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> NOAUDIT POLICY pol_chu_gouvernance;
+NOAUDIT POLICY pol_chu_gouvernance
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_GOUVERNANCE was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> DROP AUDIT POLICY pol_chu_gouvernance;
+DROP AUDIT POLICY pol_chu_gouvernance
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_GOUVERNANCE was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> 
+SQL> -- 1. POL_CHU_DOSSIERS : SELECT, INSERT, UPDATE, DELETE sur dossiers_medicaux + SELECT sur v_soins
+SQL> -- 			pour tous les comptes SAUF APP_CHU
+SQL> PROMPT === Creation POL_CHU_DOSSIERS ===
+=== Creation POL_CHU_DOSSIERS ===
+SQL> CREATE AUDIT POLICY pol_chu_dossiers
+  2    ACTIONS SELECT, INSERT, UPDATE, DELETE ON chu.dossiers_medicaux,
+  3  	       SELECT ON chu.v_soins;
+
+Audit policy created.
+
+SQL> PROMPT === Activation POL_CHU_DOSSIERS (EXCEPT app_chu) ===
+=== Activation POL_CHU_DOSSIERS (EXCEPT app_chu) ===
+SQL> AUDIT POLICY pol_chu_dossiers EXCEPT app_chu;
+
+Audit succeeded.
+
+SQL> 
+SQL> -- 2. POL_CHU_ADHOC : INSERT, UPDATE, DELETE sur PATIENTS, PRESCRIPTIONS, FACTURES
+SQL> -- 		   uniquement quand le programme client est SQL*Plus ou SQL Developer
+SQL> -- 		   (evaluation par session)
+SQL> PROMPT === Creation POL_CHU_ADHOC (clause WHEN sur CLIENT_PROGRAM_NAME) ===
+=== Creation POL_CHU_ADHOC (clause WHEN sur CLIENT_PROGRAM_NAME) ===
+SQL> CREATE AUDIT POLICY pol_chu_adhoc
+  2    ACTIONS INSERT, UPDATE, DELETE ON chu.patients,
+  3  	       INSERT, UPDATE, DELETE ON chu.prescriptions,
+  4  	       INSERT, UPDATE, DELETE ON chu.factures
+  5    WHEN 'SYS_CONTEXT(''USERENV'',''CLIENT_PROGRAM_NAME'') LIKE ''%sqlplus%'' OR SYS_CONTEXT(''USERENV'',''CLIENT_PROGRAM_NAME'') LIKE ''%sqldeveloper%''' EVALUATE PER SESSION;
+
+Audit policy created.
+
+SQL> PROMPT === Activation POL_CHU_ADHOC ===
+=== Activation POL_CHU_ADHOC ===
+SQL> AUDIT POLICY pol_chu_adhoc;
+
+Audit succeeded.
+
+SQL> 
+SQL> -- 3. POL_CHU_GOUVERNANCE : CREATE/ALTER/DROP TRIGGER, DROP TABLE, TRUNCATE TABLE,
+SQL> -- 			 SELECT ANY TABLE, ALTER ANY TRIGGER
+SQL> PROMPT === Creation POL_CHU_GOUVERNANCE ===
+=== Creation POL_CHU_GOUVERNANCE ===
+SQL> CREATE AUDIT POLICY pol_chu_gouvernance
+  2    PRIVILEGES CREATE TRIGGER, ALTER TRIGGER, DROP TRIGGER,
+  3  		  DROP ANY TABLE, TRUNCATE ANY TABLE,
+  4  		  SELECT ANY TABLE, ALTER ANY TRIGGER;
+  PRIVILEGES CREATE TRIGGER, ALTER TRIGGER, DROP TRIGGER,
+                             *
+ERROR at line 2:
+ORA-46355: The system privilege audit option mentioned is invalid.
+Help: https://docs.oracle.com/error-help/db/ora-46355/
+
+
+SQL> PROMPT === Activation POL_CHU_GOUVERNANCE ===
+=== Activation POL_CHU_GOUVERNANCE ===
+SQL> AUDIT POLICY pol_chu_gouvernance;
+AUDIT POLICY pol_chu_gouvernance
+*
+ERROR at line 1:
+ORA-46357: Unified Audit policy POL_CHU_GOUVERNANCE was not found.
+Help: https://docs.oracle.com/error-help/db/ora-46357/
+
+
+SQL> 
+SQL> -- 4. ORA_ACCOUNT_MGMT (predefinie) : gestion des comptes et habilitations
+SQL> PROMPt === Activation ORA_ACCOUNT_MGMT ===
+=== Activation ORA_ACCOUNT_MGMT ===
+SQL> AUDIT POLICY ora_account_mgmt;
+
+Audit succeeded.
+
+SQL> 
+SQL> COLUMN policy_name FORMAT A30
+SQL> COLUMN audit_option FORMAT A25
+SQL> PROMPt === Politiques CREEES ===
+=== Politiques CREEES ===
+SQL> SELECT policy_name, audit_option
+  2    FROM audit_unified_policies
+  3   WHERE policy_name IN ('POL_CHU_DOSSIERS','POL_CHU_ADHOC','POL_CHU_GOUVERNANCE')
+  4   ORDER BY policy_name, audit_option;
+
+POLICY_NAME		       AUDIT_OPTION
+------------------------------ -------------------------
+POL_CHU_ADHOC		       DELETE
+POL_CHU_ADHOC		       DELETE
+POL_CHU_ADHOC		       DELETE
+POL_CHU_ADHOC		       INSERT
+POL_CHU_ADHOC		       UPDATE
+POL_CHU_DOSSIERS	       DELETE
+POL_CHU_DOSSIERS	       INSERT
+POL_CHU_DOSSIERS	       SELECT
+POL_CHU_DOSSIERS	       SELECT
+POL_CHU_DOSSIERS	       UPDATE
+
+10 rows selected.
+
+SQL> 
+SQL> COLUMN entity_name FORMAT A30
+SQL> COLUMN success FORMAT A10
+SQL> COLUMN failure FORMAT A10
+SQL> PROMPt === Politiques ACTIVEES ===
+=== Politiques ACTIVEES ===
+SQL> SELECT entity_name, success, failure
+  2    FROM audit_unified_enabled_policies
+  3   WHERE entity_name IN ('POL_CHU_DOSSIERS','POL_CHU_ADHOC','POL_CHU_GOUVERNANCE','ORA_ACCOUNT_MGMT')
+  4   ORDER BY entity_name;
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

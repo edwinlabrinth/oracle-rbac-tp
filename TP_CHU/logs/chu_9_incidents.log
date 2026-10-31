@@ -1,0 +1,182 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:37:28 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_9_incidents.sql : Chapitre 9 -- Execution des 8 incidents (script enseignant adapté)
+SQL> -- A lancer APRÈS les chapitres 3 à 8.
+SQL> -- Adaptation : @//localhost/FREEPDB1 au lieu de @orclpdb
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> 
+SQL> WHENEVER SQLERROR CONTINUE
+SQL> 
+SQL> -- Incident 1 : attaque par force brute sur un compte du secretariat
+SQL> PROMPT === INCIDENT 1 : Force brute sur SEC_KETTANI ===
+=== INCIDENT 1 : Force brute sur SEC_KETTANI ===
+SQL> CONNECT sec_kettani/mauvais1@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT sec_kettani/mauvais2@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT sec_kettani/mauvais3@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT sec_kettani/"Accueil#2026k"@//localhost/FREEPDB1
+ERROR:
+ORA-28000: The account is locked; login denied.
+Help: https://docs.oracle.com/error-help/db/ora-28000/
+
+
+SQL> 
+SQL> -- Incident 2 : un infirmier cherche les dossiers complets
+SQL> PROMPT === INCIDENT 2 : INF_GHAZI lit dossier 22 ===
+=== INCIDENT 2 : INF_GHAZI lit dossier 22 ===
+SQL> CONNECT inf_ghazi/"Soins#2026g"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22;
+SELECT diagnostic FROM chu.dossiers_medicaux WHERE dossier_id = 22
+                           *
+ERROR at line 1:
+ORA-00942: table or view "CHU"."DOSSIERS_MEDICAUX" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> -- Incident 3 : curiosite d'un medecin envers les patients VIP
+SQL> PROMPT === INCIDENT 3 : DR_FASSI lit patients VIP ===
+=== INCIDENT 3 : DR_FASSI lit patients VIP ===
+SQL> CONNECT dr_fassi/"Cardio#2026f"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT p.nom, p.prenom, d.diagnostic, d.traitement
+  2  FROM   chu.dossiers_medicaux d
+  3  JOIN   chu.sejours  s ON s.sejour_id  = d.sejour_id
+  4  JOIN   chu.patients p ON p.patient_id = s.patient_id
+  5  WHERE  p.vip = 'O';
+
+NOM					 PRENOM
+---------------------------------------- ----------------------------------------
+DIAGNOSTIC
+--------------------------------------------------------------------------------
+TRAITEMENT
+--------------------------------------------------------------------------------
+Naji					 Kenza
+Asthme aigu
+Salbutamol
+
+Cherkaoui				 Malak
+Déshydratation
+Réhydratation
+
+Tounsi					 Salma
+Bronchiolite
+Kinésithérapie respiratoire
+
+Naji					 Kenza
+Bronchiolite
+Kinésithérapie respiratoire
+
+
+4 rows selected.
+
+SQL> 
+SQL> -- Incident 4 : modification d'un dossier d'un autre service
+SQL> PROMPT === INCIDENT 4 : DR_ALAMI modifie dossier 5 ===
+=== INCIDENT 4 : DR_ALAMI modifie dossier 5 ===
+SQL> CONNECT dr_alami/"Urgences#2026a"@//localhost/FREEPDB1
+Connected.
+SQL> UPDATE chu.dossiers_medicaux
+  2  SET    diagnostic = 'Hypotension', traitement = 'Arret des IEC'
+  3  WHERE  dossier_id = 5;
+
+1 row updated.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> 
+SQL> -- Incident 5 : modification de la prescription d'un confrere
+SQL> PROMPT === INCIDENT 5 : DR_BENALI modifie prescription 8 ===
+=== INCIDENT 5 : DR_BENALI modifie prescription 8 ===
+SQL> CONNECT dr_benali/"Cardio#2026b"@//localhost/FREEPDB1
+Connected.
+SQL> UPDATE chu.prescriptions SET dose = '4 cp/j' WHERE presc_id = 8;
+UPDATE chu.prescriptions SET dose = '4 cp/j' WHERE presc_id = 8
+           *
+ERROR at line 1:
+ORA-20010: Seul le prescripteur peut modifier sa prescription
+ORA-06512: at "SYS.TRG_CTRL_PRESC", line 27
+ORA-04088: error during execution of trigger 'SYS.TRG_CTRL_PRESC'
+
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> 
+SQL> -- Incident 6 : abus de delegation (ADMIN OPTION)
+SQL> PROMPT === INCIDENT 6 : Delegation - DR_BENALI accorde R_INFIRMIER a SEC_LAHLOU ===
+=== INCIDENT 6 : Delegation - DR_BENALI accorde R_INFIRMIER a SEC_LAHLOU ===
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> GRANT r_infirmier TO sec_lahlou;
+
+Grant succeeded.
+
+SQL> CONNECT sec_lahlou/"Accueil#2026l"@//localhost/FREEPDB1
+ERROR:
+ORA-28000: The account is locked; login denied.
+Help: https://docs.oracle.com/error-help/db/ora-28000/
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> SELECT nom, prenom, diagnostic FROM chu.v_soins WHERE ROWNUM <= 10;
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> 
+SQL> -- Incident 7 : le compte applicatif utilise a la main
+SQL> PROMPT === INCIDENT 7 : APP_CHU connexion directe ===
+=== INCIDENT 7 : APP_CHU connexion directe ===
+SQL> CONNECT app_chu/"ChuApp##Prod2026"@//localhost/FREEPDB1
+Connected.
+SQL> 
+SQL> -- Incident 8 : tentative de vider une table par le developpeur
+SQL> PROMPT === INCIDENT 8 : DEV_CHU tente TRUNCATE ===
+=== INCIDENT 8 : DEV_CHU tente TRUNCATE ===
+SQL> CONNECT dev_chu[chu]/"Deploi#2026d"@//localhost/FREEPDB1
+Connected.
+SQL> TRUNCATE TABLE chu.prescriptions;
+TRUNCATE TABLE chu.prescriptions
+                   *
+ERROR at line 1:
+ORA-04088: error during execution of trigger 'SYS.TRG_DDL_CHU'
+ORA-00604: Error occurred at recursive SQL level 1. Check subsequent errors.
+ORA-20030: Structure protegee : modification DDL interdite sur le schma CHU
+ORA-06512: at line 4
+Help: https://docs.oracle.com/error-help/db/ora-04088/
+
+
+SQL> DISCONNECT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> PROMPt === Incidents executes. Flush trace. ===
+=== Incidents executes. Flush trace. ===
+SQL> BEGIN DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL; EXCEPTION WHEN OTHERS THEN NULL; END;
+  2  EXIT
+  3  EXIT
+  4  Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

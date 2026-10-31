@@ -1,0 +1,126 @@
+\section{Enquête sur les incidents de la nuit (Chapitre 9)}
+
+\subsection{9.1 Les connexions}
+\textbf{Objectif.} Analyser les échecs de connexion et l'état des comptes.
+
+\shots{chu_9_incidents} \shots{chu_9_investigation}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{SEC\_KETTANI} a subi 3 échecs de connexion (\code{ORA-01017}) puis le compte est verrouillé (\code{ORA-28000}). \code{SEC\_LAHLOU} a subi 3 échecs puis \code{ORA-28000}. Les deux comptes sont \code{LOCKED(TIMED)} dans \code{DBA\_USERS}.
+  \item Les échecs sont retrouvés dans \code{UNIFIED\_AUDIT\_TRAIL} (\code{action\_name = 'LOGON'}, \code{return\_code <> 0}, politique \code{ORA\_LOGON\_FAILURES}) avec code retour 1017.
+  \item Le compte applicatif \code{APP\_CHU} a été utilisé : connexion réussie depuis \code{sqlplus} (return\_code 0), puis plusieurs \code{SELECT}/\code{INSERT}. Le \code{TRG\_LOGON} n'a pas bloqué la connexion depuis sqlplus (voir écart 8.4).
+\end{enumerate}
+
+\subsection{9.2 Les accès aux données médicales}
+\textbf{Objectif.} Analyser les accès aux données sensibles.
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{INF\_GHAZI} (infirmier) a tenté \code{SELECT * FROM chu.dossiers\_medicaux} : \code{ORA-00942} (table invisible, aucun privilège). L'accès refusé est tracé dans \code{UNIFIED\_AUDIT\_TRAIL} (politique \code{POL\_CHU\_DOSSIERS}).
+  \item 3 alertes de confidentialité FGA ont été levées par \code{DR\_FASSI} sur \code{chu.dossiers\_medicaux} (politique \code{FGA\_CHU\_CONFIDENTIEL}, colonnes \code{DIAGNOSTIC, ANTECEDENTS, TRAITEMENT} sur lignes \code{confidentiel = 'O'}).
+  \item Aucune secrétaire n'a lu de données de soins : \code{SEC\_KETTANI} et \code{SEC\_LAHLOU} n'ont accès qu'à \code{v\_accueil} (pas de donnée médicale).
+\end{enumerate}
+
+\subsection{9.3 Les modifications}
+\textbf{Objectif.} Analyser les modifications de données et de structure.
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DR\_ALAMI} a modifié le dossier 5 : \code{diagnostic} 'HTA'→'Hypotension', \code{traitement} 'IEC'→'Arrêt des IEC'. \code{DR\_ALAMI} est bien le médecin du séjour 5 (\code{medecin\_id = 1 = DR\_ALAMI}). La modification est journalisée dans \code{JOURNAL\_DOSSIERS}.
+  \item \code{DR\_BENALI} a tenté de modifier la prescription 8 (dose) : refusé par \code{TRG\_CTRL\_PRESC} (\code{ORA-20010}) car il n'est pas le prescripteur. Le refus est journalisé (\code{REFUS\_PRESC}).
+  \item \code{DEV\_CHU} via proxy a tenté \code{TRUNCATE TABLE chu.prescriptions} : bloqué par \code{TRG\_DDL\_CHU} (\code{ORA-20030}). L'opération est journalisée (\code{REFUS\_DDL}, utilisateur proxy \code{CHU}).
+\end{enumerate}
+
+\subsection{9.4 Rapport d'enquête : 8 fiches incidents}
+\textbf{Objectif.} Pour chaque incident, répondre aux 6 questions de l'audit.
+
+\textbf{Observations et réponses.}
+
+\begin{enumerate}
+\item \textbf{Incident 1 : Force brute sur SEC\_KETTANI}
+  \begin{itemize}
+    \item Qui : \code{SEC\_KETTANI} (secrétaire, Urgences), 3 tentatives depuis \code{sqlplus}.
+    \item Quoi : 3 connexions échouées avec mots de passe erronés, puis compte verrouillé.
+    \item Quand : durant la nuit (horodatage dans \code{UNIFIED\_AUDIT\_TRAIL}).
+    \item D'où : \code{sqlplus@325ea919716d} (conteneur Docker).
+    \item Comment : \code{ORA-01017} (mauvais identifiant), puis \code{ORA-28000} (compte verrouillé).
+    \item Résultat : compte \code{LOCKED(TIMED)}, déverrouillage automatique après 30 min (\code{PASSWORD\_LOCK\_TIME}).
+  \end{itemize}
+
+\item \textbf{Incident 2 : Infirmier lit dossiers complets}
+  \begin{itemize}
+    \item Qui : \code{INF\_GHAZI} (infirmier).
+    \item Quoi : \code{SELECT diagnostic FROM chu.dossiers\_medicaux WHERE dossier\_id = 22}.
+    \item Résultat : \code{ORA-00942} (aucun privilège, table invisible).
+  \end{itemize}
+
+\item \textbf{Incident 3 : Médecin lit patients VIP}
+  \begin{itemize}
+    \item Qui : \code{DR\_FASSI} (médecin, Cardiologie).
+    \item Quoi : \code{SELECT} diagnostic/traitement des patients VIP via jointure \code{dossiers\_medicaux} × \code{sejours} × \code{patients}.
+    \item Résultat : 4 lignes lues (dont Naji Kenza, 2 séjours). Alerte FGA levée (colonne \code{DIAGNOSTIC} sur ligne confidentielle).
+  \end{itemize}
+
+\item \textbf{Incident 4 : Modification de dossier d'un autre service}
+  \begin{itemize}
+    \item Qui : \code{DR\_ALAMI} (médecin, Urgences).
+    \item Quoi : \code{UPDATE chu.dossiers\_medicaux SET diagnostic='Hypotension', traitement='Arrêt des IEC' WHERE dossier\_id = 5}.
+    \item Résultat : 1 ligne modifiée, \code{COMMIT}. Journalisé dans \code{JOURNAL\_DOSSIERS} (ancien/nouveau valeurs). \code{DR\_ALAMI} est le médecin du séjour 5.
+  \end{itemize}
+
+\item \textbf{Incident 5 : Modification de prescription d'un confrère}
+  \begin{itemize}
+    \item Qui : \code{DR\_BENALI} (médecin, Cardiologie).
+    \item Quoi : \code{UPDATE chu.prescriptions SET dose = '4 cp/j' WHERE presc\_id = 8}.
+    \item Résultat : \code{ORA-20010} (trigger \code{TRG\_CTRL\_PRESC} bloque : pas le prescripteur). Refus journalisé (\code{REFUS\_PRESC}).
+  \end{itemize}
+
+\item \textbf{Incident 6 : Abus de délégation}
+  \begin{itemize}
+    \item Qui : \code{DR\_BENALI} (chef de service, a \code{R\_INFIRMIER} avec \code{ADMIN OPTION}).
+    \item Quoi : \code{GRANT r\_infirmier TO sec\_lahlou} (réussi), puis \code{SEC\_LAHLOU} tente de lire \code{v\_soins}.
+    \item Résultat : \code{SEC\_LAHLOU} est verrouillé (\code{LOCKED(TIMED)}) depuis l'incident 1, donc la connexion échoue (\code{ORA-28000}). L'abus de délégation est contrecarré par le verrouillage du compte cible.
+  \end{itemize}
+
+\item \textbf{Incident 7 : Compte applicatif utilisé à la main}
+  \begin{itemize}
+    \item Qui : \code{APP\_CHU} (compte technique).
+    \item Quoi : Connexion directe depuis \code{sqlplus} (return\_code 0), puis \code{SELECT}/\code{INSERT}.
+    \item Résultat : Connexion réussie malgré le \code{TRG\_LOGON} qui devrait refuser \code{APP\_CHU} depuis sqlplus. Le \code{WHEN OTHERS THEN NULL} du trigger avale le \code{RAISE\_APPLICATION\_ERROR(-20020)}.
+  \end{itemize}
+
+\item \textbf{Incident 8 : Tentative de vidage de table par le développeur}
+  \begin{itemize}
+    \item Qui : \code{DEV\_CHU} via proxy \code{CHU}.
+    \item Quoi : \code{TRUNCATE TABLE chu.prescriptions}.
+    \item Résultat : \code{ORA-20030} (trigger \code{TRG\_DDL\_CHU} bloque). Table préservée. Opération journalisée (\code{REFUS\_DDL}).
+  \end{itemize}
+\end{enumerate}
+
+\textbf{Table récapitulative :}
+
+\begin{center}
+\small
+\begin{tabular}{|l|l|l|l|}
+\hline
+\textbf{Incident} & \textbf{Empêché par} & \textbf{Révélé par} & \textbf{Gravité} \\
+\hline
+1 & Profil (verrouillage) & Audit unifié (\code{ORA\_LOGON\_FAILURES}) & Moyenne \\
+\hline
+2 & Privilège objet & Audit unifié (\code{POL\_CHU\_DOSSIERS}) & Faible \\
+\hline
+3 & Aucun (accès autorisé) & Audit fin (FGA \code{FGA\_CHU\_CONFIDENTIEL}) & Élevée \\
+\hline
+4 & Aucun (accès autorisé) & Trigger 8.2 (\code{JOURNAL\_DOSSIERS}) & Moyenne \\
+\hline
+5 & Trigger 8.3 (\code{TRG\_CTRL\_PRESC}) & Trigger + audit unifié & Élevée \\
+\hline
+6 & Profil (compte verrouillé) & \code{GRANT} tracé (\code{ORA\_ACCOUNT\_MGMT}) & Moyenne \\
+\hline
+7 & Aucun (bug trigger \code{TRG\_LOGON}) & Audit unifié (\code{LOGON} succès) & Critique \\
+\hline
+8 & Trigger 8.5 (\code{TRG\_DDL\_CHU}) & Trigger + journal \code{REFUS\_DDL} & Critique \\
+\hline
+\end{tabular}
+\end{center}

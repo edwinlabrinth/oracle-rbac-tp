@@ -1,0 +1,22 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:36:43 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> SHOW ERRORS TRIGGER trg_ddl_chu;
+Errors for TRIGGER TRG_DDL_CHU:
+
+LINE/COL ERROR
+-------- -----------------------------------------------------------------
+2/3	 PL/SQL: Statement ignored
+2/34	 PLS-00201: identifier 'ORA_DICTIONARY_OBJ_NAME' must be declared
+6/3	 PL/SQL: Statement ignored
+6/62	 PLS-00201: identifier 'ORA_DICTIONARY_OBJ_OPERATION' must be
+	 declared
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

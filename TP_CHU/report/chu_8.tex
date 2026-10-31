@@ -1,0 +1,66 @@
+\section{Triggers d'audit (Chapitre 8)}
+
+\subsection{8.1 Tables de journal et procédure LOG\_EVT}
+\textbf{Objectif.} Créer \code{JOURNAL\_DOSSIERS}, \code{JOURNAL\_EVENEMENTS} et \code{LOG\_EVT} dans \code{AUDIT\_CHU}.
+
+\shots{chu_8_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{AUDIT\_CHU} reçoit \code{SELECT} sur \code{CHU.PERSONNEL} (directement, pas via rôle, car les triggers s'exécutent avec les privilèges du définisseur et les rôles sont désactivés dans les triggers).
+  \item \code{JOURNAL\_DOSSIERS} : date, utilisateur, proxy, poste, programme, dossier, ancien/nouveau diagnostic, traitement, confidentialité.
+  \item \code{JOURNAL\_EVENEMENTS} : date, type, utilisateur, proxy, poste, programme, objet, détail.
+  \item \code{LOG\_EVT} utilise \code{PRAGMA AUTONOMOUS\_TRANSACTION} : ses insertions survivent à un \code{ROLLBACK} de l'appelant.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{8.2 Trigger de valeurs sur les dossiers (E6)}
+\textbf{Objectif.} Créer \code{TRG\_AUD\_DOSSIERS} : après UPDATE sur \code{diagnostic}, \code{traitement}, \code{confidentiel}, journaliser dans \code{JOURNAL\_DOSSIERS}.
+
+\shots{chu_8_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DR\_FASSI} met à jour \code{traitement} du dossier 5 puis \code{ROLLBACK} : aucune ligne dans le journal (le trigger n'est pas autonome, le \code{ROLLBACK} annule l'insertion).
+  \item \code{DR\_FASSI} met à jour puis \code{COMMIT} : 1 ligne dans le journal avec ancien et nouveau traitement.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{8.3 Trigger de règle métier (E7)}
+\textbf{Objectif.} Créer \code{TRG\_CTRL\_PRESC} : avant UPDATE/DELETE sur \code{PRESCRIPTIONS}, bloquer un médecin qui n'est pas le prescripteur.
+
+\shots{chu_8_3}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DR\_ALAMI} (prescripteur de la prescription 8) : \code{UPDATE} réussit, puis \code{ROLLBACK}.
+  \item \code{DR\_FASSI} (médecin mais pas prescripteur) : \code{ORA-20010} (trigger bloque). Le refus est journalisé via \code{LOG\_EVT} (transaction autonome) donc visible malgré l'erreur.
+  \item \code{PHA\_MANSOURI} (pharmacien) : \code{UPDATE} réussit (pas de déclenchement, pas médecin).
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{8.4 Trigger de connexion (E8)}
+\textbf{Objectif.} Créer \code{TRG\_LOGON} : journaliser les connexions du personnel et d'\code{APP\_CHU}, refuser \code{APP\_CHU} depuis sqlplus/SQL Developer.
+
+\shots{chu_8_4}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DR\_ALAMI} se connecte : \code{LOGON} journalisé dans \code{JOURNAL\_EVENEMENTS}.
+  \item \code{APP\_CHU} se connecte depuis sqlplus : la connexion réussit (le \code{WHEN OTHERS THEN NULL} du trigger avale le \code{RAISE\_APPLICATION\_ERROR(-20020)}).
+\end{enumerate}
+\ecart{Le trigger \code{TRG\_LOGON} a un \code{WHEN OTHERS THEN NULL} qui empêche le \code{RAISE\_APPLICATION\_ERROR(-20020)} de se propager : \code{APP\_CHU} peut se connecter depuis sqlplus malgré la règle. L'alerte \code{REFUS\_LOGON} est journalisée mais la connexion n'est pas bloquée.}
+
+\subsection{8.5 Trigger de protection de structure (E9)}
+\textbf{Objectif.} Créer \code{TRG\_DDL\_CHU} : avant DROP/TRUNCATE sur \code{chu.SCHEMA}, journaliser et lever -20030.
+
+\shots{chu_8_5}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DEV\_CHU} via proxy crée un index : succès (le trigger ne bloque que DROP/TRUNCATE).
+  \item \code{DEV\_CHU} tente \code{TRUNCATE TABLE chu.prescriptions} → \code{ORA-20030} (trigger bloque).
+  \item La table \code{PRESCRIPTIONS} existe encore après la tentative.
+  \item Le journal \code{JOURNAL\_EVENEMENTS} contient l'enregistrement \code{REFUS\_DDL} avec l'utilisateur proxy (\code{CHU}).
+\end{enumerate}
+\ecart{Aucun.}

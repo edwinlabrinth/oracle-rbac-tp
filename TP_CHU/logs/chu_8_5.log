@@ -1,0 +1,101 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 18:36:59 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- chu_8_5.sql : Chapitre 8.5 -- Trigger protection structure (E9)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Nettoyage
+SQL> PROMPT === Nettoyage ===
+=== Nettoyage ===
+SQL> DROP TRIGGER trg_ddl_chu;
+
+Trigger dropped.
+
+SQL> 
+SQL> -- Trigger BEFORE DROP OR TRUNCATE ON chu.SCHEMA
+SQL> PROMPT === Creation de TRG_DDL_CHU ===
+=== Creation de TRG_DDL_CHU ===
+SQL> CREATE OR REPLACE TRIGGER trg_ddl_chu
+  2    BEFORE DROP OR TRUNCATE ON chu.SCHEMA
+  3  BEGIN
+  4    audit_chu.log_evt('REFUS_DDL', 'OBJET_DDL',
+  5  	 'Tentative DDL sur schma CHU par ' || SYS_CONTEXT('USERENV','SESSION_USER'));
+  6    RAISE_APPLICATION_ERROR(-20030, 'Structure protegee : modification DDL interdite sur le schma CHU');
+  7  END;
+  8  /
+
+Trigger created.
+
+SQL> 
+SQL> -- Test : DEV_CHU via proxy cree un index (OK) puis tente TRUNCATE (bloque -20030)
+SQL> CONNECT dev_chu[chu]/"Deploi#2026d"@//localhost/FREEPDB1
+Connected.
+SQL> PROMPT === DEV_CHU : CREATE INDEX sur prescriptions ===
+=== DEV_CHU : CREATE INDEX sur prescriptions ===
+SQL> CREATE INDEX idx_prescriptions_sejour ON chu.prescriptions(sejour_id);
+CREATE INDEX idx_prescriptions_sejour ON chu.prescriptions(sejour_id)
+             *
+ERROR at line 1:
+ORA-00955: name is already used by an existing object
+Help: https://docs.oracle.com/error-help/db/ora-00955/
+
+
+SQL> 
+SQL> PROMPT === DEV_CHU : TRUNCATE TABLE prescriptions (attendu -20030) ===
+=== DEV_CHU : TRUNCATE TABLE prescriptions (attendu -20030) ===
+SQL> TRUNCATE TABLE chu.prescriptions;
+TRUNCATE TABLE chu.prescriptions
+                   *
+ERROR at line 1:
+ORA-04088: error during execution of trigger 'SYS.TRG_DDL_CHU'
+ORA-00604: Error occurred at recursive SQL level 1. Check subsequent errors.
+ORA-20030: Structure protegee : modification DDL interdite sur le schma CHU
+ORA-06512: at line 4
+Help: https://docs.oracle.com/error-help/db/ora-04088/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Verifier le journal
+SQL> COLUMN type_evenement FORMAT A20
+SQL> COLUMN utilisateur FORMAT A15
+SQL> COLUMN objet FORMAT A20
+SQL> COLUMN detail FORMAT A80
+SQL> PROMPt === Journal evenements (REFUS_DDL) ===
+=== Journal evenements (REFUS_DDL) ===
+SQL> SELECT evenement_date, type_evenement, utilisateur, objet, detail
+  2    FROM audit_chu.journal_evenements
+  3   WHERE type_evenement = 'REFUS_DDL'
+  4   ORDER BY evenement_date DESC;
+
+EVENEMENT_DATE	   TYPE_EVENEMENT	UTILISATEUR	OBJET
+------------------ -------------------- --------------- --------------------
+DETAIL
+--------------------------------------------------------------------------------
+31-OCT-26	   REFUS_DDL		CHU		OBJET_DDL
+Tentative DDL sur schma CHU par CHU
+
+
+1 row selected.
+
+SQL> 
+SQL> -- Verifier que la table prescriptions existe encore
+SQL> COLUMN table_name FORMAT A30
+SQL> SELECT table_name FROM dba_tables WHERE table_name = 'PRESCRIPTIONS' AND owner = 'CHU';
+
+TABLE_NAME
+------------------------------
+PRESCRIPTIONS
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,32 @@
+\section{Audit fin (FGA) (Chapitre 7)}
+
+\subsection{7.1 Politique FGA avec gestionnaire d'alerte}
+\textbf{Objectif.} Créer \code{FGA\_CHU\_CONFIDENTIEL} sur \code{chu.dossiers\_medicaux} avec gestionnaire d'alerte.
+
+\shots{chu_7_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Table \code{AUDIT\_CHU.ALERTES} créée (identifiant, date, utilisateur, poste, programme, objet, politique).
+  \item Procédure \code{AUDIT\_CHU.ALERTE\_FGA} créée avec \code{PRAGMA AUTONOMOUS\_TRANSACTION} : elle insère une alerte même si la transaction appelante est annulée.
+  \item Politique \code{FGA\_CHU\_CONFIDENTIEL} : condition \code{confidentiel = 'O'}, colonnes \code{DIAGNOSTIC, ANTECEDENTS, TRAITEMENT}, \code{SELECT, UPDATE}, gestionnaire \code{alerte\_fga}.
+  \item Le gestionnaire doit être en transaction autonome pour que l'alerte survive à un \code{ROLLBACK} de la requête déclenchante.
+  \item Problème rencontré : le handler s'exécute sous le contexte \code{SYS} et ne résout pas \code{audit\_chu.alerte\_fga}. Solution : créer la procédure dans \code{SYS} et l'appeler sans préfixe de schéma (\code{handler\_module => 'alerte\_fga'}).
+\end{enumerate}
+\ecart{L'erreur \code{ORA-28144} (handler introuvable) est survenue car \code{SYS} ne résout pas \code{audit\_chu.alerte\_fga}. Résolu en créant la procédure dans \code{SYS}.}
+
+\subsection{7.2 Tests de déclenchement}
+\textbf{Objectif.} Tester quelles requêtes déclenchent l'alerte FGA.
+
+\shots{chu_7_2} \shots{chu_7_2f}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item (a) \code{SELECT diagnostic WHERE dossier\_id = 5} (\code{confidentiel = 'N'}) : pas d'alerte (colonne \code{confidentiel} pas dans \code{audit\_column}, et ligne non confidentielle).
+  \item (b) \code{SELECT diagnostic WHERE dossier\_id = 22} (\code{confidentiel = 'O'}) : alerte déclenchée (colonne \code{DIAGNOSTIC} lue sur ligne confidentielle).
+  \item (c) \code{SELECT COUNT(*) WHERE confidentiel = 'O'} : pas d'alerte (colonne \code{confidentiel} pas auditée).
+  \item (d) \code{SELECT dossier\_id, maj\_le} : pas d'alerte (colonnes non auditées).
+  \item (e) \code{SELECT *} sur lignes confidentielles : alerte déclenchée.
+  \item 3 alertes dans \code{AUDIT\_CHU.ALERTES} et 9 traces FGA dans \code{UNIFIED\_AUDIT\_TRAIL} (certaines doublons de tests antérieurs).
+\end{enumerate}
+\ecart{Aucun.}

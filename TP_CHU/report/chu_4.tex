@@ -1,0 +1,37 @@
+\section{Privilèges et rôles (Chapitre 4)}
+
+\subsection{4.1 Création des rôles et matrice RBAC}
+\textbf{Objectif.} Créer les 9 rôles de la matrice, construire la hiérarchie et attribuer les rôles aux comptes. Déléguer \code{R\_INFIRMIER} à \code{DR\_BENALI} avec \code{ADMIN OPTION}.
+
+\shots{chu_4_1} \shots{chu_4_3}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Les 9 rôles sont créés : \code{R\_CHU\_CONNEXION}, \code{R\_SECRETAIRE}, \code{R\_INFIRMIER}, \code{R\_MEDECIN}, \code{R\_PHARMACIEN}, \code{R\_COMPTABLE}, \code{R\_DIRECTION}, \code{R\_AUDIT}, \code{R\_APPLI}.
+  \item Hiérarchie : \code{R\_MEDECIN} hérite de \code{R\_INFIRMIER} qui hérite de \code{R\_CHU\_CONNEXION}. Tous les rôles héritent de \code{R\_CHU\_CONNEXION} (sauf \code{R\_AUDIT} et \code{R\_APPLI} qui ont leur propre connexion).
+  \item \code{GRANT r\_infirmier TO dr\_benali WITH ADMIN OPTION} : DIR\_BENALI peut déléguer le rôle d'infirmier.
+  \item Aucun privilège système n'est accordé directement aux comptes métier (conforme à E2).
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{4.3 Campagne de tests des droits}
+\textbf{Objectif.} Exécuter les tests de contrôle d'accès et comparer attendu vs obtenu.
+
+\shots{chu_4_3}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item TEST 1 : \code{SEC\_KETTANI} lit \code{v\_accueil} → 60 lignes (succès).
+  \item TEST 2 : \code{SEC\_KETTANI} lit \code{dossiers\_medicaux} → \code{ORA-00942} (table invisible).
+  \item TEST 3 : \code{SEC\_KETTANI} met à jour \code{patients.cin} → \code{ORA-41900} (colonne non autorisée).
+  \item TEST 4 : \code{INF\_GHAZI} compte \code{v\_soins} → 41 lignes (succès).
+  \item TEST 5 : \code{INF\_GHAZI} met à jour \code{prescriptions.statut} → \code{ORA-41900} (pas de privilège UPDATE).
+  \item TEST 6 : \code{CPT\_OUAZZANI} lit \code{v\_soins} → \code{ORA-00942}.
+  \item TEST 7 : \code{DIR\_RAMI} lit \code{v\_stats\_services} → 6 lignes (succès).
+  \item TEST 8 : \code{DIR\_RAMI} lit \code{patients} → \code{ORA-00942}.
+  \item TEST 9 : \code{DR\_FASSI} lit \code{dossiers\_medicaux} dossier 22 → succès.
+  \item TEST 10 : \code{PHA\_MANSOURI} met à jour \code{prescriptions.statut} → 1 ligne (succès, puis ROLLBACK).
+  \item TEST 11 : \code{DR\_BENALI} a l'\code{ADMIN OPTION} sur \code{R\_INFIRMIER} (délégation vérifiée).
+  \item Aucun privilège système direct n'est accordé aux comptes métier (conforme à E2).
+\end{enumerate}
+\ecart{L'énoncé 19c attend \code{ORA-01031} pour les refus de privilège objet ; en 26ai, c'est \code{ORA-41900} qui est renvoyé. Le comportement est équivalent (refus d'accès).}
