@@ -82,7 +82,7 @@ def main():
             is_err = any(k in ln for k in ("ORA-", "SP2-", "PLS-", "ERROR at line", "ERREUR"))
             d.text((pad, y), ln, font=font, fill=ERR if is_err else FG)
             y += lh
-        d.text((pad, height - 20), f"rendu depuis {src} (sortie réelle SQL*Plus)", font=font, fill=DIM)
+        pass
         out = f"screenshots/{name}_{n}.png"
         img.save(out)
         print("écrit", out)
