@@ -1,0 +1,38 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:55:18 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 3_3_c.sql : Exercice 3.3 -- nettoyage et controle final
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> DROP ROLE r_test;
+
+Role dropped.
+
+SQL> 
+SQL> PROMPT === Lina ne doit plus voir les employes (pas de salaires) ===
+=== Lina ne doit plus voir les employes (pas de salaires) ===
+SQL> CONNECT lina/"Lina#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT COUNT(*) AS employes FROM rh.employes;
+SELECT COUNT(*) AS employes FROM rh.employes
+                                    *
+ERROR at line 1:
+ORA-00942: table or view "RH"."EMPLOYES" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> SELECT COUNT(*) AS annuaire FROM rh.v_annuaire;
+
+  ANNUAIRE
+----------
+	 8
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,160 @@
+\section{Rôles et modèle RBAC}
+
+\subsection{Exercice 3.1 -- Construire la matrice RBAC du service RH}
+\textbf{Objectif.} Mettre en œuvre la matrice RBAC du service RH en créant les rôles métier, en leur
+attribuant les privilèges minimaux et en les affectant aux utilisateurs.
+
+\begin{center}
+\small
+\begin{tabular}{|l|c|c|c|c|c|}
+\hline
+\textbf{Rôle / privilège} & \code{CREATE SESSION} & \code{rh.departements} & \code{rh.v_annuaire} & \code{rh.employes} (cols) & \code{rh.employes} (salaire) \\
+\hline
+\code{R_CONNEXION} & \textbf{Oui} & -- & -- & -- & -- \\
+\hline
+\code{R_RH_LECTEUR} & via \code{R_CONNEXION} & \textbf{SELECT} & \textbf{SELECT} & -- & -- \\
+\hline
+\code{R_RH_GESTION} & via \code{R_CONNEXION} & via \code{LECTEUR} & via \code{LECTEUR} & \textbf{SELECT, INSERT, UPD}(\code{poste},\code{dept_id}) & -- \\
+\hline
+\code{R_RH_PAIE} & via \code{R_CONNEXION} & -- & -- & \textbf{SELECT} & \textbf{UPD}(\code{salaire}) \\
+\hline
+\end{tabular}
+\end{center}
+
+\shots{3_1}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \textbf{LINA} (\code{R\_RH_LECTEUR}) : accède à \code{rh.departements} (4) et \code{rh.v_annuaire}
+        (8), mais \code{SELECT * FROM rh.employes} renvoie \code{ORA-00942}.
+  \item \textbf{OMAR} (\code{R\_RH_GESTION}) : accède à \code{rh.employes} (8), modifie \code{poste} avec
+        succès (\code{1 row updated}), mais la modification de \code{salaire} renvoie \code{ORA-41900: missing
+        UPDATE privilege}. Ses droits directs sur la table et la vue ont tous été révoqués au préalable
+        (\code{DBA_TAB_PRIVS} et \code{DBA_COL_PRIVS} vides pour OMAR).
+  \item \textbf{SARA} (\code{R\_RH_PAIE}) : lit \code{rh.employes}, modifie \code{salaire} avec succès
+        (\code{1 row updated}), mais la modification de \code{poste} renvoie \code{ORA-41900} et l'accès à
+        \code{rh.departements} renvoie \code{ORA-00942}.
+\end{enumerate}
+
+\subsection{Exercice 3.2 -- Lire la hiérarchie dans le dictionnaire}
+\textbf{Objectif.} Interroger le dictionnaire pour reconstituer l'arbre d'héritage des rôles et l'ensemble
+des privilèges effectifs d'un utilisateur.
+
+\shots{3_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{DBA_ROLE_PRIVS WHERE grantee = 'OMAR'} ne renvoie que \code{R_RH_GESTION}. \code{R_RH_LECTEUR}
+        et \code{R_CONNEXION} n'y apparaissent pas directement car ils sont accordés au rôle \code{R_RH_GESTION}
+        et non directement à l'utilisateur OMAR.
+  \item La requête hiérarchique avec \code{START WITH grantee = 'OMAR' CONNECT BY PRIOR granted_role = grantee}
+        déroule l'arbre complet : \code{R_RH_GESTION} $\to$ \code{R_CONNEXION} et \code{R_RH_LECTEUR} $\to$
+        \code{R_CONNEXION}.
+  \item La jointure avec \code{DBA_TAB_PRIVS} / \code{DBA_COL_PRIVS} et l'interrogation de
+        \code{ROLE_TAB_PRIVS} fournissent la liste exhaustive des 6 privilèges objet dont dispose OMAR
+        via la hiérarchie des rôles.
+\end{enumerate}
+
+\subsection{Exercice 3.3 -- Effet immédiat ou à la reconnexion ?}
+\textbf{Objectif.} Analyser le comportement des sessions ouvertes lors de la modification des privilèges
+d'un rôle ou de l'attribution d'un nouveau rôle.
+
+\shots{3_3_a}
+\shots{3_3_b}
+\shots{3_3_c}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \textbf{Étape 1} : quand l'administrateur accorde \code{SELECT ON rh.employes} au rôle
+        \code{R_RH_LECTEUR}, la session de LINA déjà ouverte voit immédiatement la table (\code{8}) sans
+        se reconnecter. Les privilèges objet portés par un rôle actif sont réévalués dynamiquement à l'exécution.
+  \item \textbf{Étape 2} : après révocation du droit sur \code{R_RH_LECTEUR} et attribution du rôle
+        \code{R_TEST} à LINA, le \code{SELECT} dans la même session échoue (\code{ORA-00942}). Le nouveau rôle
+        accordé n'est pas actif dans une session déjà ouverte. Après \code{SET ROLE ALL}, le rôle s'active
+        et la requête réussit (\code{8}). Après reconnexion, la requête réussit aussi.
+  \item \textbf{Conclusion} : lors du départ d'un collaborateur, révoquer ses rôles ne suffit pas ; ses
+        sessions ouvertes conservent leurs rôles actifs jusqu'à leur fermeture. Il faut obligatoirement
+        \textbf{tuer les sessions ouvertes} avec \code{ALTER SYSTEM KILL SESSION} pour rendre la révocation
+        immédiatement effective.
+\end{enumerate}
+
+\subsection{Exercice 3.4 -- Rôle protégé et rôles par défaut}
+\textbf{Objectif.} Protéger le rôle de la paie par mot de passe et gérer les rôles par défaut.
+
+\shots{3_4}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Après \code{ALTER ROLE r_rh_paie IDENTIFIED BY "Paie#2026"}, la tentative de connexion de Sara
+        renvoie \code{ORA-01045: Login denied}. Le rôle protégé par mot de passe n'est plus activé
+        automatiquement à la connexion ; comme Sara ne possédait \code{CREATE SESSION} que via
+        \code{R_RH_PAIE}, elle ne peut plus ouvrir de session.
+  \item Pour corriger, l'administrateur accorde \code{R_CONNEXION} directement à Sara et définit
+        \code{ALTER USER sara DEFAULT ROLE r_connexion}. Sara se connecte alors avec le seul rôle
+        \code{R_CONNEXION} actif ; l'accès à \code{rh.employes} renvoie \code{ORA-00942}.
+  \item Sara tente \code{SET ROLE r_rh_paie IDENTIFIED BY "mauvais"} $\to$ \code{ORA-01979: missing or
+        invalid password for role "R_RH_PAIE"}. Avec le bon mot de passe (\code{Paie#2026}), le rôle
+        s'active (\code{Role set.}) et Sara peut à nouveau lire les employés et modifier leurs salaires.
+\end{enumerate}
+
+\ecart{Dans l'énoncé 19c, le rôle par défaut restait activé sans mot de passe à la connexion. En 26ai, un
+rôle protégé par mot de passe n'est pas activé automatiquement s'il est le seul vecteur de connexion, ce qui
+a provoqué \code{ORA-01045} jusqu'à l'octroi direct de \code{R_CONNEXION}.}
+
+\subsection{Exercice 3.5 -- Le piège des rôles dans le code}
+\textbf{Objectif.} Comprendre pourquoi les unités PL/SQL nommées (droits du définisseur) et les vues ignorent
+les privilèges reçus par rôles.
+
+\shots{3_5}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Bien qu'OMAR puisse exécuter \code{SELECT * FROM rh.employes} en SQL direct, la compilation de la
+        fonction \code{nb_employes} échoue avec \code{PLS- / ORA-00942: table or view "RH"."EMPLOYES" does
+        not exist}. De même, la création de la vue \code{v_effectif} renvoie \code{ORA-41904: Missing object
+        privilege on "RH"."EMPLOYES" to create a view}.
+  \item \textbf{Raison} : en PL/SQL à droits du définisseur (défaut) et pour la création de vues, le SGBD
+        désactive les rôles lors de la compilation pour garantir la stabilité et la sécurité du code.
+        Seuls les privilèges accordés \textbf{directement} à l'utilisateur sont pris en compte.
+  \item L'option \code{AUTHID CURRENT_USER} a aussi échoué à la compilation en 26ai : le contrôle du SQL
+        statique à la compilation exige que l'objet soit accessible au définisseur.
+  \item \textbf{Correction la plus restreinte} : \code{GRANT SELECT ON rh.employes TO omar}. Ce privilège
+        direct permet à la fonction de compiler sans erreur (\code{Function created.}) et à la vue d'être
+        créée (\code{View created.}). C'est une exception assumée au principe RBAC pur.
+\end{enumerate}
+
+\subsection{Exercice 3.6 -- Que contiennent CONNECT et RESOURCE ?}
+\textbf{Objectif.} Examiner le contenu des rôles système prédéfinis \code{CONNECT} et \code{RESOURCE}.
+
+\shots{3_6}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{ROLE_SYS_PRIVS} montre : \code{CONNECT} contient \code{CREATE SESSION} et \code{SET CONTAINER}
+        (2 privilèges). \code{RESOURCE} contient 15 privilèges de création (\code{CREATE TABLE}, \code{CREATE
+        PROCEDURE}, \code{CREATE SEQUENCE}, \code{CREATE TRIGGER}, \code{CREATE TYPE}, etc.), mais
+        \textbf{pas de quota} sur aucun tablespace.
+  \item L'utilisateur \code{TEST_RES} doté de \code{CONNECT, RESOURCE} crée sa table \code{t_res}, mais
+        l'insertion d'une ligne échoue avec \code{ORA-01950: insufficient quota on tablespace USERS}. Il
+        lui manque un quota explicite (\code{UNLIMITED TABLESPACE} ayant été retiré de \code{RESOURCE}).
+  \item Ces rôles historiques ne doivent pas servir de base à une politique RBAC d'entreprise : ils sont
+        trop larges, figés, accordent des droits inutiles (ex: \code{CREATE CLUSTER}, \code{CREATE OPERATOR})
+        et varient selon la version de la base sans correspondre aux métiers de l'organisation.
+\end{enumerate}
+
+\subsection{Exercice 3.7 -- Analyse des privilèges (DBMS\_PRIVILEGE\_CAPTURE)}
+\textbf{Objectif.} Capturer les privilèges réellement utilisés par un utilisateur avec le package système.
+
+\shots{3_7}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item La capture \code{cap_omar} (\code{type => G_CONTEXT}, \code{condition => 'SESSION_USER = OMAR'})
+        s'est créée (\code{CREATE_CAPTURE}), activée (\code{ENABLE_CAPTURE}) et désactivée
+        (\code{DISABLE_CAPTURE}) sans erreur.
+  \item Après \code{GENERATE_RESULT}, la consultation des vues \code{DBA_USED_OBJPRIVS} et
+        \code{DBA_UNUSED_OBJPRIVS} est fonctionnelle (colonnes \code{CAPTURE}, \code{USERNAME},
+        \code{USED_ROLE}, \code{OBJ_PRIV}, \code{OBJECT_NAME}).
+  \item Cet outil permet en production d'analyser l'activité réelle d'un compte sur une période donnée pour
+        retirer les privilèges inutilisés et appliquer rigoureusement le principe du moindre privilège.
+\end{enumerate}

@@ -1,0 +1,255 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:54:30 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 3_1.sql : Exercice 3.1 -- Construire la matrice RBAC du service RH
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 2. Comptes LINA et SARA, et retrait des droits directs d'OMAR (chapitre 2)
+SQL> CREATE USER lina IDENTIFIED BY "Lina#2026";
+
+User created.
+
+SQL> CREATE USER sara IDENTIFIED BY "Sara#2026";
+
+User created.
+
+SQL> 
+SQL> REVOKE CREATE SESSION FROM omar;
+
+Revoke succeeded.
+
+SQL> REVOKE SELECT ON rh.v_annuaire FROM omar;
+
+Revoke succeeded.
+
+SQL> REVOKE UPDATE ON rh.v_annuaire FROM omar;
+
+Revoke succeeded.
+
+SQL> 
+SQL> -- 3. Roles et alimentation
+SQL> CREATE ROLE r_connexion;
+
+Role created.
+
+SQL> GRANT CREATE SESSION TO r_connexion;
+
+Grant succeeded.
+
+SQL> 
+SQL> CREATE ROLE r_rh_lecteur;
+
+Role created.
+
+SQL> GRANT SELECT ON rh.departements TO r_rh_lecteur;
+
+Grant succeeded.
+
+SQL> GRANT SELECT ON rh.v_annuaire TO r_rh_lecteur;
+
+Grant succeeded.
+
+SQL> GRANT r_connexion TO r_rh_lecteur;
+
+Grant succeeded.
+
+SQL> 
+SQL> CREATE ROLE r_rh_gestion;
+
+Role created.
+
+SQL> GRANT r_rh_lecteur TO r_rh_gestion;
+
+Grant succeeded.
+
+SQL> GRANT SELECT, INSERT ON rh.employes TO r_rh_gestion;
+
+Grant succeeded.
+
+SQL> GRANT UPDATE (poste, dept_id) ON rh.employes TO r_rh_gestion;
+
+Grant succeeded.
+
+SQL> GRANT r_connexion TO r_rh_gestion;
+
+Grant succeeded.
+
+SQL> 
+SQL> CREATE ROLE r_rh_paie;
+
+Role created.
+
+SQL> GRANT SELECT ON rh.employes TO r_rh_paie;
+
+Grant succeeded.
+
+SQL> GRANT UPDATE (salaire) ON rh.employes TO r_rh_paie;
+
+Grant succeeded.
+
+SQL> GRANT r_connexion TO r_rh_paie;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- Attribution aux utilisateurs
+SQL> GRANT r_rh_lecteur TO lina;
+
+Grant succeeded.
+
+SQL> GRANT r_rh_gestion TO omar;
+
+Grant succeeded.
+
+SQL> GRANT r_rh_paie TO sara;
+
+Grant succeeded.
+
+SQL> 
+SQL> -- 4. Verification par compte
+SQL> PROMPT ================= LINA =================
+================= LINA =================
+SQL> CONNECT lina/"Lina#2026"@//localhost/FREEPDB1
+Connected.
+SQL> COLUMN role FORMAT A20
+SQL> SELECT role FROM session_roles ORDER BY role;
+
+ROLE
+--------------------
+R_CONNEXION
+R_RH_LECTEUR
+
+2 rows selected.
+
+SQL> SELECT COUNT(*) AS departements FROM rh.departements;
+
+DEPARTEMENTS
+------------
+	   4
+
+1 row selected.
+
+SQL> SELECT COUNT(*) AS annuaire FROM rh.v_annuaire;
+
+  ANNUAIRE
+----------
+	 8
+
+1 row selected.
+
+SQL> SELECT COUNT(*) AS employes_salaires FROM rh.employes;
+SELECT COUNT(*) AS employes_salaires FROM rh.employes
+                                             *
+ERROR at line 1:
+ORA-00942: table or view "RH"."EMPLOYES" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> PROMPT ================= OMAR =================
+================= OMAR =================
+SQL> CONNECT omar/"Omar#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT role FROM session_roles ORDER BY role;
+
+ROLE
+--------------------
+R_CONNEXION
+R_RH_GESTION
+R_RH_LECTEUR
+
+3 rows selected.
+
+SQL> SELECT COUNT(*) AS employes FROM rh.employes;
+
+  EMPLOYES
+----------
+	 8
+
+1 row selected.
+
+SQL> UPDATE rh.employes SET poste = 'Architecte' WHERE emp_id = 3;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> UPDATE rh.employes SET salaire = 99999 WHERE emp_id = 3;
+UPDATE rh.employes SET salaire = 99999 WHERE emp_id = 3
+          *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "RH"."EMPLOYES"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> PROMPT ================= SARA =================
+================= SARA =================
+SQL> CONNECT sara/"Sara#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT role FROM session_roles ORDER BY role;
+
+ROLE
+--------------------
+R_CONNEXION
+R_RH_PAIE
+
+2 rows selected.
+
+SQL> SELECT COUNT(*) AS employes FROM rh.employes;
+
+  EMPLOYES
+----------
+	 8
+
+1 row selected.
+
+SQL> UPDATE rh.employes SET salaire = 99999 WHERE emp_id = 3;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> UPDATE rh.employes SET poste = 'Architecte' WHERE emp_id = 3;
+UPDATE rh.employes SET poste = 'Architecte' WHERE emp_id = 3
+          *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "RH"."EMPLOYES"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> SELECT COUNT(*) AS departements FROM rh.departements;
+SELECT COUNT(*) AS departements FROM rh.departements
+                                        *
+ERROR at line 1:
+ORA-00942: table or view "RH"."DEPARTEMENTS" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> PROMPT ================= Etat des droits directs d'OMAR =================
+================= Etat des droits directs d'OMAR =================
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> SELECT owner, table_name, privilege, grantee
+  2    FROM dba_tab_privs WHERE grantee = 'OMAR';
+
+no rows selected
+
+SQL> SELECT owner, table_name, column_name, privilege, grantee
+  2    FROM dba_col_privs WHERE grantee = 'OMAR';
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

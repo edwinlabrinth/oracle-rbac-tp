@@ -1,0 +1,70 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 01:25:23 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 4_1_third.sql : Exercice 4.1 (partie 2) -- trois sessions puis inactivite
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Session numero 3 de LINA (les deux autres sont ouvertes en parallele : 4_1_a, 4_1_b)
+SQL> PROMPT === Troisieme tentative de connexion de LINA (doit echouer) ===
+=== Troisieme tentative de connexion de LINA (doit echouer) ===
+SQL> CONNECT lina/"Lina#2026"@//localhost/FREEPDB1
+ERROR:
+ORA-02391: exceeded simultaneous SESSIONS_PER_USER limit
+Help: https://docs.oracle.com/error-help/db/ora-02391/
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> 
+SQL> -- On libere les deux sessions de fond de LINA pour pouvoir continuer
+SQL> PROMPT === Liste et terminaison des sessions LINA ===
+=== Liste et terminaison des sessions LINA ===
+SQL> COLUMN sid FORMAT A8
+SQL> COLUMN serial# FORMAT A8
+SQL> SELECT sid, serial#, status FROM v$session WHERE username = 'LINA';
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> BEGIN
+  2    FOR r IN (SELECT sid, serial# FROM v$session WHERE username = 'LINA') LOOP
+  3  	 EXECUTE IMMEDIATE 'ALTER SYSTEM KILL SESSION ''' || r.sid || ',' || r.serial# || ''' IMMEDIATE';
+  4    END LOOP;
+  5  END;
+  6  /
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> 
+SQL> -- Test d'inactivite (IDLE_TIME = 1 minute)
+SQL> PROMPT === Session LINA inactive puis requete (doit donner ORA-02396) ===
+=== Session LINA inactive puis requete (doit donner ORA-02396) ===
+SQL> CONNECT lina/"Lina#2026"@//localhost/FREEPDB1
+ERROR:
+ORA-02391: exceeded simultaneous SESSIONS_PER_USER limit
+Help: https://docs.oracle.com/error-help/db/ora-02391/
+
+
+SQL> HOST sleep 70
+
+SQL> SELECT 1 AS test_inactivite FROM dual;
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> 
+SQL> PROMPT === Statut de la session LINA dans V$SESSION ===
+=== Statut de la session LINA dans V$SESSION ===
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> SELECT sid, serial#, status, last_call_et FROM v$session WHERE username = 'LINA';
+
+       SID    SERIAL# STATUS   LAST_CALL_ET
+---------- ---------- -------- ------------
+########## ########## ACTIVE		 75
+########## ########## ACTIVE		 75
+
+2 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

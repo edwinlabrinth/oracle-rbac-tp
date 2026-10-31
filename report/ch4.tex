@@ -1,0 +1,120 @@
+\section{Profils}
+
+\subsection{Exercice 4.1 -- Profil de ressources}
+\textbf{Objectif.} Vérifier \code{RESOURCE\_LIMIT}, créer le profil \code{P\_RH\_TEST}
+(\code{SESSIONS\_PER\_USER 2}, \code{IDLE\_TIME 1}) et l'attribuer à LINA, puis observer
+les limites de sessions simultanées et d'inactivité.
+
+\shots{4_1_setup}
+\shots{4_1_a}
+\shots{4_1_b}
+\shots{4_1_third}
+\shots{4_1_idle}
+\shots{4_1_idle_status}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{RESOURCE\_LIMIT} vaut \code{TRUE} : les limites de profil sont appliquées.
+  \item Le profil \code{P\_RH\_TEST} est créé avec \code{SESSIONS\_PER\_USER = 2} et
+        \code{IDLE\_TIME = 1} (1 minute), puis attribué à LINA.
+  \item La troisième session LINA renvoie \code{ORA-02391: exceeded simultaneous
+        SESSIONS\_PER\_USER limit} : le plafond de 2 sessions simultanées est respecté.
+  \item Après \code{HOST sleep 150} (> IDLE\_TIME 1 minute), la requête renvoie
+        \code{ORA-02396: exceeded maximum idle time, please connect again}. Pendant
+        l'attente, le DBA voit la session LINA en statut \code{ACTIVE} dans \code{V\$SESSION},
+        puis elle disparaît (\emph{sniped} par Oracle).
+  \item Dans \code{DBA\_PROFILES}, la valeur \code{DEFAULT} dans la colonne \code{LIMIT}
+        signifie que le paramètre reprend la valeur définie dans le profil \code{DEFAULT}.
+\end{enumerate}
+\ecart{Aucun. Le comportement est conforme à l'énoncé.}
+
+\subsection{Exercice 4.2 -- Verrouillage après échecs}
+\textbf{Objectif.} Configurer le verrouillage de compte après échecs de connexion
+(\code{FAILED\_LOGIN\_ATTEMPTS 3}, \code{PASSWORD\_LOCK\_TIME 2/1440}) et en observer
+l'effet ainsi que le déverrouillage automatique.
+
+\shots{4_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Les trois premières connexions LINA avec un mauvais mot de passe renvoient
+        \code{ORA-01017}. La quatrième, avec le bon mot de passe, renvoie
+        \code{ORA-28000: The account is locked; login denied.} Le compte est verrouillé.
+  \item \code{DBA\_USERS} affiche \code{ACCOUNT\_STATUS = LOCKED(TIMED)} avec un
+        \code{LOCK\_DATE} renseigné.
+  \item Après une attente de 130 secondes (> 2 minutes de \code{PASSWORD\_LOCK\_TIME}),
+        la reconnexion de LINA réussit : le déverrouillage est automatique.
+\end{enumerate}
+\ecart{Aucun. Conforme à l'énoncé.}
+
+\subsection{Exercice 4.3 -- Expiration, grâce et réutilisation}
+\textbf{Objectif.} Configurer la réutilisation des mots de passe
+(\code{PASSWORD\_REUSE\_TIME 30}, \code{PASSWORD\_REUSE\_MAX 3}), puis tester l'expiration
+et la période de grâce avec \code{PASSWORD\_LIFE\_TIME} et \code{PASSWORD\_GRACE\_TIME}
+réglés à 1 minute.
+
+\shots{4_3}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Les règles \code{PASSWORD\_REUSE\_TIME = 30} et \code{PASSWORD\_REUSE\_MAX = 3}
+        sont appliquées à \code{P\_RH\_TEST}.
+  \item LINA change son mot de passe, puis tente de reprendre l'ancien immédiatement :
+        la reprise a \textbf{réussi} (pas de \code{ORA-28007}) : l'historique de
+        réutilisation n'a pas bloqué la réutilisation immédiate dans ce contexte.
+        \ecart{L'énoncé 19c attend un refus (ORA-28007) en réutilisant l'ancien mot de
+        passe ; en 26ai la reprise a fonctionné. Cela est consigné tel quel dans le log.}
+  \item Avec \code{PASSWORD\_LIFE\_TIME = 1/1440} et \code{PASSWORD\_GRACE\_TIME =
+        1/1440} : après 1 minute, la connexion est acceptée avec l'avertissement
+        \code{ORA-28098} et \code{ACCOUNT\_STATUS = EXPIRED(GRACE)}. Après 2 minutes
+        supplémentaires, la connexion renvoie \code{ORA-28001} et le compte passe en
+        \code{EXPIRED}.
+  \item Restauration à \code{PASSWORD\_LIFE\_TIME 90} / \code{PASSWORD\_GRACE\_TIME 7} :
+        LINA reçoit un mot de passe neuf (\code{Lina\#2032}) et repasse en \code{OPEN}.
+\end{enumerate}
+
+\subsection{Exercice 4.4 -- Complexité des mots de passe}
+\textbf{Objectif.} Associer une fonction de vérification de complexité
+(\code{ORA12C\_VERIFY\_FUNCTION}) au profil et observer le rejet des mots de passe faibles
+ainsi que l'obligation de la clause \code{REPLACE}.
+
+\shots{4_4}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{ORA12C\_VERIFY\_FUNCTION} existe bien (objet \code{FUNCTION} propriétaire
+        \code{SYS}). Elle est associée à \code{P\_RH\_TEST}.
+  \item Tentatives de mots de passe faibles (\code{lina}, \code{abcdefgh},
+        \code{Lina2026x}) sans clause \code{REPLACE} : toutes renvoient
+        \code{ORA-28221: REPLACE clause not specified}. Quand une fonction de vérification
+        est définie, Oracle exige la clause \code{REPLACE} avant d'évaluer la complexité.
+  \item Le mot de passe \code{Lina\#2033} (contient le nom d'utilisateur) renvoie
+        \code{ORA-28003: password contains the user name}, même avec la clause
+        \code{REPLACE}.
+\end{enumerate}
+\ecart{L'énoncé 19c attend \code{ORA-28003} pour les mots de passe faibles. En 26ai, sans
+clause \code{REPLACE}, c'est \code{ORA-28221} qui est renvoyé en premier (exigence de la
+clause REPLACE liée à la fonction de vérification). Le mot de passe de LINA reste
+\code{Lina\#2032} (compte \code{OPEN}).}
+
+\subsection{Exercice 4.5 -- Profil de production et synthèse}
+\textbf{Objectif.} Créer un profil de production \code{P\_RH\_STANDARD}, le déployer sur
+LINA, OMAR et SARA, supprimer \code{P\_RH\_TEST} avec \code{CASCADE} et observer le sort
+des utilisateurs concernés.
+
+\shots{4_5}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Le profil \code{P\_RH\_STANDARD} est créé avec des limites de production
+        (\code{SESSIONS\_PER\_USER 2}, \code{IDLE\_TIME 30}, \code{FAILED\_LOGIN\_ATTEMPTS
+        3}, \code{PASSWORD\_LIFE\_TIME 90}, \code{PASSWORD\_REUSE\_TIME 365},
+        \code{PASSWORD\_VERIFY\_FUNCTION ORA12C\_VERIFY\_FUNCTION}, etc.).
+  \item \code{DROP PROFILE p\_rh\_test CASCADE} supprime le profil et réaffecte
+        automatiquement LINA, OMAR et SARA au profil \code{DEFAULT} (visible dans
+        \code{DBA\_USERS}). Un utilisateur dont le profil est supprimé avec
+        \code{CASCADE} retombe donc sur le profil \code{DEFAULT}.
+  \item Les trois utilisateurs sont ensuite passés sur \code{P\_RH\_STANDARD} ; leur
+        \code{ACCOUNT\_STATUS} reste \code{OPEN}.
+\end{enumerate}
+\ecart{Aucun. Conforme à l'énoncé.}

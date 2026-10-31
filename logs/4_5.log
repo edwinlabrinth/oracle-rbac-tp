@@ -1,0 +1,137 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 15:59:01 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 4_5.sql : Exercice 4.5 -- Profil de production P_RH_STANDARD et synthese
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- Creation du profil de production P_RH_STANDARD (de l'atelier 4.1 : limites raisonnables)
+SQL> PROMPT === Creation du profil P_RH_STANDARD ===
+=== Creation du profil P_RH_STANDARD ===
+SQL> CREATE PROFILE p_rh_standard LIMIT
+  2    SESSIONS_PER_USER 2
+  3    IDLE_TIME 30
+  4    FAILED_LOGIN_ATTEMPTS 3
+  5    PASSWORD_LOCK_TIME 1/1440
+  6    PASSWORD_LIFE_TIME 90
+  7    PASSWORD_GRACE_TIME 7
+  8    PASSWORD_REUSE_TIME 365
+  9    PASSWORD_REUSE_MAX 5
+ 10    PASSWORD_VERIFY_FUNCTION ORA12C_VERIFY_FUNCTION;
+
+Profile created.
+
+SQL> 
+SQL> COLUMN profile FORMAT A16
+SQL> COLUMN resource_name FORMAT A30
+SQL> COLUMN limit FORMAT A14
+SQL> PROMPT === Parametres de P_RH_STANDARD ===
+=== Parametres de P_RH_STANDARD ===
+SQL> SELECT profile, resource_name, limit
+  2    FROM dba_profiles
+  3   WHERE profile = 'P_RH_STANDARD'
+  4   ORDER BY resource_name;
+
+PROFILE 	 RESOURCE_NAME			LIMIT
+---------------- ------------------------------ --------------
+P_RH_STANDARD	 COMPOSITE_LIMIT		DEFAULT
+P_RH_STANDARD	 CONNECT_TIME			DEFAULT
+P_RH_STANDARD	 CPU_PER_CALL			DEFAULT
+P_RH_STANDARD	 CPU_PER_SESSION		DEFAULT
+P_RH_STANDARD	 FAILED_LOGIN_ATTEMPTS		3
+P_RH_STANDARD	 IDLE_TIME			30
+P_RH_STANDARD	 INACTIVE_ACCOUNT_TIME		DEFAULT
+P_RH_STANDARD	 LOGICAL_READS_PER_CALL 	DEFAULT
+P_RH_STANDARD	 LOGICAL_READS_PER_SESSION	DEFAULT
+P_RH_STANDARD	 PASSWORD_GRACE_TIME		7
+P_RH_STANDARD	 PASSWORD_LIFE_TIME		90
+P_RH_STANDARD	 PASSWORD_LOCK_TIME		.0006
+P_RH_STANDARD	 PASSWORD_REUSE_MAX		5
+P_RH_STANDARD	 PASSWORD_REUSE_TIME		365
+P_RH_STANDARD	 PASSWORD_ROLLOVER_TIME 	DEFAULT
+P_RH_STANDARD	 PASSWORD_VERIFY_FUNCTION	ORA12C_VERIFY_
+						FUNCTION
+
+P_RH_STANDARD	 PRIVATE_SGA			DEFAULT
+P_RH_STANDARD	 SESSIONS_PER_USER		2
+
+18 rows selected.
+
+SQL> 
+SQL> -- Suppression de P_RH_TEST avec CASCADE : LINA retombe sur le profil DEFAULT
+SQL> PROMPT === Suppression de P_RH_TEST avec CASCADE ===
+=== Suppression de P_RH_TEST avec CASCADE ===
+SQL> DROP PROFILE p_rh_test CASCADE;
+
+Profile dropped.
+
+SQL> 
+SQL> COLUMN username FORMAT A12
+SQL> COLUMN profile FORMAT A14
+SQL> COLUMN account_status FORMAT A18
+SQL> COLUMN expiry_date FORMAT A16
+SQL> PROMPt === Profils des utilisateurs apres suppression de P_RH_TEST (LINA sur DEFAULT) ===
+=== Profils des utilisateurs apres suppression de P_RH_TEST (LINA sur DEFAULT) ===
+SQL> SELECT username, profile, account_status, expiry_date
+  2    FROM dba_users
+  3   WHERE username IN ('LINA','OMAR','SARA')
+  4   ORDER BY username;
+
+USERNAME     PROFILE	    ACCOUNT_STATUS     EXPIRY_DATE
+------------ -------------- ------------------ ----------------
+LINA	     DEFAULT	    OPEN
+OMAR	     DEFAULT	    OPEN
+SARA	     DEFAULT	    OPEN
+
+3 rows selected.
+
+SQL> 
+SQL> -- Affectation de P_RH_STANDARD à LINA, OMAR, SARA
+SQL> PROMPT === Affectation de P_RH_STANDARD à LINA, OMAR, SARA ===
+=== Affectation de P_RH_STANDARD à LINA, OMAR, SARA ===
+SQL> ALTER USER lina PROFILE p_rh_standard;
+
+User altered.
+
+SQL> ALTER USER omar PROFILE p_rh_standard;
+
+User altered.
+
+SQL> ALTER USER sara PROFILE p_rh_standard;
+
+User altered.
+
+SQL> 
+SQL> PROMPT === Profils finaux (utilisateurs non Oracle) ===
+=== Profils finaux (utilisateurs non Oracle) ===
+SQL> SELECT username, profile, account_status, expiry_date
+  2    FROM dba_users
+  3   WHERE oracle_maintained = 'N'
+  4   ORDER BY username;
+
+USERNAME     PROFILE	    ACCOUNT_STATUS     EXPIRY_DATE
+------------ -------------- ------------------ ----------------
+A1	     DEFAULT	    OPEN
+A2	     DEFAULT	    OPEN
+BOB	     DEFAULT	    OPEN
+C##SUPERVISE DEFAULT	    OPEN
+UR
+
+DEV1	     DEFAULT	    OPEN
+LECTEUR1     DEFAULT	    OPEN
+LINA	     P_RH_STANDARD  OPEN	       29-JAN-27
+OMAR	     P_RH_STANDARD  OPEN	       27-JAN-27
+PDBADMIN     DEFAULT	    OPEN
+RH	     DEFAULT	    OPEN
+SARA	     P_RH_STANDARD  OPEN	       27-JAN-27
+TEST_RES     DEFAULT	    OPEN
+
+12 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

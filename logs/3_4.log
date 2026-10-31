@@ -1,0 +1,128 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 00:55:29 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 3_4.sql : Exercice 3.4 -- Role protege et roles par defaut
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> -- 1. Protection du role par mot de passe
+SQL> ALTER ROLE r_rh_paie IDENTIFIED BY "Paie#2026";
+
+Role altered.
+
+SQL> 
+SQL> PROMPT === Sara se reconnecte : le role par defaut est-il actif sans mot de passe ? ===
+=== Sara se reconnecte : le role par defaut est-il actif sans mot de passe ? ===
+SQL> CONNECT sara/"Sara#2026"@//localhost/FREEPDB1
+ERROR:
+ORA-01045: Login denied. User SARA does not have CREATE SESSION privilege.
+Help: https://docs.oracle.com/error-help/db/ora-01045/
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> COLUMN role FORMAT A20
+SQL> SELECT role FROM session_roles ORDER BY role;
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> SELECT COUNT(*) AS employes FROM rh.employes;
+SP2-0640: Not connected
+Help: https://docs.oracle.com/error-help/db/sp2-0640/
+SQL> 
+SQL> -- 2. Seul R_CONNEXION actif a la connexion de Sara
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> GRANT r_connexion TO sara;
+
+Grant succeeded.
+
+SQL> ALTER USER sara DEFAULT ROLE r_connexion;
+
+User altered.
+
+SQL> 
+SQL> COLUMN granted_role FORMAT A20
+SQL> COLUMN default_role FORMAT A12
+SQL> PROMPT === DBA_ROLE_PRIVS pour SARA ===
+=== DBA_ROLE_PRIVS pour SARA ===
+SQL> SELECT granted_role, default_role
+  2    FROM dba_role_privs WHERE grantee = 'SARA'
+  3   ORDER BY granted_role;
+
+GRANTED_ROLE	     DEFAULT_ROLE
+-------------------- ------------
+R_CONNEXION	     YES
+R_RH_PAIE	     NO
+
+2 rows selected.
+
+SQL> 
+SQL> PROMPT === Sara apres restriction des roles par defaut ===
+=== Sara apres restriction des roles par defaut ===
+SQL> CONNECT sara/"Sara#2026"@//localhost/FREEPDB1
+Connected.
+SQL> SELECT role FROM session_roles ORDER BY role;
+
+ROLE
+--------------------
+R_CONNEXION
+
+1 row selected.
+
+SQL> SELECT COUNT(*) AS employes FROM rh.employes;
+SELECT COUNT(*) AS employes FROM rh.employes
+                                    *
+ERROR at line 1:
+ORA-00942: table or view "RH"."EMPLOYES" does not exist
+Help: https://docs.oracle.com/error-help/db/ora-00942/
+
+
+SQL> 
+SQL> -- 3. Activation du role protege : mauvais mot de passe puis bon mot de passe
+SQL> PROMPT === SET ROLE avec un mauvais mot de passe ===
+=== SET ROLE avec un mauvais mot de passe ===
+SQL> SET ROLE r_rh_paie IDENTIFIED BY "mauvais";
+SET ROLE r_rh_paie IDENTIFIED BY "mauvais"
+*
+ERROR at line 1:
+ORA-01979: missing or invalid password for role "R_RH_PAIE"
+Help: https://docs.oracle.com/error-help/db/ora-01979/
+
+
+SQL> PROMPT === SET ROLE avec le bon mot de passe ===
+=== SET ROLE avec le bon mot de passe ===
+SQL> SET ROLE r_rh_paie IDENTIFIED BY "Paie#2026";
+
+Role set.
+
+SQL> SELECT role FROM session_roles ORDER BY role;
+
+ROLE
+--------------------
+R_CONNEXION
+R_RH_PAIE
+
+2 rows selected.
+
+SQL> SELECT COUNT(*) AS employes FROM rh.employes;
+
+  EMPLOYES
+----------
+	 8
+
+1 row selected.
+
+SQL> UPDATE rh.employes SET salaire = 99999 WHERE emp_id = 3;
+
+1 row updated.
+
+SQL> ROLLBACK;
+
+Rollback complete.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

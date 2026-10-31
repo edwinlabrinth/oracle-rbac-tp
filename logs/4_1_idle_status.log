@@ -1,0 +1,20 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 01:32:17 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 4_1_idle_status.sql : statut V$SESSION de LINA apres le snipe d'inactivite
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> COLUMN sid FORMAT A8
+SQL> COLUMN serial# FORMAT A8
+SQL> COLUMN status FORMAT A10
+SQL> SELECT sid, serial#, status, last_call_et FROM v$session WHERE username = 'LINA';
+
+no rows selected
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

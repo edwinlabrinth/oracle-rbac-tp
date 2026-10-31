@@ -1,0 +1,95 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Thu Oct 29 01:32:40 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 4_2.sql : Exercice 4.2 -- Verrouillage apres echecs
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> ALTER PROFILE p_rh_test LIMIT
+  2    FAILED_LOGIN_ATTEMPTS 3
+  3    PASSWORD_LOCK_TIME 2/1440;
+
+Profile altered.
+
+SQL> 
+SQL> COLUMN profile FORMAT A14
+SQL> COLUMN resource_name FORMAT A30
+SQL> COLUMN limit FORMAT A12
+SQL> PROMPT === Parametres de verrouillage de P_RH_TEST ===
+=== Parametres de verrouillage de P_RH_TEST ===
+SQL> SELECT resource_name, limit
+  2    FROM dba_profiles
+  3   WHERE profile = 'P_RH_TEST'
+  4  	AND resource_name IN ('FAILED_LOGIN_ATTEMPTS','PASSWORD_LOCK_TIME');
+
+RESOURCE_NAME		       LIMIT
+------------------------------ ------------
+FAILED_LOGIN_ATTEMPTS	       3
+PASSWORD_LOCK_TIME	       .0013
+
+2 rows selected.
+
+SQL> 
+SQL> -- Trois mauvais mots de passe, puis le bon
+SQL> PROMPT === Tentative 1 (mauvais) ===
+=== Tentative 1 (mauvais) ===
+SQL> CONNECT lina/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> PROMPT === Tentative 2 (mauvais) ===
+=== Tentative 2 (mauvais) ===
+SQL> CONNECT lina/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> PROMPT === Tentative 3 (mauvais) : le compte se verrouille ===
+=== Tentative 3 (mauvais) : le compte se verrouille ===
+SQL> CONNECT lina/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> PROMPT === Tentative 4 avec le bon mot de passe (compte verrouille) ===
+=== Tentative 4 avec le bon mot de passe (compte verrouille) ===
+SQL> CONNECT lina/"Lina#2026"@//localhost/FREEPDB1
+ERROR:
+ORA-28000: The account is locked; login denied.
+Help: https://docs.oracle.com/error-help/db/ora-28000/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> COLUMN account_status FORMAT A18
+SQL> COLUMN lock_date FORMAT A20
+SQL> PROMPT === Etat du compte LINA ===
+=== Etat du compte LINA ===
+SQL> SELECT username, account_status, lock_date
+  2    FROM dba_users WHERE username = 'LINA';
+
+USERNAME
+------------------------------------------------------------------------------------------------------------------------
+ACCOUNT_STATUS	   LOCK_DATE
+------------------ --------------------
+LINA
+LOCKED(TIMED)	   29-OCT-26
+
+
+1 row selected.
+
+SQL> 
+SQL> -- Attente > PASSWORD_LOCK_TIME (2 minutes) puis reconnexion OK
+SQL> PROMPT === Attente de 130 secondes ( > 2 minutes de verrouillage) ===
+=== Attente de 130 secondes ( > 2 minutes de verrouillage) ===
+SQL> HOST sleep 130
