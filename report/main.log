@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2026.10.29)  31 OCT 2026 16:53
+This is XeTeX, Version 3.141592653-2.6-0.999995 (TeX Live 2023/Debian) (preloaded format=xelatex 2026.10.29)  31 OCT 2026 16:57
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -570,7 +570,7 @@ File: screenshots/0_1_1.png Graphic file (type bmp)
  [4]
 File: screenshots/0_1_2.png Graphic file (type bmp)
 <screenshots/0_1_2.png>
-) [5]
+)
 Overfull \hbox (1.7587pt too wide) in paragraph at lines 36--41
 []\TU/lmr/m/n/10.95 Pour le compte \TU/DejaVuSansMono(0)/m/n/10.95 RH\TU/lmr/m/
 n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_USERS \TU/lmr/m/n/10.95 renvoie 
@@ -578,6 +578,7 @@ n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_USERS \TU/lmr/m/n/10.95 renvoie
 , \TU/DejaVuSansMono(0)/m/n/10.95 ACCOUNT\_STATUS
  []
 
+[5]
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 49.
 LaTeX Font Info:    External font `cmex10' loaded for size
@@ -587,10 +588,9 @@ LaTeX Font Info:    Font shape `TU/DejaVuSansMono(0)/m/n' will be
 ) (./report/ch1.tex (./screenshots/1_1.tex
 File: screenshots/1_1_1.png Graphic file (type bmp)
 <screenshots/1_1_1.png>
- [6]
 File: screenshots/1_1_2.png Graphic file (type bmp)
 <screenshots/1_1_2.png>
-) [7]
+) [6]
 Overfull \hbox (29.62129pt too wide) in paragraph at lines 18--21
 []\TU/DejaVuSansMono(0)/m/n/10.95 DBA\_USERS \TU/lmr/m/n/10.95 affiche : \TU/De
 jaVuSansMono(0)/m/n/10.95 USERNAME = ALI\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(
@@ -601,10 +601,10 @@ jaVuSansMono(0)/m/n/10.95 USERNAME = ALI\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(
 (./screenshots/1_2.tex
 File: screenshots/1_2_1.png Graphic file (type bmp)
 <screenshots/1_2_1.png>
- [8]
+ [7]
 File: screenshots/1_2_2.png Graphic file (type bmp)
 <screenshots/1_2_2.png>
- [9]
+ [8]
 File: screenshots/1_2_3.png Graphic file (type bmp)
 <screenshots/1_2_3.png>
 )
@@ -634,22 +634,23 @@ ansMono(0)/m/n/10.95 BYTES = 1048576 \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)
 /m/n/10.95 MAX\_BYTES = 1048576\TU/lmr/m/n/10.95 .
  []
 
-[10] (./screenshots/1_3.tex
+(./screenshots/1_3.tex
 File: screenshots/1_3_1.png Graphic file (type bmp)
 <screenshots/1_3_1.png>
+ [9]
 File: screenshots/1_3_2.png Graphic file (type bmp)
 <screenshots/1_3_2.png>
 ) (./screenshots/1_3_chg.tex
 File: screenshots/1_3_chg_1.png Graphic file (type bmp)
 <screenshots/1_3_chg_1.png>
- [11])
+ [10])
 (./screenshots/1_3_lock.tex
 File: screenshots/1_3_lock_1.png Graphic file (type bmp)
 <screenshots/1_3_lock_1.png>
- [12] [13]
+ [11]
 File: screenshots/1_3_lock_2.png Graphic file (type bmp)
 <screenshots/1_3_lock_2.png>
- [14]
+ [12]
 File: screenshots/1_3_lock_3.png Graphic file (type bmp)
 <screenshots/1_3_lock_3.png>
 )
@@ -659,12 +660,13 @@ mr/m/n/10.95 puis propose \TU/DejaVuSansMono(0)/m/n/10.95 Changing password for
  ali
  []
 
-[15] (./screenshots/1_4.tex
+(./screenshots/1_4.tex
 File: screenshots/1_4_1.png Graphic file (type bmp)
 <screenshots/1_4_1.png>
+ [13]
 File: screenshots/1_4_2.png Graphic file (type bmp)
 <screenshots/1_4_2.png>
- [16]
+ [14]
 File: screenshots/1_4_3.png Graphic file (type bmp)
 <screenshots/1_4_3.png>
 )
@@ -695,12 +697,13 @@ TO rh\TU/lmr/m/n/10.95 , la connexion proxy réussit : \TU/DejaVuSansMono(0)/m/n
 EXT('USERENV','PROXY\_USER')
  []
 
-[17] (./screenshots/1_5.tex
+(./screenshots/1_5.tex
 File: screenshots/1_5_1.png Graphic file (type bmp)
 <screenshots/1_5_1.png>
+ [15]
 File: screenshots/1_5_2.png Graphic file (type bmp)
 <screenshots/1_5_2.png>
-) [18]
+) [16]
 Overfull \hbox (72.2462pt too wide) in paragraph at lines 103--105
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER c####superviseur ... CONTAINER=AL
 L \TU/lmr/m/n/10.95 puis \TU/DejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION .
@@ -710,20 +713,19 @@ L \TU/lmr/m/n/10.95 puis \TU/DejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION .
 (./screenshots/1_6.tex
 File: screenshots/1_6_1.png Graphic file (type bmp)
 <screenshots/1_6_1.png>
- [19]
 File: screenshots/1_6_2.png Graphic file (type bmp)
 <screenshots/1_6_2.png>
 ) (./screenshots/1_6_a.tex
 File: screenshots/1_6_a_1.png Graphic file (type bmp)
 <screenshots/1_6_a_1.png>
-)
+ [17])
 (./screenshots/1_6_drop.tex
 File: screenshots/1_6_drop_1.png Graphic file (type bmp)
 <screenshots/1_6_drop_1.png>
- [20] [21]
+ [18]
 File: screenshots/1_6_drop_2.png Graphic file (type bmp)
 <screenshots/1_6_drop_2.png>
- [22]
+ [19]
 File: screenshots/1_6_drop_3.png Graphic file (type bmp)
 <screenshots/1_6_drop_3.png>
 )
@@ -758,17 +760,17 @@ TU/lmr/m/n/10.95 dans \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TABLES \TU/lmr/m/n/1
 ) (./report/ch2.tex (./screenshots/2_1.tex
 File: screenshots/2_1_1.png Graphic file (type bmp)
 <screenshots/2_1_1.png>
- [23]
+ [20]
 File: screenshots/2_1_2.png Graphic file (type bmp)
 <screenshots/2_1_2.png>
-) [24] (./screenshots/2_2.tex
+) [21] (./screenshots/2_2.tex
 File: screenshots/2_2_1.png Graphic file (type bmp)
 <screenshots/2_2_1.png>
 
-[25]
+[22]
 File: screenshots/2_2_2.png Graphic file (type bmp)
 <screenshots/2_2_2.png>
- [26]
+ [23]
 File: screenshots/2_2_3.png Graphic file (type bmp)
 <screenshots/2_2_3.png>
 )
@@ -785,7 +787,7 @@ Overfull \hbox (43.62543pt too wide) in paragraph at lines 33--37
 EPARTEMENTS"
  []
 
-[27]
+
 Overfull \hbox (22.26392pt too wide) in paragraph at lines 47--49
 []\TU/lmr/bx/n/10.95 Objectif. \TU/lmr/m/n/10.95 Autoriser la modification de d
 eux colonnes seulement, comprendre l’effet de \TU/DejaVuSansMono(0)/m/n/10.95 S
@@ -795,21 +797,22 @@ QL92\_SECURITY\TU/lmr/m/n/10.95 ,
 (./screenshots/2_3.tex
 File: screenshots/2_3_1.png Graphic file (type bmp)
 <screenshots/2_3_1.png>
+ [24]
 File: screenshots/2_3_2.png Graphic file (type bmp)
 <screenshots/2_3_2.png>
- [28]
+ [25]
 File: screenshots/2_3_3.png Graphic file (type bmp)
 <screenshots/2_3_3.png>
- [29]
+ [26]
 File: screenshots/2_3_4.png Graphic file (type bmp)
 <screenshots/2_3_4.png>
 ) (./screenshots/2_3b.tex
 File: screenshots/2_3b_1.png Graphic file (type bmp)
 <screenshots/2_3b_1.png>
- [30]
+ [27]
 File: screenshots/2_3b_2.png Graphic file (type bmp)
 <screenshots/2_3b_2.png>
-) [31]
+) [28]
 Overfull \hbox (31.19849pt too wide) in paragraph at lines 62--64
 []\TU/lmr/m/n/10.95 Sans clause \TU/DejaVuSansMono(0)/m/n/10.95 WHERE\TU/lmr/m/
 n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE rh.employes SET poste = 'Archi
@@ -820,10 +823,10 @@ d\TU/lmr/m/n/10.95 ) :
 (./screenshots/2_4.tex
 File: screenshots/2_4_1.png Graphic file (type bmp)
 <screenshots/2_4_1.png>
- [32]
+ [29]
 File: screenshots/2_4_2.png Graphic file (type bmp)
 <screenshots/2_4_2.png>
-) [33]
+) [30]
 Overfull \hbox (32.61078pt too wide) in paragraph at lines 87--90
 []\TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TAB\_PRIVS \TU/lmr/m/n/10.95 sur \TU/Dej
 aVuSansMono(0)/m/n/10.95 RH.DEPARTEMENTS \TU/lmr/m/n/10.95 montre deux lignes :
@@ -833,7 +836,7 @@ aVuSansMono(0)/m/n/10.95 RH.DEPARTEMENTS \TU/lmr/m/n/10.95 montre deux lignes :
 (./screenshots/2_5.tex
 File: screenshots/2_5_1.png Graphic file (type bmp)
 <screenshots/2_5_1.png>
- [34]
+ [31]
 File: screenshots/2_5_2.png Graphic file (type bmp)
 <screenshots/2_5_2.png>
 )
@@ -844,7 +847,7 @@ ono(0)/m/n/10.95 CREATE VIEW \TU/lmr/m/n/10.95 : \TU/DejaVuSansMono(0)/m/n/10.9
 5 USER\_SYS\_PRIVS
  []
 
-[35]
+[32]
 Underfull \hbox (badness 10000) in paragraph at lines 119--119
 []\TU/DejaVuSansMono(0)/m/n/10 GRANTOR \TU/lmr/m/n/10 visible dans
  []
@@ -854,7 +857,7 @@ File: screenshots/2_6_1.png Graphic file (type bmp)
 <screenshots/2_6_1.png>
 File: screenshots/2_6_2.png Graphic file (type bmp)
 <screenshots/2_6_2.png>
-) [36]) (./report/ch3.tex
+) [33]) (./report/ch3.tex
 Overfull \hbox (200.68489pt too wide) in paragraph at lines 9--22
  [] 
  []
@@ -862,22 +865,22 @@ Overfull \hbox (200.68489pt too wide) in paragraph at lines 9--22
 (./screenshots/3_1.tex
 File: screenshots/3_1_1.png Graphic file (type bmp)
 <screenshots/3_1_1.png>
- [37]
+ [34]
 File: screenshots/3_1_2.png Graphic file (type bmp)
 <screenshots/3_1_2.png>
- [38]
+ [35]
 File: screenshots/3_1_3.png Graphic file (type bmp)
 <screenshots/3_1_3.png>
- [39]
+ [36]
 File: screenshots/3_1_4.png Graphic file (type bmp)
 <screenshots/3_1_4.png>
- [40]
+ [37]
 File: screenshots/3_1_5.png Graphic file (type bmp)
 <screenshots/3_1_5.png>
- [41]
+ [38]
 File: screenshots/3_1_6.png Graphic file (type bmp)
 <screenshots/3_1_6.png>
- [42]
+ [39]
 File: screenshots/3_1_7.png Graphic file (type bmp)
 <screenshots/3_1_7.png>
 )
@@ -895,15 +898,15 @@ n de \TU/DejaVuSansMono(0)/m/n/10.95 salaire \TU/lmr/m/n/10.95 renvoie \TU/Deja
 VuSansMono(0)/m/n/10.95 ORA-41900: missing UPDATE privilege\TU/lmr/m/n/10.95 .
  []
 
-[43] (./screenshots/3_2.tex
+[40] (./screenshots/3_2.tex
 File: screenshots/3_2_1.png Graphic file (type bmp)
 <screenshots/3_2_1.png>
 File: screenshots/3_2_2.png Graphic file (type bmp)
 <screenshots/3_2_2.png>
- [44]
+ [41]
 File: screenshots/3_2_3.png Graphic file (type bmp)
 <screenshots/3_2_3.png>
-) [45]
+) [42]
 Overfull \hbox (27.10275pt too wide) in paragraph at lines 50--53
 []\TU/lmr/m/n/10.95 La requête hiérarchique avec \TU/DejaVuSansMono(0)/m/n/10.9
 5 START WITH grantee = 'OMAR' CONNECT BY PRIOR granted_role
@@ -917,23 +920,23 @@ File: screenshots/3_3_a_2.png Graphic file (type bmp)
 ) (./screenshots/3_3_b.tex
 File: screenshots/3_3_b_1.png Graphic file (type bmp)
 <screenshots/3_3_b_1.png>
- [46] [47]
+ [43]
 File: screenshots/3_3_b_2.png Graphic file (type bmp)
 <screenshots/3_3_b_2.png>
 )
 (./screenshots/3_3_c.tex
 File: screenshots/3_3_c_1.png Graphic file (type bmp)
 <screenshots/3_3_c_1.png>
-) [48] (./screenshots/3_4.tex
+ [44]) (./screenshots/3_4.tex
 File: screenshots/3_4_1.png Graphic file (type bmp)
 <screenshots/3_4_1.png>
- [49]
+ [45]
 File: screenshots/3_4_2.png Graphic file (type bmp)
 <screenshots/3_4_2.png>
- [50]
+ [46]
 File: screenshots/3_4_3.png Graphic file (type bmp)
 <screenshots/3_4_3.png>
- [51]
+ [47]
 File: screenshots/3_4_4.png Graphic file (type bmp)
 <screenshots/3_4_4.png>
 )
@@ -943,15 +946,16 @@ Overfull \hbox (5.23909pt too wide) in paragraph at lines 92--95
  R_CONNEXION
  []
 
-[52] (./screenshots/3_5.tex
+(./screenshots/3_5.tex
 File: screenshots/3_5_1.png Graphic file (type bmp)
 <screenshots/3_5_1.png>
+ [48]
 File: screenshots/3_5_2.png Graphic file (type bmp)
 <screenshots/3_5_2.png>
- [53]
+ [49]
 File: screenshots/3_5_3.png Graphic file (type bmp)
 <screenshots/3_5_3.png>
- [54]
+ [50]
 File: screenshots/3_5_4.png Graphic file (type bmp)
 <screenshots/3_5_4.png>
 )
@@ -961,18 +965,18 @@ U/lmr/m/n/10.95 échoue avec \TU/DejaVuSansMono(0)/m/n/10.95 PLS- / ORA-00942: t
 able or view "RH"."EMPLOYES"
  []
 
-[55] (./screenshots/3_6.tex
+[51] (./screenshots/3_6.tex
 File: screenshots/3_6_1.png Graphic file (type bmp)
 <screenshots/3_6_1.png>
 File: screenshots/3_6_2.png Graphic file (type bmp)
 <screenshots/3_6_2.png>
-) [56] (./screenshots/3_7.tex
+) [52] (./screenshots/3_7.tex
 File: screenshots/3_7_1.png Graphic file (type bmp)
 <screenshots/3_7_1.png>
- [57]
+ [53]
 File: screenshots/3_7_2.png Graphic file (type bmp)
 <screenshots/3_7_2.png>
- [58]
+ [54]
 File: screenshots/3_7_3.png Graphic file (type bmp)
 <screenshots/3_7_3.png>
 )
@@ -995,30 +999,30 @@ IME
 (./screenshots/4_1_setup.tex
 File: screenshots/4_1_setup_1.png Graphic file (type bmp)
 <screenshots/4_1_setup_1.png>
- [59]
+ [55]
 File: screenshots/4_1_setup_2.png Graphic file (type bmp)
 <screenshots/4_1_setup_2.png>
 ) (./screenshots/4_1_a.tex
 File: screenshots/4_1_a_1.png Graphic file (type bmp)
 <screenshots/4_1_a_1.png>
- [60])
+ [56])
 (./screenshots/4_1_b.tex
 File: screenshots/4_1_b_1.png Graphic file (type bmp)
 <screenshots/4_1_b_1.png>
 ) (./screenshots/4_1_third.tex
 File: screenshots/4_1_third_1.png Graphic file (type bmp)
 <screenshots/4_1_third_1.png>
- [61]
+ [57]
 File: screenshots/4_1_third_2.png Graphic file (type bmp)
 <screenshots/4_1_third_2.png>
 )
 (./screenshots/4_1_idle.tex
 File: screenshots/4_1_idle_1.png Graphic file (type bmp)
 <screenshots/4_1_idle_1.png>
- [62]) (./screenshots/4_1_idle_status.tex
+ [58]) (./screenshots/4_1_idle_status.tex
 File: screenshots/4_1_idle_status_1.png Graphic file (type bmp)
 <screenshots/4_1_idle_status_1.png>
-) [63]
+) [59]
 Overfull \hbox (23.37814pt too wide) in paragraph at lines 20--22
 []\TU/lmr/m/n/10.95 La troisième session LINA renvoie \TU/DejaVuSansMono(0)/m/n
 /10.95 ORA-02391: exceeded simultaneous SESSIONS\_PER\_USER
@@ -1041,13 +1045,13 @@ compte après échecs de connexion (\TU/DejaVuSansMono(0)/m/n/10.95 FAILED\_LOGI
 (./screenshots/4_2.tex
 File: screenshots/4_2_1.png Graphic file (type bmp)
 <screenshots/4_2_1.png>
- [64]
+ [60]
 File: screenshots/4_2_2.png Graphic file (type bmp)
 <screenshots/4_2_2.png>
- [65]
+ [61]
 File: screenshots/4_2_3.png Graphic file (type bmp)
 <screenshots/4_2_3.png>
-) [66]
+)
 Overfull \hbox (50.6837pt too wide) in paragraph at lines 51--55
 []\TU/lmr/bx/n/10.95 Objectif. \TU/lmr/m/n/10.95 Configurer la réutilisation de
 s mots de passe (\TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_REUSE\_TIME 30\TU/lm
@@ -1061,41 +1065,41 @@ et la période de grâce avec \TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_LIFE\_TI
 E \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_GRACE\_TIME
  []
 
-(./screenshots/4_3.tex
+[62] (./screenshots/4_3.tex
 File: screenshots/4_3_1.png Graphic file (type bmp)
 <screenshots/4_3_1.png>
 File: screenshots/4_3_2.png Graphic file (type bmp)
 <screenshots/4_3_2.png>
- [67]
+ [63]
 File: screenshots/4_3_3.png Graphic file (type bmp)
 <screenshots/4_3_3.png>
- [68]
+ [64]
 File: screenshots/4_3_4.png Graphic file (type bmp)
 <screenshots/4_3_4.png>
- [69]
+ [65]
 File: screenshots/4_3_5.png Graphic file (type bmp)
 <screenshots/4_3_5.png>
-) [70] (./screenshots/4_4.tex
+) [66] (./screenshots/4_4.tex
 File: screenshots/4_4_1.png Graphic file (type bmp)
 <screenshots/4_4_1.png>
 File: screenshots/4_4_2.png Graphic file (type bmp)
 <screenshots/4_4_2.png>
- [71]
+
+[67]
 File: screenshots/4_4_3.png Graphic file (type bmp)
 <screenshots/4_4_3.png>
-
-[72]
+ [68]
 File: screenshots/4_4_4.png Graphic file (type bmp)
 <screenshots/4_4_4.png>
-) [73] (./screenshots/4_5.tex
+) [69] (./screenshots/4_5.tex
 File: screenshots/4_5_1.png Graphic file (type bmp)
 <screenshots/4_5_1.png>
 File: screenshots/4_5_2.png Graphic file (type bmp)
 <screenshots/4_5_2.png>
- [74]
+ [70]
 File: screenshots/4_5_3.png Graphic file (type bmp)
 <screenshots/4_5_3.png>
- [75]
+ [71]
 File: screenshots/4_5_4.png Graphic file (type bmp)
 <screenshots/4_5_4.png>
 )
@@ -1113,12 +1117,12 @@ Overfull \hbox (3.18477pt too wide) in paragraph at lines 113--117
 10.95 supprime le profil et réaffecte automatiquement LINA,
  []
 
-[76]) (./report/ch5.tex (./screenshots/5_1.tex
+[72]) (./report/ch5.tex (./screenshots/5_1.tex
 File: screenshots/5_1_1.png Graphic file (type bmp)
 <screenshots/5_1_1.png>
 File: screenshots/5_1_2.png Graphic file (type bmp)
 <screenshots/5_1_2.png>
- [77]
+ [73]
 File: screenshots/5_1_3.png Graphic file (type bmp)
 <screenshots/5_1_3.png>
 )
@@ -1132,13 +1136,13 @@ IG\TU/lmr/m/n/10.95 ,
 (./screenshots/5_2.tex
 File: screenshots/5_2_1.png Graphic file (type bmp)
 <screenshots/5_2_1.png>
- [78]
+ [74]
 File: screenshots/5_2_2.png Graphic file (type bmp)
 <screenshots/5_2_2.png>
- [79]
+ [75]
 File: screenshots/5_2_3.png Graphic file (type bmp)
 <screenshots/5_2_3.png>
-) [80]
+) [76]
 Overfull \hbox (6.28061pt too wide) in paragraph at lines 27--28
 []\TU/lmr/m/n/10.95 Les connexions OMAR/\TU/DejaVuSansMono(0)/m/n/10.95 faux \T
 U/lmr/m/n/10.95 (×2) et PIRATE/\TU/DejaVuSansMono(0)/m/n/10.95 x \TU/lmr/m/n/10
@@ -1175,13 +1179,12 @@ Underfull \hbox (badness 10000) in paragraph at lines 36--36
 (./screenshots/5_3.tex
 File: screenshots/5_3_1.png Graphic file (type bmp)
 <screenshots/5_3_1.png>
- [81]
 File: screenshots/5_3_2.png Graphic file (type bmp)
 <screenshots/5_3_2.png>
- [82]
+ [77]
 File: screenshots/5_3_3.png Graphic file (type bmp)
 <screenshots/5_3_3.png>
-) [83]
+)
 Overfull \hbox (5.4203pt too wide) in paragraph at lines 49--51
 \TU/lmr/m/n/10.95 contient les 5 enregistrements (\TU/DejaVuSansMono(0)/m/n/10.
 95 CREATE USER\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 GRANT \TU/lmr
@@ -1190,30 +1193,30 @@ jaVuSansMono(0)/m/n/10.95 DROP USER\TU/lmr/m/n/10.95 ) avec \TU/DejaVuSansMono(
 0)/m/n/10.95 DBUSERNAME
  []
 
-(./screenshots/5_4.tex
+[78] (./screenshots/5_4.tex
 File: screenshots/5_4_1.png Graphic file (type bmp)
 <screenshots/5_4_1.png>
 File: screenshots/5_4_2.png Graphic file (type bmp)
 <screenshots/5_4_2.png>
- [84]
+ [79]
 File: screenshots/5_4_3.png Graphic file (type bmp)
 <screenshots/5_4_3.png>
- [85]
+ [80]
 File: screenshots/5_4_4.png Graphic file (type bmp)
 <screenshots/5_4_4.png>
- [86]
+ [81]
 File: screenshots/5_4_5.png Graphic file (type bmp)
 <screenshots/5_4_5.png>
- [87]
+ [82]
 File: screenshots/5_4_6.png Graphic file (type bmp)
 <screenshots/5_4_6.png>
-) [88]
+)
 Overfull \hbox (42.04938pt too wide) in paragraph at lines 65--67
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE AUDIT POLICY pol\_rh\_salaires ACTIONS
  SELECT, UPDATE, DELETE ON rh.employes
  []
 
-
+[83]
 Overfull \hbox (0.80563pt too wide) in paragraph at lines 67--69
 []\TU/lmr/m/n/10.95 SARA (\TU/DejaVuSansMono(0)/m/n/10.95 SET ROLE r\_rh\_paie 
 IDENTIFIED BY "Paie\#2026"\TU/lmr/m/n/10.95 ) : \TU/DejaVuSansMono(0)/m/n/10.95
@@ -1232,25 +1235,25 @@ File: screenshots/5_5_1.png Graphic file (type bmp)
 <screenshots/5_5_1.png>
 File: screenshots/5_5_2.png Graphic file (type bmp)
 <screenshots/5_5_2.png>
- [89]
+ [84]
 File: screenshots/5_5_3.png Graphic file (type bmp)
 <screenshots/5_5_3.png>
- [90]
+ [85]
 File: screenshots/5_5_4.png Graphic file (type bmp)
 <screenshots/5_5_4.png>
- [91]
+ [86]
 File: screenshots/5_5_5.png Graphic file (type bmp)
 <screenshots/5_5_5.png>
- [92]
+ [87]
 File: screenshots/5_5_6.png Graphic file (type bmp)
 <screenshots/5_5_6.png>
- [93]
+ [88]
 File: screenshots/5_5_7.png Graphic file (type bmp)
 <screenshots/5_5_7.png>
- [94]
+ [89]
 File: screenshots/5_5_8.png Graphic file (type bmp)
 <screenshots/5_5_8.png>
- [95]
+ [90]
 File: screenshots/5_5_9.png Graphic file (type bmp)
 <screenshots/5_5_9.png>
 )
@@ -1260,7 +1263,7 @@ Overfull \hbox (16.8864pt too wide) in paragraph at lines 87--89
 6d (TNS
  []
 
-[96]
+[91]
 Overfull \hbox (27.94077pt too wide) in paragraph at lines 92--93
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE AUDIT POLICY pol\_dba ROLES dba \TU/lm
 r/m/n/10.95 puis \TU/DejaVuSansMono(0)/m/n/10.95 AUDIT POLICY pol\_dba \TU/lmr/
@@ -1294,13 +1297,13 @@ File: screenshots/5_6_1.png Graphic file (type bmp)
 <screenshots/5_6_1.png>
 File: screenshots/5_6_2.png Graphic file (type bmp)
 <screenshots/5_6_2.png>
- [97]
+ [92]
 File: screenshots/5_6_3.png Graphic file (type bmp)
 <screenshots/5_6_3.png>
- [98]
+ [93]
 File: screenshots/5_6_4.png Graphic file (type bmp)
 <screenshots/5_6_4.png>
-) [99]
+) [94]
 Overfull \hbox (30.44662pt too wide) in paragraph at lines 113--114
 []\TU/DejaVuSansMono(0)/m/n/10.95 DBMS\_FGA.ADD\_POLICY(... policy\_name => 'FG
 A\_GROS\_SALAIRES', audit\_condition
@@ -1322,19 +1325,18 @@ DejaVuSansMono(0)/m/n/10.95 fga\_policy\_name = FGA\_GROS\_SALAIRES\TU/lmr/m/n/
 (./screenshots/5_7.tex
 File: screenshots/5_7_1.png Graphic file (type bmp)
 <screenshots/5_7_1.png>
- [100]
 File: screenshots/5_7_2.png Graphic file (type bmp)
 <screenshots/5_7_2.png>
- [101]
+ [95]
 File: screenshots/5_7_3.png Graphic file (type bmp)
 <screenshots/5_7_3.png>
- [102]
+ [96]
 File: screenshots/5_7_4.png Graphic file (type bmp)
 <screenshots/5_7_4.png>
- [103]
+ [97]
 File: screenshots/5_7_5.png Graphic file (type bmp)
 <screenshots/5_7_5.png>
-) [104]
+) [98]
 Overfull \hbox (14.42598pt too wide) in paragraph at lines 136--137
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER auditeur\TU/lmr/m/n/10.95 , \TU/D
 ejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION\TU/lmr/m/n/10.95 , \TU/DejaVuSa
@@ -1357,13 +1359,13 @@ OLICY pol\_rh\_salaires $\OMS/cmsy/m/n/10.95 !$ \TU/DejaVuSansMono(0)/m/n/10.95
 ) (./report/ch6.tex (./screenshots/6_init.tex
 File: screenshots/6_init_1.png Graphic file (type bmp)
 <screenshots/6_init_1.png>
- [105]
+ [99]
 File: screenshots/6_init_2.png Graphic file (type bmp)
 <screenshots/6_init_2.png>
- [106]
+ [100]
 File: screenshots/6_init_3.png Graphic file (type bmp)
 <screenshots/6_init_3.png>
- [107]
+ [101]
 File: screenshots/6_init_4.png Graphic file (type bmp)
 <screenshots/6_init_4.png>
 )
@@ -1382,7 +1384,7 @@ telephone \TU/lmr/m/n/10.95 (pas de \TU/DejaVuSansMono(0)/m/n/10.95 revenu\_men
 suel\TU/lmr/m/n/10.95 ,
  []
 
-[108]
+[102]
 Overfull \hbox (146.02568pt too wide) in paragraph at lines 29--46
  [] 
  []
@@ -1397,16 +1399,16 @@ OPERATION) : aucun rôle n’a \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE \TU/lmr/m/
 (./screenshots/6_2.tex
 File: screenshots/6_2_1.png Graphic file (type bmp)
 <screenshots/6_2_1.png>
- [109]
+ [103]
 File: screenshots/6_2_2.png Graphic file (type bmp)
 <screenshots/6_2_2.png>
- [110]
+ [104]
 File: screenshots/6_2_3.png Graphic file (type bmp)
 <screenshots/6_2_3.png>
- [111]
+ [105]
 File: screenshots/6_2_4.png Graphic file (type bmp)
 <screenshots/6_2_4.png>
- [112]
+ [106]
 File: screenshots/6_2_5.png Graphic file (type bmp)
 <screenshots/6_2_5.png>
 )
@@ -1416,7 +1418,7 @@ Overfull \hbox (15.43379pt too wide) in paragraph at lines 75--79
 /DejaVuSansMono(0)/m/n/10.95 PASSWORD\_REUSE\_TIME 365\TU/lmr/m/n/10.95 ,
  []
 
-[113]
+[107]
 Overfull \hbox (23.44467pt too wide) in paragraph at lines 84--87
 []\TU/DejaVuSansMono(0)/m/n/10.95 P\_BQ\_SERVICE \TU/lmr/m/n/10.95 : \TU/DejaVu
 SansMono(0)/m/n/10.95 PASSWORD\_LIFE\_TIME UNLIMITED \TU/lmr/m/n/10.95 (pas d’e
@@ -1429,29 +1431,28 @@ File: screenshots/6_3d_1.png Graphic file (type bmp)
 <screenshots/6_3d_1.png>
 File: screenshots/6_3d_2.png Graphic file (type bmp)
 <screenshots/6_3d_2.png>
-) [114] (./screenshots/6_4.tex
+) [108] (./screenshots/6_4.tex
 File: screenshots/6_4_1.png Graphic file (type bmp)
 <screenshots/6_4_1.png>
- [115]
 File: screenshots/6_4_2.png Graphic file (type bmp)
 <screenshots/6_4_2.png>
- [116]
+ [109]
 File: screenshots/6_4_3.png Graphic file (type bmp)
 <screenshots/6_4_3.png>
- [117]
+ [110]
 File: screenshots/6_4_4.png Graphic file (type bmp)
 <screenshots/6_4_4.png>
-
-[118]
+ [111]
 File: screenshots/6_4_5.png Graphic file (type bmp)
 <screenshots/6_4_5.png>
- [119]
+
+[112]
 File: screenshots/6_4_6.png Graphic file (type bmp)
 <screenshots/6_4_6.png>
 ) (./screenshots/6_4c.tex
 File: screenshots/6_4c_1.png Graphic file (type bmp)
 <screenshots/6_4c_1.png>
- [120] [121]
+ [113]
 File: screenshots/6_4c_2.png Graphic file (type bmp)
 <screenshots/6_4c_2.png>
 )
@@ -1469,15 +1470,15 @@ N \TU/lmr/m/n/10.95 : DIR1 peut déléguer \TU/DejaVuSansMono(0)/m/n/10.95 R\_BQ
 _GUICHET
  []
 
-[122] (./screenshots/6_5.tex
+[114] (./screenshots/6_5.tex
 File: screenshots/6_5_1.png Graphic file (type bmp)
 <screenshots/6_5_1.png>
 File: screenshots/6_5_2.png Graphic file (type bmp)
 <screenshots/6_5_2.png>
- [123]
+ [115]
 File: screenshots/6_5_3.png Graphic file (type bmp)
 <screenshots/6_5_3.png>
-) [124]
+) [116]
 Overfull \hbox (6.3371pt too wide) in paragraph at lines 157--160
 []\TU/DejaVuSansMono(0)/m/n/10.95 POL\_BQ\_SOLDES \TU/lmr/m/n/10.95 et \TU/Deja
 VuSansMono(0)/m/n/10.95 POL\_BQ\_SOLDES\_OPS \TU/lmr/m/n/10.95 activés avec \TU
@@ -1490,29 +1491,29 @@ File: screenshots/6_6_a_1.png Graphic file (type bmp)
 <screenshots/6_6_a_1.png>
 File: screenshots/6_6_a_2.png Graphic file (type bmp)
 <screenshots/6_6_a_2.png>
- [125]
+ [117]
 File: screenshots/6_6_a_3.png Graphic file (type bmp)
 <screenshots/6_6_a_3.png>
 ) (./screenshots/6_6_b.tex
 File: screenshots/6_6_b_1.png Graphic file (type bmp)
 <screenshots/6_6_b_1.png>
- [126]
+ [118]
 File: screenshots/6_6_b_2.png Graphic file (type bmp)
 <screenshots/6_6_b_2.png>
- [127]
+ [119]
 File: screenshots/6_6_b_3.png Graphic file (type bmp)
 <screenshots/6_6_b_3.png>
- [128]
+ [120]
 File: screenshots/6_6_b_4.png Graphic file (type bmp)
 <screenshots/6_6_b_4.png>
 
-[129]
+[121]
 File: screenshots/6_6_b_5.png Graphic file (type bmp)
 <screenshots/6_6_b_5.png>
 ) (./screenshots/6_6_fond.tex
 File: screenshots/6_6_fond_1.png Graphic file (type bmp)
 <screenshots/6_6_fond_1.png>
-) [130]
+) [122]
 Overfull \hbox (119.37416pt too wide) in paragraph at lines 182--219
  [] 
  []
@@ -1527,26 +1528,26 @@ Overfull \hbox (25.48312pt too wide) in paragraph at lines 223--226
 (./screenshots/6_7.tex
 File: screenshots/6_7_1.png Graphic file (type bmp)
 <screenshots/6_7_1.png>
- [131]
+ [123]
 File: screenshots/6_7_2.png Graphic file (type bmp)
 <screenshots/6_7_2.png>
- [132]
+ [124]
 File: screenshots/6_7_3.png Graphic file (type bmp)
 <screenshots/6_7_3.png>
- [133]
+ [125]
 File: screenshots/6_7_4.png Graphic file (type bmp)
 <screenshots/6_7_4.png>
 ) (./screenshots/6_7b.tex
 File: screenshots/6_7b_1.png Graphic file (type bmp)
 <screenshots/6_7b_1.png>
-) [134]
+) [126]
 Overfull \hbox (49.11896pt too wide) in paragraph at lines 260--265
 []\TU/lmr/bx/n/10.95 Tuer ses sessions ouvertes \TU/lmr/m/n/10.95 : \TU/DejaVuS
 ansMono(0)/m/n/10.95 SELECT sid, serial\# FROM v\$session WHERE username='GUI2'
 ;
  []
 
-[135]
+[127]
 Overfull \hbox (18.78261pt too wide) in paragraph at lines 266--268
 []\TU/lmr/bx/n/10.95 Vérifier qu’il ne possède aucun objet \TU/lmr/m/n/10.95 : 
 \TU/DejaVuSansMono(0)/m/n/10.95 SELECT owner, object\_name FROM dba\_objects
@@ -1564,7 +1565,7 @@ Overfull \hbox (4.58919pt too wide) in paragraph at lines 302--309
 /10.95 conseiller = SYS\_CONTEXT('USERENV','SESSION\_USER')
  []
 
-[136]) [137] (report/main.aux)
+[128]) [129] (report/main.aux)
  ***********
 LaTeX2e <2023-11-01> patch level 1
 L3 programming layer <2024-01-22>
@@ -1585,4 +1586,4 @@ Here is how much of TeX's memory you used:
  14 hyphenation exceptions out of 8191
  79i,12n,93p,467b,576s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on report/main.pdf (138 pages).
+Output written on report/main.pdf (130 pages).

@@ -64,20 +64,16 @@ def main():
     pages = [cleaned[i:i + ROWS] for i in range(0, len(cleaned), ROWS)]
     font = load_font()
     cw = font.getlength("M") if hasattr(font, "getlength") else 9
-    lh, pad, bar = SIZE + 5, 14, 34
+    lh, pad = SIZE + 5, 14
     width = int(cw * COLS) + 2 * pad
     tex = []
 
     for n, page in enumerate(pages, 1):
-        height = bar + 2 * pad + lh * len(page) + 20
+        height = 2 * pad + lh * len(page) + 20
         img = Image.new("RGB", (width, height), BG)
         d = ImageDraw.Draw(img)
-        d.rectangle([0, 0, width, bar], fill=BAR)
-        for i, c in enumerate(((255, 95, 86), (255, 189, 46), (39, 201, 63))):
-            d.ellipse([pad + i * 20, 11, pad + i * 20 + 12, 23], fill=c)
         suffix = f" ({n}/{len(pages)})" if len(pages) > 1 else ""
-        d.text((pad + 80, 9), f"{title}{suffix}", font=font, fill=FG)
-        y = bar + pad
+        y = pad
         for ln in page:
             is_err = any(k in ln for k in ("ORA-", "SP2-", "PLS-", "ERROR at line", "ERREUR"))
             d.text((pad, y), ln, font=font, fill=ERR if is_err else FG)

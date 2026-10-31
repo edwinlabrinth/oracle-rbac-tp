@@ -5,53 +5,53 @@
 \contentsline {subsection}{\numberline {1.2}Exercice 0.1 -- Vérifier l'environnement}{4}{subsection.1.2}%
 \contentsline {section}{\numberline {2}Utilisateurs}{6}{section.2}%
 \contentsline {subsection}{\numberline {2.1}Exercice 1.1 -- Premier compte}{6}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Exercice 1.2 -- Quotas et création différée}{8}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Exercice 1.3 -- Cycle de vie d'un compte}{11}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Exercice 1.4 -- Compte schéma seul et proxy}{16}{subsection.2.4}%
-\contentsline {subsection}{\numberline {2.5}Exercice 1.5 -- Utilisateurs communs et locaux}{18}{subsection.2.5}%
-\contentsline {subsection}{\numberline {2.6}Exercice 1.6 -- Supprimer un utilisateur}{19}{subsection.2.6}%
-\contentsline {section}{\numberline {3}Privilèges}{24}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Exercice 2.1 -- Le développeur minimal}{24}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Exercice 2.2 -- Lire sans modifier}{25}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}Exercice 2.3 -- Droits par colonne, SQL92\_SECURITY et vue}{28}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Exercice 2.4 -- GRANT OPTION : la cascade}{32}{subsection.3.4}%
-\contentsline {subsection}{\numberline {3.5}Exercice 2.5 -- ADMIN OPTION : pas de cascade}{34}{subsection.3.5}%
-\contentsline {subsection}{\numberline {3.6}Exercice 2.6 -- Le danger des privilèges ANY}{36}{subsection.3.6}%
-\contentsline {section}{\numberline {4}Rôles et modèle RBAC}{37}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Exercice 3.1 -- Construire la matrice RBAC du service RH}{37}{subsection.4.1}%
-\contentsline {subsection}{\numberline {4.2}Exercice 3.2 -- Lire la hiérarchie dans le dictionnaire}{44}{subsection.4.2}%
-\contentsline {subsection}{\numberline {4.3}Exercice 3.3 -- Effet immédiat ou à la reconnexion ?}{46}{subsection.4.3}%
-\contentsline {subsection}{\numberline {4.4}Exercice 3.4 -- Rôle protégé et rôles par défaut}{49}{subsection.4.4}%
-\contentsline {subsection}{\numberline {4.5}Exercice 3.5 -- Le piège des rôles dans le code}{53}{subsection.4.5}%
-\contentsline {subsection}{\numberline {4.6}Exercice 3.6 -- Que contiennent CONNECT et RESOURCE ?}{56}{subsection.4.6}%
-\contentsline {subsection}{\numberline {4.7}Exercice 3.7 -- Analyse des privilèges (DBMS\_PRIVILEGE\_CAPTURE)}{57}{subsection.4.7}%
-\contentsline {section}{\numberline {5}Profils}{60}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Exercice 4.1 -- Profil de ressources}{60}{subsection.5.1}%
-\contentsline {subsection}{\numberline {5.2}Exercice 4.2 -- Verrouillage après échecs}{64}{subsection.5.2}%
-\contentsline {subsection}{\numberline {5.3}Exercice 4.3 -- Expiration, grâce et réutilisation}{67}{subsection.5.3}%
-\contentsline {subsection}{\numberline {5.4}Exercice 4.4 -- Complexité des mots de passe}{71}{subsection.5.4}%
-\contentsline {subsection}{\numberline {5.5}Exercice 4.5 -- Profil de production et synthèse}{74}{subsection.5.5}%
-\contentsline {section}{\numberline {6}Audit unifié et FGA}{77}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Exercice 5.1 -- État de l'audit}{77}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Exercice 5.2 -- Échecs de connexion}{78}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}Exercice 5.3 -- Tracer l'administration des comptes}{81}{subsection.6.3}%
-\contentsline {subsection}{\numberline {6.4}Exercice 5.4 -- Politique sur les données sensibles}{84}{subsection.6.4}%
-\contentsline {subsection}{\numberline {6.5}Exercice 5.5 -- Politique conditionnelle et rôle}{89}{subsection.6.5}%
-\contentsline {subsection}{\numberline {6.6}Exercice 5.6 -- Audit fin des gros salaires (FGA)}{97}{subsection.6.6}%
-\contentsline {subsection}{\numberline {6.7}Exercice 5.7 -- Séparation des tâches et purge}{100}{subsection.6.7}%
-\contentsline {section}{\numberline {7}Étude de cas : Banque Atlas}{106}{section.7}%
-\contentsline {subsection}{\numberline {7.1}6\_init — Initialisation du schéma BANQUE}{106}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Exercice 6.1 — T1 : Matrice RBAC}{109}{subsection.7.2}%
-\contentsline {subsection}{\numberline {7.3}Exercice 6.2 — T2 : Profils}{109}{subsection.7.3}%
-\contentsline {subsection}{\numberline {7.4}Exercice 6.3 — T3 : Comptes}{114}{subsection.7.4}%
-\contentsline {subsection}{\numberline {7.5}Exercice 6.4 — T4 : Rôles et habilitations}{115}{subsection.7.5}%
-\contentsline {subsection}{\numberline {7.6}Exercice 6.5 — T5 : Audit}{123}{subsection.7.6}%
-\contentsline {subsection}{\numberline {7.7}Exercice 6.6 — T6 : Campagne de tests (16 tests)}{125}{subsection.7.7}%
-\contentsline {subsection}{\numberline {7.8}Exercice 6.7 — T7 : Revue des habilitations}{131}{subsection.7.8}%
-\contentsline {subsection}{\numberline {7.9}Exercice 6.8 — Questions de synthèse}{135}{subsection.7.9}%
-\contentsline {subsubsection}{\numberline {7.9.1}1. Départ de GUI2}{135}{subsubsection.7.9.1}%
-\contentsline {subsubsection}{\numberline {7.9.2}2. Pourquoi P\_OPERATION protège mieux qu'un GRANT UPDATE(solde)}{136}{subsubsection.7.9.2}%
-\contentsline {subsubsection}{\numberline {7.9.3}3. Risque de la délégation du directeur}{136}{subsubsection.7.9.3}%
-\contentsline {subsubsection}{\numberline {7.9.4}4. Le DBA (SYS) peut lire les revenus — acceptable ?}{136}{subsubsection.7.9.4}%
-\contentsline {subsubsection}{\numberline {7.9.5}5. Limiter le conseiller à ses clients}{136}{subsubsection.7.9.5}%
-\contentsline {subsubsection}{\numberline {7.9.6}6. Deux améliorations de la politique de l'agence}{136}{subsubsection.7.9.6}%
+\contentsline {subsection}{\numberline {2.2}Exercice 1.2 -- Quotas et création différée}{7}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Exercice 1.3 -- Cycle de vie d'un compte}{10}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Exercice 1.4 -- Compte schéma seul et proxy}{14}{subsection.2.4}%
+\contentsline {subsection}{\numberline {2.5}Exercice 1.5 -- Utilisateurs communs et locaux}{16}{subsection.2.5}%
+\contentsline {subsection}{\numberline {2.6}Exercice 1.6 -- Supprimer un utilisateur}{17}{subsection.2.6}%
+\contentsline {section}{\numberline {3}Privilèges}{21}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Exercice 2.1 -- Le développeur minimal}{21}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Exercice 2.2 -- Lire sans modifier}{22}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Exercice 2.3 -- Droits par colonne, SQL92\_SECURITY et vue}{25}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Exercice 2.4 -- GRANT OPTION : la cascade}{29}{subsection.3.4}%
+\contentsline {subsection}{\numberline {3.5}Exercice 2.5 -- ADMIN OPTION : pas de cascade}{31}{subsection.3.5}%
+\contentsline {subsection}{\numberline {3.6}Exercice 2.6 -- Le danger des privilèges ANY}{33}{subsection.3.6}%
+\contentsline {section}{\numberline {4}Rôles et modèle RBAC}{34}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Exercice 3.1 -- Construire la matrice RBAC du service RH}{34}{subsection.4.1}%
+\contentsline {subsection}{\numberline {4.2}Exercice 3.2 -- Lire la hiérarchie dans le dictionnaire}{41}{subsection.4.2}%
+\contentsline {subsection}{\numberline {4.3}Exercice 3.3 -- Effet immédiat ou à la reconnexion ?}{43}{subsection.4.3}%
+\contentsline {subsection}{\numberline {4.4}Exercice 3.4 -- Rôle protégé et rôles par défaut}{45}{subsection.4.4}%
+\contentsline {subsection}{\numberline {4.5}Exercice 3.5 -- Le piège des rôles dans le code}{49}{subsection.4.5}%
+\contentsline {subsection}{\numberline {4.6}Exercice 3.6 -- Que contiennent CONNECT et RESOURCE ?}{52}{subsection.4.6}%
+\contentsline {subsection}{\numberline {4.7}Exercice 3.7 -- Analyse des privilèges (DBMS\_PRIVILEGE\_CAPTURE)}{53}{subsection.4.7}%
+\contentsline {section}{\numberline {5}Profils}{56}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Exercice 4.1 -- Profil de ressources}{56}{subsection.5.1}%
+\contentsline {subsection}{\numberline {5.2}Exercice 4.2 -- Verrouillage après échecs}{60}{subsection.5.2}%
+\contentsline {subsection}{\numberline {5.3}Exercice 4.3 -- Expiration, grâce et réutilisation}{63}{subsection.5.3}%
+\contentsline {subsection}{\numberline {5.4}Exercice 4.4 -- Complexité des mots de passe}{67}{subsection.5.4}%
+\contentsline {subsection}{\numberline {5.5}Exercice 4.5 -- Profil de production et synthèse}{70}{subsection.5.5}%
+\contentsline {section}{\numberline {6}Audit unifié et FGA}{73}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Exercice 5.1 -- État de l'audit}{73}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Exercice 5.2 -- Échecs de connexion}{74}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}Exercice 5.3 -- Tracer l'administration des comptes}{77}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.4}Exercice 5.4 -- Politique sur les données sensibles}{79}{subsection.6.4}%
+\contentsline {subsection}{\numberline {6.5}Exercice 5.5 -- Politique conditionnelle et rôle}{84}{subsection.6.5}%
+\contentsline {subsection}{\numberline {6.6}Exercice 5.6 -- Audit fin des gros salaires (FGA)}{92}{subsection.6.6}%
+\contentsline {subsection}{\numberline {6.7}Exercice 5.7 -- Séparation des tâches et purge}{95}{subsection.6.7}%
+\contentsline {section}{\numberline {7}Étude de cas : Banque Atlas}{100}{section.7}%
+\contentsline {subsection}{\numberline {7.1}6\_init — Initialisation du schéma BANQUE}{100}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Exercice 6.1 — T1 : Matrice RBAC}{103}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Exercice 6.2 — T2 : Profils}{103}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Exercice 6.3 — T3 : Comptes}{108}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Exercice 6.4 — T4 : Rôles et habilitations}{109}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Exercice 6.5 — T5 : Audit}{115}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Exercice 6.6 — T6 : Campagne de tests (16 tests)}{117}{subsection.7.7}%
+\contentsline {subsection}{\numberline {7.8}Exercice 6.7 — T7 : Revue des habilitations}{123}{subsection.7.8}%
+\contentsline {subsection}{\numberline {7.9}Exercice 6.8 — Questions de synthèse}{127}{subsection.7.9}%
+\contentsline {subsubsection}{\numberline {7.9.1}1. Départ de GUI2}{127}{subsubsection.7.9.1}%
+\contentsline {subsubsection}{\numberline {7.9.2}2. Pourquoi P\_OPERATION protège mieux qu'un GRANT UPDATE(solde)}{128}{subsubsection.7.9.2}%
+\contentsline {subsubsection}{\numberline {7.9.3}3. Risque de la délégation du directeur}{128}{subsubsection.7.9.3}%
+\contentsline {subsubsection}{\numberline {7.9.4}4. Le DBA (SYS) peut lire les revenus — acceptable ?}{128}{subsubsection.7.9.4}%
+\contentsline {subsubsection}{\numberline {7.9.5}5. Limiter le conseiller à ses clients}{128}{subsubsection.7.9.5}%
+\contentsline {subsubsection}{\numberline {7.9.6}6. Deux améliorations de la politique de l'agence}{128}{subsubsection.7.9.6}%

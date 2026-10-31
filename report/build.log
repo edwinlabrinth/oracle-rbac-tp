@@ -76,19 +76,19 @@ Overfull \hbox (7.84172pt too wide) in paragraph at lines 16--19
  \TU/lmr/m/n/10.95 renvoie 5 tablespaces : \TU/DejaVuSansMono(0)/m/n/10.95 SYST
 EM\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 SYSAUX\TU/lmr/m/n/10.95 ,
 
-(./screenshots/0_1.tex [4]) [5]
+(./screenshots/0_1.tex [4])
 Overfull \hbox (1.7587pt too wide) in paragraph at lines 36--41
 []\TU/lmr/m/n/10.95 Pour le compte \TU/DejaVuSansMono(0)/m/n/10.95 RH\TU/lmr/m/
 n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_USERS \TU/lmr/m/n/10.95 renvoie 
 : \TU/DejaVuSansMono(0)/m/n/10.95 AUTHENTICATION\_TYPE = NONE\TU/lmr/m/n/10.95 
 , \TU/DejaVuSansMono(0)/m/n/10.95 ACCOUNT\_STATUS
-) (./report/ch1.tex (./screenshots/1_1.tex [6]) [7]
+[5]) (./report/ch1.tex (./screenshots/1_1.tex) [6]
 Overfull \hbox (29.62129pt too wide) in paragraph at lines 18--21
 []\TU/DejaVuSansMono(0)/m/n/10.95 DBA\_USERS \TU/lmr/m/n/10.95 affiche : \TU/De
 jaVuSansMono(0)/m/n/10.95 USERNAME = ALI\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(
 0)/m/n/10.95 DEFAULT\_TABLESPACE = USERS\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(
 0)/m/n/10.95 TEMPORARY\_TABLESPACE
-(./screenshots/1_2.tex [8] [9])
+(./screenshots/1_2.tex [7] [8])
 Overfull \hbox (9.91931pt too wide) in paragraph at lines 31--36
 []\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 GRANT CREATE TABLE TO
  ali\TU/lmr/m/n/10.95 , ALI crée \TU/DejaVuSansMono(0)/m/n/10.95 notes(id NUMBE
@@ -107,13 +107,13 @@ Overfull \hbox (6.44197pt too wide) in paragraph at lines 39--42
 r ALI sur \TU/DejaVuSansMono(0)/m/n/10.95 USERS \TU/lmr/m/n/10.95 : \TU/DejaVuS
 ansMono(0)/m/n/10.95 BYTES = 1048576 \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)
 /m/n/10.95 MAX\_BYTES = 1048576\TU/lmr/m/n/10.95 .
-[10] (./screenshots/1_3.tex) (./screenshots/1_3_chg.tex [11])
-(./screenshots/1_3_lock.tex [12] [13] [14])
+(./screenshots/1_3.tex [9]) (./screenshots/1_3_chg.tex [10])
+(./screenshots/1_3_lock.tex [11] [12])
 Overfull \hbox (7.1548pt too wide) in paragraph at lines 54--60
 \TU/DejaVuSansMono(0)/m/n/10.95 has expired. The password must be changed \TU/l
 mr/m/n/10.95 puis propose \TU/DejaVuSansMono(0)/m/n/10.95 Changing password for
  ali
-[15] (./screenshots/1_4.tex [16])
+(./screenshots/1_4.tex [13] [14])
 Overfull \hbox (8.10785pt too wide) in paragraph at lines 80--85
 []\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER dev1 IDEN
 TIFIED BY "Dev1\#2026"\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 GRANT
@@ -133,13 +133,13 @@ Overfull \hbox (157.65965pt too wide) in paragraph at lines 85--88
 TO rh\TU/lmr/m/n/10.95 , la connexion proxy réussit : \TU/DejaVuSansMono(0)/m/n
 /10.95 USER = RH \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 SYS\_CONT
 EXT('USERENV','PROXY\_USER')
-[17] (./screenshots/1_5.tex) [18]
+(./screenshots/1_5.tex [15]) [16]
 Overfull \hbox (72.2462pt too wide) in paragraph at lines 103--105
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER c####superviseur ... CONTAINER=AL
 L \TU/lmr/m/n/10.95 puis \TU/DejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION .
 .. CONTAINER=ALL
-(./screenshots/1_6.tex [19]) (./screenshots/1_6_a.tex)
-(./screenshots/1_6_drop.tex [20] [21] [22])
+(./screenshots/1_6.tex) (./screenshots/1_6_a.tex [17])
+(./screenshots/1_6_drop.tex [18] [19])
 Overfull \hbox (2.67044pt too wide) in paragraph at lines 128--130
 []\TU/DejaVuSansMono(0)/m/n/10.95 DROP USER ali \TU/lmr/m/n/10.95 échoue avec \
 TU/DejaVuSansMono(0)/m/n/10.95 ORA-01922: CASCADE must be specified to drop 'AL
@@ -160,8 +160,8 @@ Overfull \hbox (36.32364pt too wide) in paragraph at lines 137--139
 _ali = 0 \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 quotas\_ali = 0 \
 TU/lmr/m/n/10.95 dans \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TABLES \TU/lmr/m/n/1
 0.95 et \TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TS\_QUOTAS\TU/lmr/m/n/10.95 .
-) (./report/ch2.tex (./screenshots/2_1.tex [23]) [24] (./screenshots/2_2.tex
-[25] [26])
+) (./report/ch2.tex (./screenshots/2_1.tex [20]) [21] (./screenshots/2_2.tex
+[22] [23])
 Overfull \hbox (20.41985pt too wide) in paragraph at lines 31--33
 []\TU/DejaVuSansMono(0)/m/n/10.95 UPDATE rh.employes SET salaire = 1 \TU/lmr/m/
 n/10.95 échoue avec \TU/DejaVuSansMono(0)/m/n/10.95 ORA-41900: missing UPDATE p
@@ -171,35 +171,35 @@ Overfull \hbox (43.62543pt too wide) in paragraph at lines 33--37
 []\TU/DejaVuSansMono(0)/m/n/10.95 SELECT * FROM rh.departements \TU/lmr/m/n/10.
 95 échoue avec \TU/DejaVuSansMono(0)/m/n/10.95 ORA-00942: table or view "RH"."D
 EPARTEMENTS"
-[27]
+
 Overfull \hbox (22.26392pt too wide) in paragraph at lines 47--49
 []\TU/lmr/bx/n/10.95 Objectif. \TU/lmr/m/n/10.95 Autoriser la modification de d
 eux colonnes seulement, comprendre l’effet de \TU/DejaVuSansMono(0)/m/n/10.95 S
 QL92\_SECURITY\TU/lmr/m/n/10.95 ,
-(./screenshots/2_3.tex [28] [29]) (./screenshots/2_3b.tex [30]) [31]
+(./screenshots/2_3.tex [24] [25] [26]) (./screenshots/2_3b.tex [27]) [28]
 Overfull \hbox (31.19849pt too wide) in paragraph at lines 62--64
 []\TU/lmr/m/n/10.95 Sans clause \TU/DejaVuSansMono(0)/m/n/10.95 WHERE\TU/lmr/m/
 n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE rh.employes SET poste = 'Archi
 tecte' \TU/lmr/m/n/10.95 réussit (\TU/DejaVuSansMono(0)/m/n/10.95 8 rows update
 d\TU/lmr/m/n/10.95 ) :
-(./screenshots/2_4.tex [32]) [33]
+(./screenshots/2_4.tex [29]) [30]
 Overfull \hbox (32.61078pt too wide) in paragraph at lines 87--90
 []\TU/DejaVuSansMono(0)/m/n/10.95 DBA\_TAB\_PRIVS \TU/lmr/m/n/10.95 sur \TU/Dej
 aVuSansMono(0)/m/n/10.95 RH.DEPARTEMENTS \TU/lmr/m/n/10.95 montre deux lignes :
  \TU/DejaVuSansMono(0)/m/n/10.95 A1 / GRANTOR=RH / GRANTABLE=YES
-(./screenshots/2_5.tex [34])
+(./screenshots/2_5.tex [31])
 Overfull \hbox (8.03633pt too wide) in paragraph at lines 104--107
 []\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 REVOKE CREATE VIEW FR
 OM a1\TU/lmr/m/n/10.95 , A2 possède \TU/lmr/m/it/10.95 toujours \TU/DejaVuSansM
 ono(0)/m/n/10.95 CREATE VIEW \TU/lmr/m/n/10.95 : \TU/DejaVuSansMono(0)/m/n/10.9
 5 USER\_SYS\_PRIVS
-[35]
+[32]
 Underfull \hbox (badness 10000) in paragraph at lines 119--119
 []\TU/DejaVuSansMono(0)/m/n/10 GRANTOR \TU/lmr/m/n/10 visible dans
-(./screenshots/2_6.tex) [36]) (./report/ch3.tex
+(./screenshots/2_6.tex) [33]) (./report/ch3.tex
 Overfull \hbox (200.68489pt too wide) in paragraph at lines 9--22
  [] 
-(./screenshots/3_1.tex [37] [38] [39] [40] [41] [42])
+(./screenshots/3_1.tex [34] [35] [36] [37] [38] [39])
 Overfull \hbox (1.81728pt too wide) in paragraph at lines 28--30
 []\TU/lmr/bx/n/10.95 LINA \TU/lmr/m/n/10.95 (\TU/DejaVuSansMono(0)/m/n/10.95 R\
 _RH_LECTEUR\TU/lmr/m/n/10.95 ) : accède à \TU/DejaVuSansMono(0)/m/n/10.95 rh.de
@@ -210,22 +210,22 @@ Overfull \hbox (6.70885pt too wide) in paragraph at lines 30--34
 \TU/DejaVuSansMono(0)/m/n/10.95 updated\TU/lmr/m/n/10.95 ), mais la modificatio
 n de \TU/DejaVuSansMono(0)/m/n/10.95 salaire \TU/lmr/m/n/10.95 renvoie \TU/Deja
 VuSansMono(0)/m/n/10.95 ORA-41900: missing UPDATE privilege\TU/lmr/m/n/10.95 .
-[43] (./screenshots/3_2.tex [44]) [45]
+[40] (./screenshots/3_2.tex [41]) [42]
 Overfull \hbox (27.10275pt too wide) in paragraph at lines 50--53
 []\TU/lmr/m/n/10.95 La requête hiérarchique avec \TU/DejaVuSansMono(0)/m/n/10.9
 5 START WITH grantee = 'OMAR' CONNECT BY PRIOR granted_role
-(./screenshots/3_3_a.tex) (./screenshots/3_3_b.tex [46] [47])
-(./screenshots/3_3_c.tex) [48] (./screenshots/3_4.tex [49] [50] [51])
+(./screenshots/3_3_a.tex) (./screenshots/3_3_b.tex [43])
+(./screenshots/3_3_c.tex [44]) (./screenshots/3_4.tex [45] [46] [47])
 Overfull \hbox (5.23909pt too wide) in paragraph at lines 92--95
 \TU/DejaVuSansMono(0)/m/n/10.95 USER sara DEFAULT ROLE r_connexion\TU/lmr/m/n/1
 0.95 . Sara se connecte alors avec le seul rôle \TU/DejaVuSansMono(0)/m/n/10.95
  R_CONNEXION
-[52] (./screenshots/3_5.tex [53] [54])
+(./screenshots/3_5.tex [48] [49] [50])
 Overfull \hbox (22.00896pt too wide) in paragraph at lines 112--116
 \TU/lmr/m/n/10.95 de la fonction \TU/DejaVuSansMono(0)/m/n/10.95 nb_employes \T
 U/lmr/m/n/10.95 échoue avec \TU/DejaVuSansMono(0)/m/n/10.95 PLS- / ORA-00942: t
 able or view "RH"."EMPLOYES"
-[55] (./screenshots/3_6.tex) [56] (./screenshots/3_7.tex [57] [58])
+[51] (./screenshots/3_6.tex) [52] (./screenshots/3_7.tex [53] [54])
 Overfull \hbox (19.08792pt too wide) in paragraph at lines 155--158
 []\TU/lmr/m/n/10.95 Après \TU/DejaVuSansMono(0)/m/n/10.95 GENERATE_RESULT\TU/lm
 r/m/n/10.95 , la consultation des vues \TU/DejaVuSansMono(0)/m/n/10.95 DBA_USED
@@ -238,9 +238,9 @@ Overfull \hbox (27.00308pt too wide) in paragraph at lines 4--7
 o(0)/m/n/10.95 P\_RH\_TEST \TU/lmr/m/n/10.95 (\TU/DejaVuSansMono(0)/m/n/10.95 S
 ESSIONS\_PER\_USER 2\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 IDLE\_T
 IME
-(./screenshots/4_1_setup.tex [59]) (./screenshots/4_1_a.tex [60])
-(./screenshots/4_1_b.tex) (./screenshots/4_1_third.tex [61])
-(./screenshots/4_1_idle.tex [62]) (./screenshots/4_1_idle_status.tex) [63]
+(./screenshots/4_1_setup.tex [55]) (./screenshots/4_1_a.tex [56])
+(./screenshots/4_1_b.tex) (./screenshots/4_1_third.tex [57])
+(./screenshots/4_1_idle.tex [58]) (./screenshots/4_1_idle_status.tex) [59]
 Overfull \hbox (23.37814pt too wide) in paragraph at lines 20--22
 []\TU/lmr/m/n/10.95 La troisième session LINA renvoie \TU/DejaVuSansMono(0)/m/n
 /10.95 ORA-02391: exceeded simultaneous SESSIONS\_PER\_USER
@@ -254,7 +254,7 @@ Overfull \hbox (10.23486pt too wide) in paragraph at lines 32--35
 []\TU/lmr/bx/n/10.95 Objectif. \TU/lmr/m/n/10.95 Configurer le verrouillage de 
 compte après échecs de connexion (\TU/DejaVuSansMono(0)/m/n/10.95 FAILED\_LOGIN
 \_ATTEMPTS
-(./screenshots/4_2.tex [64] [65]) [66]
+(./screenshots/4_2.tex [60] [61])
 Overfull \hbox (50.6837pt too wide) in paragraph at lines 51--55
 []\TU/lmr/bx/n/10.95 Objectif. \TU/lmr/m/n/10.95 Configurer la réutilisation de
 s mots de passe (\TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_REUSE\_TIME 30\TU/lm
@@ -264,8 +264,8 @@ Overfull \hbox (27.06758pt too wide) in paragraph at lines 51--55
 \TU/DejaVuSansMono(0)/m/n/10.95 3\TU/lmr/m/n/10.95 ), puis tester l’expiration 
 et la période de grâce avec \TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_LIFE\_TIM
 E \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_GRACE\_TIME
-(./screenshots/4_3.tex [67] [68] [69]) [70] (./screenshots/4_4.tex [71]
-[72]) [73] (./screenshots/4_5.tex [74] [75])
+[62] (./screenshots/4_3.tex [63] [64] [65]) [66] (./screenshots/4_4.tex
+[67] [68]) [69] (./screenshots/4_5.tex [70] [71])
 Overfull \hbox (63.94943pt too wide) in paragraph at lines 109--113
 \TU/DejaVuSansMono(0)/m/n/10.95 2\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/
 10.95 IDLE\_TIME 30\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 FAILED\_
@@ -276,13 +276,13 @@ E\_TIME
 Overfull \hbox (3.18477pt too wide) in paragraph at lines 113--117
 []\TU/DejaVuSansMono(0)/m/n/10.95 DROP PROFILE p\_rh\_test CASCADE \TU/lmr/m/n/
 10.95 supprime le profil et réaffecte automatiquement LINA,
-[76]) (./report/ch5.tex (./screenshots/5_1.tex [77])
+[72]) (./report/ch5.tex (./screenshots/5_1.tex [73])
 Overfull \hbox (26.76753pt too wide) in paragraph at lines 12--15
 \TU/lmr/m/n/10.95 prédéfinies, parmi lesquelles \TU/DejaVuSansMono(0)/m/n/10.95
  ORA\_LOGON\_FAILURES\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 ORA\_A
 CCOUNT\_MGMT\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 ORA\_SECURECONF
 IG\TU/lmr/m/n/10.95 ,
-(./screenshots/5_2.tex [78] [79]) [80]
+(./screenshots/5_2.tex [74] [75]) [76]
 Overfull \hbox (6.28061pt too wide) in paragraph at lines 27--28
 []\TU/lmr/m/n/10.95 Les connexions OMAR/\TU/DejaVuSansMono(0)/m/n/10.95 faux \T
 U/lmr/m/n/10.95 (×2) et PIRATE/\TU/DejaVuSansMono(0)/m/n/10.95 x \TU/lmr/m/n/10
@@ -306,18 +306,18 @@ Underfull \hbox (badness 10000) in paragraph at lines 36--36
 Underfull \hbox (badness 10000) in paragraph at lines 36--36
 \TU/DejaVuSansMono(0)/m/n/10 DBMS\_AUDIT\_MGMT.FLUSH\_UNIFIED\_AUDIT\_TRAIL \TU
 /lmr/m/n/10 renvoie \TU/DejaVuSansMono(0)/m/n/10 PLS-00302: component
-(./screenshots/5_3.tex [81] [82]) [83]
+(./screenshots/5_3.tex [77])
 Overfull \hbox (5.4203pt too wide) in paragraph at lines 49--51
 \TU/lmr/m/n/10.95 contient les 5 enregistrements (\TU/DejaVuSansMono(0)/m/n/10.
 95 CREATE USER\TU/lmr/m/n/10.95 , \TU/DejaVuSansMono(0)/m/n/10.95 GRANT \TU/lmr
 /m/n/10.95 ×2, \TU/DejaVuSansMono(0)/m/n/10.95 REVOKE\TU/lmr/m/n/10.95 , \TU/De
 jaVuSansMono(0)/m/n/10.95 DROP USER\TU/lmr/m/n/10.95 ) avec \TU/DejaVuSansMono(
 0)/m/n/10.95 DBUSERNAME
-(./screenshots/5_4.tex [84] [85] [86] [87]) [88]
+[78] (./screenshots/5_4.tex [79] [80] [81] [82])
 Overfull \hbox (42.04938pt too wide) in paragraph at lines 65--67
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE AUDIT POLICY pol\_rh\_salaires ACTIONS
  SELECT, UPDATE, DELETE ON rh.employes
-
+[83]
 Overfull \hbox (0.80563pt too wide) in paragraph at lines 67--69
 []\TU/lmr/m/n/10.95 SARA (\TU/DejaVuSansMono(0)/m/n/10.95 SET ROLE r\_rh\_paie 
 IDENTIFIED BY "Paie\#2026"\TU/lmr/m/n/10.95 ) : \TU/DejaVuSansMono(0)/m/n/10.95
@@ -327,12 +327,12 @@ Overfull \hbox (35.54474pt too wide) in paragraph at lines 67--69
 \TU/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE rh.employes SET sal
 aire = salaire * 1.02 WHERE emp\_id = 7 \TU/lmr/m/n/10.95 (\TU/DejaVuSansMono(0
 )/m/n/10.95 1 row updated\TU/lmr/m/n/10.95 )
-(./screenshots/5_5.tex [89] [90] [91] [92] [93] [94] [95])
+(./screenshots/5_5.tex [84] [85] [86] [87] [88] [89] [90])
 Overfull \hbox (16.8864pt too wide) in paragraph at lines 87--89
 []\TU/DejaVuSansMono(0)/m/n/10.95 SYS\_CONTEXT('USERENV','CLIENT\_PROGRAM\_NAME
 ') \TU/lmr/m/n/10.95 renvoie \TU/DejaVuSansMono(0)/m/n/10.95 sqlplus@325ea91971
 6d (TNS
-[96]
+[91]
 Overfull \hbox (27.94077pt too wide) in paragraph at lines 92--93
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE AUDIT POLICY pol\_dba ROLES dba \TU/lm
 r/m/n/10.95 puis \TU/DejaVuSansMono(0)/m/n/10.95 AUDIT POLICY pol\_dba \TU/lmr/
@@ -353,7 +353,7 @@ Overfull \hbox (6.30344pt too wide) in paragraph at lines 105--107
 FGA sur \TU/DejaVuSansMono(0)/m/n/10.95 rh.employes \TU/lmr/m/n/10.95 (\TU/Deja
 VuSansMono(0)/m/n/10.95 SALAIRE > 30000\TU/lmr/m/n/10.95 , colonne \TU/DejaVuSa
 nsMono(0)/m/n/10.95 SALAIRE\TU/lmr/m/n/10.95 )
-(./screenshots/5_6.tex [97] [98]) [99]
+(./screenshots/5_6.tex [92] [93]) [94]
 Overfull \hbox (30.44662pt too wide) in paragraph at lines 113--114
 []\TU/DejaVuSansMono(0)/m/n/10.95 DBMS\_FGA.ADD\_POLICY(... policy\_name => 'FG
 A\_GROS\_SALAIRES', audit\_condition
@@ -366,7 +366,7 @@ Overfull \hbox (12.31519pt too wide) in paragraph at lines 117--119
 []\TU/DejaVuSansMono(0)/m/n/10.95 UNIFIED\_AUDIT\_TRAIL \TU/lmr/m/n/10.95 (\TU/
 DejaVuSansMono(0)/m/n/10.95 fga\_policy\_name = FGA\_GROS\_SALAIRES\TU/lmr/m/n/
 10.95 ) contient \TU/lmr/bx/n/10.95 une seule
-(./screenshots/5_7.tex [100] [101] [102] [103]) [104]
+(./screenshots/5_7.tex [95] [96] [97]) [98]
 Overfull \hbox (14.42598pt too wide) in paragraph at lines 136--137
 []\TU/DejaVuSansMono(0)/m/n/10.95 CREATE USER auditeur\TU/lmr/m/n/10.95 , \TU/D
 ejaVuSansMono(0)/m/n/10.95 GRANT CREATE SESSION\TU/lmr/m/n/10.95 , \TU/DejaVuSa
@@ -380,7 +380,7 @@ Overfull \hbox (1.78308pt too wide) in paragraph at lines 139--142
 []\TU/lmr/m/n/10.95 AUDITEUR tente \TU/DejaVuSansMono(0)/m/n/10.95 DROP AUDIT P
 OLICY pol\_rh\_salaires $\OMS/cmsy/m/n/10.95 !$ \TU/DejaVuSansMono(0)/m/n/10.95
  ORA-01031: insufficient
-) (./report/ch6.tex (./screenshots/6_init.tex [105] [106] [107])
+) (./report/ch6.tex (./screenshots/6_init.tex [99] [100] [101])
 Overfull \hbox (11.78053pt too wide) in paragraph at lines 11--13
 []\TU/lmr/m/n/10.95 L’utilisateur \TU/DejaVuSansMono(0)/m/n/10.95 BANQUE \TU/lm
 r/m/n/10.95 est créé avec \TU/DejaVuSansMono(0)/m/n/10.95 NO AUTHENTICATION \TU
@@ -392,7 +392,7 @@ Overfull \hbox (49.51152pt too wide) in paragraph at lines 15--17
 \TU/lmr/m/n/10.95 expose \TU/DejaVuSansMono(0)/m/n/10.95 client\_id, nom, cin, 
 telephone \TU/lmr/m/n/10.95 (pas de \TU/DejaVuSansMono(0)/m/n/10.95 revenu\_men
 suel\TU/lmr/m/n/10.95 ,
-[108]
+[102]
 Overfull \hbox (146.02568pt too wide) in paragraph at lines 29--46
  [] 
 
@@ -400,19 +400,19 @@ Overfull \hbox (43.40416pt too wide) in paragraph at lines 60--63
 []\TU/lmr/bx/n/10.95 E3 \TU/lmr/m/n/10.95 (soldes modifiables uniquement par P_
 OPERATION) : aucun rôle n’a \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE \TU/lmr/m/n/
 10.95 sur \TU/DejaVuSansMono(0)/m/n/10.95 comptes.solde \TU/lmr/m/n/10.95 ;
-(./screenshots/6_2.tex [109] [110] [111] [112])
+(./screenshots/6_2.tex [103] [104] [105] [106])
 Overfull \hbox (15.43379pt too wide) in paragraph at lines 75--79
 \TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_LOCK\_TIME 30/1440\TU/lmr/m/n/10.95 ,
  \TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_LIFE\_TIME 60\TU/lmr/m/n/10.95 , \TU
 /DejaVuSansMono(0)/m/n/10.95 PASSWORD\_REUSE\_TIME 365\TU/lmr/m/n/10.95 ,
-[113]
+[107]
 Overfull \hbox (23.44467pt too wide) in paragraph at lines 84--87
 []\TU/DejaVuSansMono(0)/m/n/10.95 P\_BQ\_SERVICE \TU/lmr/m/n/10.95 : \TU/DejaVu
 SansMono(0)/m/n/10.95 PASSWORD\_LIFE\_TIME UNLIMITED \TU/lmr/m/n/10.95 (pas d’e
 xpiration), \TU/DejaVuSansMono(0)/m/n/10.95 IDLE\_TIME DEFAULT\TU/lmr/m/n/10.95
  ,
-(./screenshots/6_3d.tex) [114] (./screenshots/6_4.tex [115] [116] [117]
-[118] [119]) (./screenshots/6_4c.tex [120] [121])
+(./screenshots/6_3d.tex) [108] (./screenshots/6_4.tex [109] [110] [111]
+[112]) (./screenshots/6_4c.tex [113])
 Overfull \hbox (43.91124pt too wide) in paragraph at lines 128--132
 []\TU/lmr/m/n/10.95 Les rôles sont affectés aux comptes : GUI1/GUI2 $\OMS/cmsy/
 m/n/10.95 !$ \TU/DejaVuSansMono(0)/m/n/10.95 R\_BQ\_GUICHET\TU/lmr/m/n/10.95 , 
@@ -423,14 +423,14 @@ Overfull \hbox (10.84666pt too wide) in paragraph at lines 132--135
 []\TU/DejaVuSansMono(0)/m/n/10.95 GRANT r\_bq\_guichet TO dir1 WITH ADMIN OPTIO
 N \TU/lmr/m/n/10.95 : DIR1 peut déléguer \TU/DejaVuSansMono(0)/m/n/10.95 R\_BQ\
 _GUICHET
-[122] (./screenshots/6_5.tex [123]) [124]
+[114] (./screenshots/6_5.tex [115]) [116]
 Overfull \hbox (6.3371pt too wide) in paragraph at lines 157--160
 []\TU/DejaVuSansMono(0)/m/n/10.95 POL\_BQ\_SOLDES \TU/lmr/m/n/10.95 et \TU/Deja
 VuSansMono(0)/m/n/10.95 POL\_BQ\_SOLDES\_OPS \TU/lmr/m/n/10.95 activés avec \TU
 /DejaVuSansMono(0)/m/n/10.95 WHENEVER NOT SUCCESSFUL \TU/lmr/m/n/10.95 : seules
 
-(./screenshots/6_6_a.tex [125]) (./screenshots/6_6_b.tex [126] [127] [128]
-[129]) (./screenshots/6_6_fond.tex) [130]
+(./screenshots/6_6_a.tex [117]) (./screenshots/6_6_b.tex [118] [119] [120]
+[121]) (./screenshots/6_6_fond.tex) [122]
 Overfull \hbox (119.37416pt too wide) in paragraph at lines 182--219
  [] 
 
@@ -438,12 +438,12 @@ Overfull \hbox (25.48312pt too wide) in paragraph at lines 223--226
 []\TU/lmr/m/n/10.95 Tests 4, 9, 13 : l’énoncé attend \TU/DejaVuSansMono(0)/m/n/
 10.95 ORA-01031 \TU/lmr/m/n/10.95 mais 26ai renvoie \TU/DejaVuSansMono(0)/m/n/1
 0.95 ORA-41900: missing UPDATE/DELETE
-(./screenshots/6_7.tex [131] [132] [133]) (./screenshots/6_7b.tex) [134]
+(./screenshots/6_7.tex [123] [124] [125]) (./screenshots/6_7b.tex) [126]
 Overfull \hbox (49.11896pt too wide) in paragraph at lines 260--265
 []\TU/lmr/bx/n/10.95 Tuer ses sessions ouvertes \TU/lmr/m/n/10.95 : \TU/DejaVuS
 ansMono(0)/m/n/10.95 SELECT sid, serial\# FROM v\$session WHERE username='GUI2'
 ;
-[135]
+[127]
 Overfull \hbox (18.78261pt too wide) in paragraph at lines 266--268
 []\TU/lmr/bx/n/10.95 Vérifier qu’il ne possède aucun objet \TU/lmr/m/n/10.95 : 
 \TU/DejaVuSansMono(0)/m/n/10.95 SELECT owner, object\_name FROM dba\_objects
@@ -455,11 +455,11 @@ ATE VIEW banque.v\_clients\_conseiller AS SELECT * FROM banque.clients
 Overfull \hbox (4.58919pt too wide) in paragraph at lines 302--309
 \TU/lmr/m/n/10.95 ajoute automatiquement le prédicate \TU/DejaVuSansMono(0)/m/n
 /10.95 conseiller = SYS\_CONTEXT('USERENV','SESSION\_USER')
-[136]) [137] (report/main.aux)
+[128]) [129] (report/main.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  )
 (see the transcript file for additional information)
-Output written on report/main.pdf (138 pages).
+Output written on report/main.pdf (130 pages).
 Transcript written on report/main.log.
