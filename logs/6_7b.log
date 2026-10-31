@@ -1,0 +1,41 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:31:36 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_7b.sql : Exercice 6.7 (T7) -- Requete 2 corrigée (objets BANQUE)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> COLUMN table_name FORMAT A25
+SQL> COLUMN grantee FORMAT A18
+SQL> COLUMN privilege FORMAT A18
+SQL> PROMPT === Requete 2 : objets BANQUE - qui dispose de quel privilège ===
+=== Requete 2 : objets BANQUE - qui dispose de quel privilège ===
+SQL> SELECT table_name, grantee, privilege
+  2    FROM dba_tab_privs
+  3   WHERE owner = 'BANQUE'
+  4   ORDER BY table_name, grantee, privilege;
+
+TABLE_NAME		  GRANTEE	     PRIVILEGE
+------------------------- ------------------ ------------------
+CLIENTS 		  R_BQ_AUDIT	     SELECT
+CLIENTS 		  R_BQ_CONSEILLER    INSERT
+CLIENTS 		  R_BQ_CONSEILLER    SELECT
+COMPTES 		  R_BQ_AUDIT	     SELECT
+COMPTES 		  R_BQ_BATCH	     SELECT
+COMPTES 		  R_BQ_CONSEILLER    INSERT
+COMPTES 		  R_BQ_GUICHET	     SELECT
+OPERATIONS		  R_BQ_AUDIT	     SELECT
+OPERATIONS		  R_BQ_CONSEILLER    SELECT
+P_OPERATION		  R_BQ_BATCH	     EXECUTE
+P_OPERATION		  R_BQ_GUICHET	     EXECUTE
+V_CLIENTS_GUICHET	  R_BQ_GUICHET	     SELECT
+
+12 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

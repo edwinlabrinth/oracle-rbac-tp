@@ -1,0 +1,49 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:24:24 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_4c.sql : Exercice 6.4 (T4) -- Contrôle E1/E2 avec dba_tab_privs
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> COLUMN utilisateur FORMAT A12
+SQL> COLUMN role FORMAT A20
+SQL> COLUMN table_name FORMAT A25
+SQL> COLUMN privilege FORMAT A15
+SQL> PROMPT === Privilèges objet effectifs via les rôles (contrôle E1/E2) ===
+=== Privilèges objet effectifs via les rôles (contrôle E1/E2) ===
+SQL> SELECT rp.grantee AS utilisateur, tp.grantee AS role, tp.table_name, tp.privilege
+  2    FROM dba_tab_privs tp
+  3   JOIN dba_role_privs rp ON tp.grantee = rp.granted_role
+  4   WHERE rp.grantee IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ')
+  5   ORDER BY rp.grantee, tp.table_name, tp.privilege;
+
+UTILISATEUR  ROLE		  TABLE_NAME		    PRIVILEGE
+------------ -------------------- ------------------------- ---------------
+APP_BATCH    R_BQ_BATCH 	  COMPTES		    SELECT
+APP_BATCH    R_BQ_BATCH 	  P_OPERATION		    EXECUTE
+AUD1	     R_BQ_AUDIT 	  CLIENTS		    SELECT
+AUD1	     R_BQ_AUDIT 	  COMPTES		    SELECT
+AUD1	     R_BQ_AUDIT 	  OPERATIONS		    SELECT
+CONS1	     R_BQ_CONSEILLER	  CLIENTS		    INSERT
+CONS1	     R_BQ_CONSEILLER	  CLIENTS		    SELECT
+CONS1	     R_BQ_CONSEILLER	  COMPTES		    INSERT
+CONS1	     R_BQ_CONSEILLER	  OPERATIONS		    SELECT
+DIR1	     R_BQ_GUICHET	  COMPTES		    SELECT
+DIR1	     R_BQ_GUICHET	  P_OPERATION		    EXECUTE
+DIR1	     R_BQ_GUICHET	  V_CLIENTS_GUICHET	    SELECT
+GUI1	     R_BQ_GUICHET	  COMPTES		    SELECT
+GUI1	     R_BQ_GUICHET	  P_OPERATION		    EXECUTE
+GUI1	     R_BQ_GUICHET	  V_CLIENTS_GUICHET	    SELECT
+GUI2	     R_BQ_GUICHET	  COMPTES		    SELECT
+GUI2	     R_BQ_GUICHET	  P_OPERATION		    EXECUTE
+GUI2	     R_BQ_GUICHET	  V_CLIENTS_GUICHET	    SELECT
+
+18 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

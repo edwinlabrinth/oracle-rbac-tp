@@ -1,0 +1,172 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:29:12 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_6_b.sql : Exercice 6.6 (T6) -- Campagne de tests, partie B (tests 7-16)
+SQL> -- Une session de fond GUI1 doit etre ouverte en parallele (6_6_fond) avant ce script
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> 
+SQL> PROMPT === TEST 7 ===
+=== TEST 7 ===
+SQL> CONNECT gui1/"Ag1#Banque2026"@//localhost/FREEPDB1
+ERROR:
+ORA-02391: exceeded simultaneous SESSIONS_PER_USER limit
+Help: https://docs.oracle.com/error-help/db/ora-02391/
+
+
+SQL> 
+SQL> PROMPT === TEST 8 ===
+=== TEST 8 ===
+SQL> CONNECT cons1/"Cn1#Conseil2026"@//localhost/FREEPDB1
+Connected.
+SQL> UPDATE banque.clients SET telephone = '0661000099' WHERE client_id = 2;
+
+1 row updated.
+
+SQL> COMMIT;
+
+Commit complete.
+
+SQL> 
+SQL> PROMPT === TEST 9 ===
+=== TEST 9 ===
+SQL> UPDATE banque.clients SET cin = 'K999999' WHERE client_id = 2;
+UPDATE banque.clients SET cin = 'K999999' WHERE client_id = 2
+              *
+ERROR at line 1:
+ORA-41900: missing UPDATE privilege on "BANQUE"."CLIENTS"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> PROMPT === TEST 10 ===
+=== TEST 10 ===
+SQL> CONNECT dir1/"Dir1#Banque2026!"@//localhost/FREEPDB1
+Connected.
+SQL> GRANT r_bq_guichet TO gui3;
+
+Grant succeeded.
+
+SQL> 
+SQL> PROMPT === TEST 11 ===
+=== TEST 11 ===
+SQL> GRANT r_bq_conseiller TO gui3;
+GRANT r_bq_conseiller TO gui3
+*
+ERROR at line 1:
+ORA-01932: Role "R_BQ_CONSEILLER" has not been granted with WITH ADMIN OPTION
+Help: https://docs.oracle.com/error-help/db/ora-01932/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT === TEST 12 ===
+=== TEST 12 ===
+SQL> CONNECT aud1/"Aud1#Banque2026!"@//localhost/FREEPDB1
+Connected.
+SQL> SET ROLE r_bq_audit;
+
+Role set.
+
+SQL> SELECT COUNT(*) FROM banque.operations;
+
+  COUNT(*)
+----------
+	 3
+
+1 row selected.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT === TEST 13 ===
+=== TEST 13 ===
+SQL> CONNECT aud1/"Aud1#Banque2026!"@//localhost/FREEPDB1
+Connected.
+SQL> DELETE FROM banque.operations WHERE op_id = 1;
+DELETE FROM banque.operations WHERE op_id = 1
+                   *
+ERROR at line 1:
+ORA-41900: missing DELETE privilege on "BANQUE"."OPERATIONS"
+Help: https://docs.oracle.com/error-help/db/ora-41900/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT === TEST 14 ===
+=== TEST 14 ===
+SQL> CONNECT gui2/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+Warning: You are no longer connected to ORACLE.
+SQL> CONNECT gui2/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT gui2/"faux"@//localhost/FREEPDB1
+ERROR:
+ORA-01017: invalid credential or not authorized; logon denied
+Help: https://docs.oracle.com/error-help/db/ora-01017/
+
+
+SQL> CONNECT gui2/"Ag2#Banque2026"@//localhost/FREEPDB1
+ERROR:
+ORA-28000: The account is locked; login denied.
+Help: https://docs.oracle.com/error-help/db/ora-28000/
+
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> ALTER USER gui2 ACCOUNT UNLOCK;
+
+User altered.
+
+SQL> 
+SQL> PROMPT === TEST 15 ===
+=== TEST 15 ===
+SQL> CONNECT dev_bq[banque]/"Dev1#Banque2026"@//localhost/FREEPDB1
+Connected.
+SQL> CREATE INDEX idx_ops_compte ON banque.operations(compte_id);
+
+Index created.
+
+SQL> DROP INDEX idx_ops_compte;
+
+Index dropped.
+
+SQL> 
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT === TEST 16 ===
+=== TEST 16 ===
+SQL> CONNECT app_batch/"BAtch##2026!"@//localhost/FREEPDB1
+Connected.
+SQL> EXECUTE banque.p_operation(1002, 'DEPOT', 1200);
+
+PL/SQL procedure successfully completed.
+
+SQL> SELECT compte_id, solde FROM banque.comptes WHERE compte_id = 1002;
+
+ COMPTE_ID	SOLDE
+---------- ----------
+      1002	92400
+
+1 row selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

@@ -1,0 +1,123 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:31:28 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_7.sql : Exercice 6.7 (T7) -- Revue des habilitations (3 requêtes pour l'auditeur)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> COLUMN username FORMAT A14
+SQL> COLUMN profile FORMAT A16
+SQL> COLUMN account_status FORMAT A14
+SQL> COLUMN expiry_date FORMAT A16
+SQL> COLUMN roles FORMAT A60
+SQL> PROMPT === Requete 1 : utilisateurs metier - profil, etat, expiration, roles (LISTAGG) ===
+=== Requete 1 : utilisateurs metier - profil, etat, expiration, roles (LISTAGG) ===
+SQL> SELECT u.username,
+  2  	    u.profile,
+  3  	    u.account_status,
+  4  	    TO_CHAR(u.expiry_date, 'DD-MON-YYYY') AS expiry_date,
+  5  	    LISTAGG(rp.granted_role, ', ') WITHIN GROUP (ORDER BY rp.granted_role) AS roles
+  6    FROM dba_users u
+  7    LEFT JOIN dba_role_privs rp ON u.username = rp.grantee
+  8   WHERE u.username IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ','GUI3')
+  9   GROUP BY u.username, u.profile, u.account_status, u.expiry_date
+ 10   ORDER BY u.username;
+
+USERNAME       PROFILE		ACCOUNT_STATUS EXPIRY_DATE
+-------------- ---------------- -------------- ----------------
+ROLES
+------------------------------------------------------------
+APP_BATCH      P_BQ_SERVICE	OPEN
+R_BQ_BATCH
+
+AUD1	       P_BQ_SENSIBLE	OPEN	       30-DEC-2026
+R_BQ_AUDIT
+
+CONS1	       P_BQ_CONSEIL	OPEN	       30-DEC-2026
+R_BQ_CONSEILLER
+
+DEV_BQ	       DEFAULT		OPEN
+R_BQ_CONNEXION
+
+DIR1	       P_BQ_SENSIBLE	OPEN	       30-DEC-2026
+R_BQ_DIRECTEUR, R_BQ_GUICHET
+
+GUI1	       P_BQ_AGENT	OPEN	       30-DEC-2026
+R_BQ_GUICHET
+
+GUI2	       P_BQ_AGENT	OPEN	       30-DEC-2026
+R_BQ_GUICHET
+
+GUI3	       P_BQ_AGENT	OPEN	       30-DEC-2026
+R_BQ_GUICHET
+
+
+8 rows selected.
+
+SQL> 
+SQL> COLUMN owner FORMAT A10
+SQL> COLUMN object_name FORMAT A25
+SQL> COLUMN grantee FORMAT A18
+SQL> COLUMN privilege FORMAT A18
+SQL> PROMPT === Requete 2 : objets BANQUE - qui dispose de quel privilège ===
+=== Requete 2 : objets BANQUE - qui dispose de quel privilège ===
+SQL> SELECT object_name, grantee, privilege
+  2    FROM dba_tab_privs
+  3   WHERE owner = 'BANQUE'
+  4   ORDER BY object_name, grantee, privilege;
+SELECT object_name, grantee, privilege
+       *
+ERROR at line 1:
+ORA-00904: "OBJECT_NAME": invalid identifier
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+
+
+SQL> 
+SQL> COLUMN unified_audit_policies FORMAT A30
+SQL> COLUMN dbusername FORMAT A15
+SQL> COLUMN nb FORMAT 9999
+SQL> PROMPt === Requete 3 : evenements d'audit par politique et utilisateur (7 jours) ===
+=== Requete 3 : evenements d'audit par politique et utilisateur (7 jours) ===
+SQL> SELECT unified_audit_policies, dbusername, COUNT(*) AS nb
+  2    FROM unified_audit_trail
+  3   WHERE event_timestamp > SYSTIMESTAMP - INTERVAL '7' DAY
+  4   GROUP BY unified_audit_policies, dbusername
+  5   ORDER BY unified_audit_policies, dbusername;
+
+UNIFIED_AUDIT_POLICIES	       DBUSERNAME	  NB
+------------------------------ --------------- -----
+ORA$MANDATORY		       SYS		   9
+ORA_ACCOUNT_MGMT	       AUD1		   2
+ORA_ACCOUNT_MGMT	       DIR1		   4
+ORA_ACCOUNT_MGMT	       SYS		  53
+ORA_LOGON_FAILURES	       APP_BATCH	   2
+ORA_LOGON_FAILURES	       AUD1		   4
+ORA_LOGON_FAILURES	       BANQUE		   2
+ORA_LOGON_FAILURES	       CONS1		   2
+ORA_LOGON_FAILURES	       DEV_BQ		   2
+ORA_LOGON_FAILURES	       DIR1		   2
+ORA_LOGON_FAILURES	       GUI1		   6
+ORA_LOGON_FAILURES	       GUI2		   8
+ORA_LOGON_FAILURES	       SYS		  24
+POL_BQ_CLIENTS		       APP_BATCH	   4
+POL_BQ_CLIENTS		       CONS1		   2
+POL_BQ_CLIENTS		       GUI1		   4
+POL_BQ_CLIENTS		       SYS		  62
+POL_BQ_CLIENTS, POL_BQ_SOLDES, CONS1		   2
+ POL_BQ_SOLDES_OPS
+
+POL_BQ_CLIENTS, POL_BQ_SOLDES, GUI1		   1
+ POL_BQ_SOLDES_OPS
+
+POL_BQ_SOLDES_OPS	       AUD1		   2
+			       GUI1		   1
+
+21 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

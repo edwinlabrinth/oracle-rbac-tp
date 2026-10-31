@@ -1,0 +1,321 @@
+\section{Étude de cas : Banque Atlas}
+
+\subsection{6\_init — Initialisation du schéma BANQUE}
+\textbf{Objectif.} Créer le schéma BANQUE (tables clients, comptes, opérations, vue v\_clients\_guichet,
+procédure p\_operation) et peupler les données de test.
+
+\shots{6_init}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item L'utilisateur \code{BANQUE} est créé avec \code{NO AUTHENTICATION} et
+        \code{QUOTA UNLIMITED ON users} (schéma seulement, pas de connexion directe).
+  \item Les tables \code{clients} (4 lignes), \code{comptes} (5 lignes) et
+        \code{operations} sont créées et peuplées.
+  \item La vue \code{v\_clients\_guichet} expose \code{client\_id, nom, cin, telephone}
+        (pas de \code{revenu\_mensuel}, pas de \code{conseiller}).
+  \item La procédure \code{p\_operation} se compile sans erreur : elle est la seule porte
+        d'entrée pour les mouvements d'argent (droits du définisseur), contrôle le solde et
+        journalise dans \code{operations} avec \code{SYS\_CONTEXT('USERENV','SESSION\_USER')}.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{Exercice 6.1 — T1 : Matrice RBAC}
+\textbf{Objectif.} Construire la matrice rôles × objets et justifier chaque case au regard des
+exigences E1 à E3.
+
+\begin{center}
+\small
+\begin{tabular}{|l|c|c|c|c|c|c|}
+\hline
+\textbf{Rôle} & \code{CREATE SESSION} & \code{clients} & \code{comptes} & \code{operations} & \code{v\_clients\_guichet} & \code{p\_operation} \\
+\hline
+\code{R\_BQ\_CONNEXION} & \textbf{Oui} & -- & -- & -- & -- & -- \\
+\hline
+\code{R\_BQ\_GUICHET} & via CONNEXION & -- & SELECT & -- & SELECT & EXECUTE \\
+\hline
+\code{R\_BQ\_CONSEILLER} & via GUICHET & SELECT, INSERT & INSERT & SELECT & SELECT (hérité) & EXECUTE (hérité) \\
+\hline
+\code{R\_BQ\_DIRECTEUR} & via CONSEILLER & (hérité) & (hérité) & (hérité) & (hérité) & EXECUTE (hérité) \\
+\hline
+\code{R\_BQ\_AUDIT} & \textbf{Oui} & SELECT & SELECT & SELECT & -- & -- \\
+\hline
+\code{R\_BQ\_BATCH} & via CONNEXION & -- & SELECT & -- & -- & EXECUTE \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Héritages :} \code{R\_BQ\_GUICHET} $\to$ \code{R\_BQ\_CONNEXION} ;
+\code{R\_BQ\_CONSEILLER} $\to$ \code{R\_BQ\_GUICHET} $\to$ \code{R\_BQ\_CONNEXION} ;
+\code{R\_BQ\_DIRECTEUR} $\to$ \code{R\_BQ\_CONSEILLER} ; \code{R\_BQ\_AUDIT} et
+\code{R\_BQ\_BATCH} $\to$ \code{R\_BQ\_CONNEXION}.
+
+\textbf{Justification (E1–E3) :}
+\begin{enumerate}
+  \item \textbf{E1} (aucun privilège direct aux utilisateurs métier) : tous les privilèges
+        sont accordés aux rôles, jamais directement aux comptes GUI1, GUI2, CONS1, DIR1,
+        AUD1, APP\_BATCH.
+  \item \textbf{E2} (pas de ANY, pas de DBA/CONNECT/RESOURCE direct) : aucun compte métier
+        ne possède ces rôles/privilèges directement.
+  \item \textbf{E3} (soldes modifiables uniquement par P\_OPERATION) : aucun rôle n'a
+        \code{UPDATE} sur \code{comptes.solde} ; seule la procédure \code{p\_operation}
+        (droits du définisseur) modifie les soldes.
+\end{enumerate}
+\textbf{Seul privilège avec retransmission :} \code{GRANT r\_bq\_guichet TO dir1 WITH ADMIN
+OPTION} (accordé directement au compte DIR1, pas via le rôle R\_BQ\_DIRECTEUR).
+
+\subsection{Exercice 6.2 — T2 : Profils}
+\textbf{Objectif.} Créer \code{P\_BQ\_AGENT}, \code{P\_BQ\_CONSEIL}, \code{P\_BQ\_SENSIBLE}
+et \code{P\_BQ\_SERVICE} conformément à E4 et E5.
+
+\shots{6_2}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{P\_BQ\_AGENT} : \code{SESSIONS\_PER\_USER 1}, \code{IDLE\_TIME 10},
+        \code{FAILED\_LOGIN\_ATTEMPTS 3}, \code{PASSWORD\_LOCK\_TIME 30/1440},
+        \code{PASSWORD\_LIFE\_TIME 60}, \code{PASSWORD\_REUSE\_TIME 365},
+        \code{PASSWORD\_REUSE\_MAX 5}, \code{PASSWORD\_VERIFY\_FUNCTION ORA12C\_VERIFY\_FUNCTION}.
+  \item \code{P\_BQ\_CONSEIL} : identique à \code{P\_BQ\_AGENT} sauf
+        \code{SESSIONS\_PER\_USER 2} (le conseiller a besoin de 2 sessions).
+  \item \code{P\_BQ\_SENSIBLE} : mêmes règles E4 que l'agent, avec
+        \code{ORA12C\_STRONG\_VERIFY\_FUNCTION} (E5 : mot de passe renforcé pour directeur
+        et auditeur).
+  \item \code{P\_BQ\_SERVICE} : \code{PASSWORD\_LIFE\_TIME UNLIMITED} (pas d'expiration),
+        \code{IDLE\_TIME DEFAULT}, \code{SESSIONS\_PER\_USER DEFAULT} (plusieurs sessions),
+        fonction forte, verrouillage court (éviter déni de service).
+\end{enumerate}
+\textbf{Gestion de la différence guichet (1 session) / conseiller (2 sessions) :}
+deux profils distincts (\code{P\_BQ\_AGENT} et \code{P\_BQ\_CONSEIL}) car
+\code{SESSIONS\_PER\_USER} est un paramètre de profil. Alternative : un seul profil +
+trigger de connexion, mais moins standard et plus complexe à maintenir.
+\ecart{Aucun.}
+
+\subsection{Exercice 6.3 — T3 : Comptes}
+\textbf{Objectif.} Créer GUI1, GUI2, CONS1, DIR1, AUD1, APP\_BATCH, DEV\_BQ avec le bon
+profil, aucun quota, mot de passe conforme à la fonction de vérification, et le proxy
+DEV\_BQ $\to$ BANQUE.
+
+\shots{6_3d}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{GUI1}, \code{GUI2} (\code{P\_BQ\_AGENT}) ; \code{CONS1} (\code{P\_BQ\_CONSEIL}) ;
+        \code{DIR1}, \code{AUD1} (\code{P\_BQ\_SENSIBLE}) ; \code{APP\_BATCH}
+        (\code{P\_BQ\_SERVICE}) ; \code{DEV\_BQ} (\code{DEFAULT}).
+  \item Aucun quota n'est affecté (la requête \code{DBA\_TS\_QUOTAS} est vide pour ces
+        comptes).
+  \item Les mots de passe respectent les fonctions de vérification (ex. \code{ORA12C\_VERIFY\_FUNCTION}
+        rejette les mots de passe contenant le nom d'utilisateur ; plusieurs tentatives ont
+        été nécessaires pour trouver des mots de passe conformes).
+  \item \code{ALTER USER banque GRANT CONNECT THROUGH dev\_bq} autorise le proxy.
+  \item \code{DEV\_BQ} n'a pas besoin de quota : les objets qu'il crée (index, vues)
+        appartiennent au schéma \code{BANQUE} (via la connexion proxy
+        \code{dev\_bq[banque]}), et \code{BANQUE} a le quota \code{UNLIMITED}.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{Exercice 6.4 — T4 : Rôles et habilitations}
+\textbf{Objectif.} Implémenter la matrice T1, attribuer les rôles aux comptes, déléguer
+\code{R\_BQ\_GUICHET} à DIR1 avec ADMIN OPTION, et vérifier E1/E2.
+
+\shots{6_4}
+\shots{6_4c}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Tous les rôles sont créés avec la bonne hiérarchie d'héritage.
+  \item Les rôles sont affectés aux comptes : GUI1/GUI2 $\to$ \code{R\_BQ\_GUICHET},
+        CONS1 $\to$ \code{R\_BQ\_CONSEILLER}, DIR1 $\to$ \code{R\_BQ\_DIRECTEUR},
+        AUD1 $\to$ \code{R\_BQ\_AUDIT}, APP\_BATCH $\to$ \code{R\_BQ\_BATCH},
+        DEV\_BQ $\to$ \code{R\_BQ\_CONNEXION}.
+  \item \code{GRANT r\_bq\_guichet TO dir1 WITH ADMIN OPTION} : DIR1 peut déléguer
+        \code{R\_BQ\_GUICHET} (test 10 réussit) mais pas \code{R\_BQ\_CONSEILLER}
+        (test 11 : \code{ORA-01932}).
+  \item Contrôle E1 : tous les privilèges objet passent par les rôles (requête 6\_4c),
+        aucun privilège direct aux utilisateurs.
+  \item Contrôle E2 : aucun privilège système direct (\code{DBA\_SYS\_PRIVS} vide pour les
+        utilisateurs métier), aucun rôle DBA/CONNECT/RESOURCE directement affecté.
+  \item Arbre des rôles de DIR1 :
+        \code{R\_BQ\_DIRECTEUR} $\to$ \code{R\_BQ\_CONSEILLER} $\to$ \code{R\_BQ\_GUICHET}
+        $\to$ \code{R\_BQ\_CONNEXION}.
+\end{enumerate}
+\ecart{Aucun.}
+
+\subsection{Exercice 6.5 — T5 : Audit}
+\textbf{Objectif.} Mettre en place l'audit répondant à E6 à E8 :
+\code{POL\_BQ\_CLIENTS} (modifications clients), \code{POL\_BQ\_SOLDES} (échecs seulement
+sur comptes/opérations), FGA \code{FGA\_BQ\_GROS\_MONTANTS} (insertions $\ge$ 50 000),
+et \code{ORA\_ACCOUNT\_MGMT} (E8).
+
+\shots{6_5}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item \code{POL\_BQ\_CLIENTS} (\code{INSERT, UPDATE, DELETE ON banque.clients}) :
+        succès et échecs tracés (E6).
+  \item \code{POL\_BQ\_SOLDES} et \code{POL\_BQ\_SOLDES\_OPS} activés avec
+        \code{WHENEVER NOT SUCCESSFUL} : seules les tentatives de modification directe
+        des soldes échouées sont tracées (E6).
+  \item \code{FGA\_BQ\_GROS\_MONTANTS} sur \code{banque.operations} (\code{INSERT},
+        \code{MONTANT >= 50000}) : trace les gros montants avec l'agent (E7).
+  \item \code{ORA\_ACCOUNT\_MGMT} activé : trace CREATE USER, GRANT, REVOKE, DROP USER
+        (E8).
+\end{enumerate}
+\textbf{Pourquoi POL\_BQ\_SOLDES ne trace pas les succès :} les modifications légitimes
+des soldes passent par \code{p\_operation} (droits du définisseur) et sont déjà
+journalisées dans la table \code{operations}. Tracer les succès noierait la trace sous du
+bruit ; seules les tentatives directes et non autorisées (échecs) méritent d'être
+signalées.
+\ecart{\code{AUDIT\_UNIFIED\_ENABLED\_POLICIES} n'affiche pas les politiques activées
+(écart récurrent 26ai).}
+
+\subsection{Exercice 6.6 — T6 : Campagne de tests (16 tests)}
+\textbf{Objectif.} Exécuter les 16 tests, comparer attendu vs obtenu, et corriger les écarts.
+
+\shots{6_6_a}
+\shots{6_6_b}
+\shots{6_6_fond}
+
+\begin{center}
+\small
+\begin{tabular}{|c|l|l|l|l|}
+\hline
+\textbf{N°} & \textbf{Compte} & \textbf{Action} & \textbf{Attendu} & \textbf{Obtenu} \\
+\hline
+1 & GUI1 & lire v\_clients\_guichet & succès & succès (4 lignes) \\
+\hline
+2 & GUI1 & lire revenu\_mensuel dans clients & ORA-00942 & ORA-00942 \\
+\hline
+3 & GUI1 & dépôt 2000 sur 1003 via p\_operation & succès & succès (solde 6200) \\
+\hline
+4 & GUI1 & UPDATE comptes solde = 1e6 & ORA-01031 + trace & ORA-41900 \\
+\hline
+5 & GUI1 & retrait 60000 sur 1002 via p\_operation & succès + FGA & succès + trace FGA \\
+\hline
+6 & GUI1 & retrait 5000 sur 1005 & ORA-20002 & ORA-20002 \\
+\hline
+7 & GUI1 & ouvrir 2e session & ORA-02391 & ORA-02391 \\
+\hline
+8 & CONS1 & modifier téléphone client 2 & succès + trace & succès + trace POL\_BQ\_CLIENTS \\
+\hline
+9 & CONS1 & modifier CIN client 2 & ORA-01031 & ORA-41900 \\
+\hline
+10 & DIR1 & accorder R\_BQ\_GUICHET à GUI3 & succès + trace & succès + trace ORA\_ACCOUNT\_MGMT \\
+\hline
+11 & DIR1 & accorder R\_BQ\_CONSEILLER à GUI3 & ORA-01932 & ORA-01932 \\
+\hline
+12 & AUD1 & lire operations + trace & succès & succès (3 opérations) \\
+\hline
+13 & AUD1 & DELETE FROM banque.operations & ORA-01031 & ORA-41900 \\
+\hline
+14 & GUI2 & 3 mauvais mdp puis le bon & ORA-28000 & ORA-28000 \\
+\hline
+15 & DEV\_BQ & connexion dev\_bq[banque] + index & succès & succès \\
+\hline
+16 & APP\_BATCH & dépôt intérêts 1200 sur 1002 & succès & succès (solde 92400) \\
+\hline
+\end{tabular}
+\end{center}
+
+\textbf{Écarts et corrections :}
+\begin{enumerate}
+  \item Tests 4, 9, 13 : l'énoncé attend \code{ORA-01031} mais 26ai renvoie
+        \code{ORA-41900: missing UPDATE/DELETE privilege} (écart connu, chapitre 2).
+        Le comportement est équivalent (refus d'accès) ; aucun correctif nécessaire.
+  \item Test 15 : initialement échouait avec \code{ORA-01045} car \code{BANQUE} n'avait
+        pas \code{CREATE SESSION}. Corrigé par \code{GRANT CREATE SESSION TO banque}.
+  \item Le test 7 (2e session GUI1) a nécessité une session de fond ouverte en parallèle
+        (\code{6\_6\_fond}) pour saturer la limite \code{SESSIONS\_PER\_USER 1}.
+\end{enumerate}
+
+\subsection{Exercice 6.7 — T7 : Revue des habilitations}
+\textbf{Objectif.} Produire trois requêtes de revue pour l'auditeur.
+
+\shots{6_7}
+\shots{6_7b}
+
+\textbf{Observations et réponses.}
+\begin{enumerate}
+  \item Requête 1 (\code{LISTAGG} des rôles par utilisateur) : 8 utilisateurs métier,
+        chacun avec son profil, son état (\code{OPEN}), sa date d'expiration et ses rôles
+        directs concaténés.
+  \item Requête 2 : tous les privilèges objet sur le schéma \code{BANQUE} sont accordés
+        aux rôles (jamais directement aux utilisateurs), conformément à E1.
+  \item Requête 3 : événements d'audit par politique et utilisateur sur 7 jours
+        (\code{ORA\_ACCOUNT\_MGMT}, \code{ORA\_LOGON\_FAILURES}, \code{POL\_BQ\_CLIENTS},
+        \code{POL\_BQ\_SOLDES\_OPS}, \code{ORA\$MANDATORY}).
+\end{enumerate}
+\ecart{La requête 2 utilise \code{TABLE\_NAME} (et non \code{OBJECT\_NAME}) car
+\code{DBA\_TAB\_PRIVS} n'a pas de colonne \code{OBJECT\_NAME} en 26ai.}
+
+\subsection{Exercice 6.8 — Questions de synthèse}
+\textbf{Objectif.} Répondre aux 6 questions de synthèse en prose.
+
+\subsubsection{1. Départ de GUI2}
+GUI2 quitte la banque. Procédure complète :
+\begin{enumerate}
+  \item \textbf{Verrouiller immédiatement} le compte :
+        \code{ALTER USER gui2 ACCOUNT LOCK;} (empêche toute nouvelle connexion).
+  \item \textbf{Tuer ses sessions ouvertes} :
+        \code{SELECT sid, serial\# FROM v\$session WHERE username='GUI2';} puis
+        \code{ALTER SYSTEM KILL SESSION 'sid,serial\#' IMMEDIATE;}
+        (comme au chapitre 3.3, la révocation des rôles ne suffit pas pour les sessions
+        déjà ouvertes).
+  \item \textbf{Révoquer ses rôles} : \code{REVOKE r\_bq\_guichet FROM gui2;}
+  \item \textbf{Vérifier qu'il ne possède aucun objet} :
+        \code{SELECT owner, object\_name FROM dba\_objects WHERE owner='GUI2';}
+  \item \textbf{Consulter son historique d'audit} dans \code{UNIFIED\_AUDIT\_TRAIL}
+        pour garder une trace de ses dernières actions.
+  \item \textbf{Supprimer le compte plus tard} (après la durée de conservation légale)
+        : \code{DROP USER gui2 CASCADE;}
+\end{enumerate}
+\textbf{Faut-il supprimer immédiatement ?} Non. On verrouille et on révoque
+immédiatement pour couper l'accès, mais on conserve le compte (et ses objets/audit)
+pendant la durée de conservation requise avant suppression définitive.
+
+\subsubsection{2. Pourquoi P\_OPERATION protège mieux qu'un GRANT UPDATE(solde)}
+\code{P\_OPERATION} (droits du définisseur) centralise : contrôle de validité du montant
+(\code{> 0}), vérification du solde suffisant pour les retraits (\code{ORA-20002}),
+mise à jour atomique du solde \textbf{et} journalisation dans \code{operations} (agent,
+montant, type, date), le tout dans une transaction avec \code{COMMIT}. Un
+\code{GRANT UPDATE(solde)} direct aux guichetiers permettrait de modifier le solde
+arbitrairement sans contrôle ni journalisation, contournant E3.
+
+\subsubsection{3. Risque de la délégation du directeur}
+DIR1 a \code{R\_BQ\_GUICHET} avec \code{ADMIN OPTION} : il peut créer des habilitations
+excessives ou frauduleuses (accorder le rôle à n'importe qui). L'audit
+\code{ORA\_ACCOUNT\_MGMT} trace chaque \code{GRANT}/\code{REVOKE} (qui, quand, quel rôle).
+L'\code{ADMIN OPTION} ne se révoque pas en cascade : si on retire le rôle à DIR1, les
+comptes qu'il a habilités conservent leur rôle. Il faut donc auditer et réviser
+régulièrement.
+
+\subsubsection{4. Le DBA (SYS) peut lire les revenus — acceptable ?}
+Non, ce n'est pas acceptable dans un contexte strict car le DBA a un accès total aux
+données sensibles (\code{revenu\_mensuel}). Solutions Oracle au-delà du TP :
+Oracle Database Vault (séparation des tâches DBA / sécurité), Transparent Data
+Encryption (chiffrement des données), Data Redaction (masquage dynamique), Virtual
+Private Database (filtrage ligne par ligne), Oracle Label Security (étiquettes de
+confidentialité), Audit Vault and Database Firewall (audit centralisé).
+
+\subsubsection{5. Limiter le conseiller à ses clients}
+Créer une vue filtrée :
+\code{CREATE VIEW banque.v\_clients\_conseiller AS SELECT * FROM banque.clients WHERE
+conseiller = SYS\_CONTEXT('USERENV','SESSION\_USER');} (les valeurs de la colonne
+\code{conseiller} sont des noms d'utilisateur). Ou mettre en place une politique VPD
+(\code{DBMS\_RLS}) qui ajoute automatiquement le prédicate
+\code{conseiller = SYS\_CONTEXT('USERENV','SESSION\_USER')} sur les requêtes de
+\code{clients}.
+
+\subsubsection{6. Deux améliorations de la politique de l'agence}
+\begin{enumerate}
+  \item \textbf{Authentification forte / centralisée} : remplacer l'authentification
+        mot de passe par Oracle Database Vault ou une authentification multifactorielle,
+        et centraliser la gestion des comptes (LDAP / Active Directory) pour éviter la
+        prolifération de mots de passe locaux.
+  \item \textbf{Chiffrement et révision périodique} : activer TDE sur les tables
+        sensibles (clients, opérations), chiffrer les échanges réseau (TLS), et mettre en
+        place une revue trimestrielle des habilitations avec l'analyse des privilèges
+        (\code{DBMS\_PRIVILEGE\_CAPTURE}) pour retirer les droits inutilisés.
+\end{enumerate}
+\ecart{Aucun.}

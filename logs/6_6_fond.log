@@ -1,0 +1,16 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:29:09 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_6_fond.sql : Session de fond GUI1 pour le test 7 (2e session simultanee)
+SQL> CONNECT gui1/"Ag1#Banque2026"@//localhost/FREEPDB1
+Connected.
+SQL> EXEC DBMS_SESSION.SLEEP(120)
+
+PL/SQL procedure successfully completed.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

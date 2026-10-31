@@ -1,0 +1,72 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:24:07 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_4b.sql : Exercice 6.4 (T4) -- Contrôle des rôles et habilitations (requête corrigée)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> COLUMN utilisateur FORMAT A12
+SQL> COLUMN role FORMAT A20
+SQL> COLUMN table_name FORMAT A25
+SQL> COLUMN privilege FORMAT A15
+SQL> PROMPT === Privilèges objet effectifs via les rôles (contrôle E1/E2) ===
+=== Privilèges objet effectifs via les rôles (contrôle E1/E2) ===
+SQL> SELECT rp.grantee AS utilisateur, tp.grantee AS role, tp.table_name, tp.privilege
+  2    FROM role_tab_privs tp
+  3   JOIN dba_role_privs rp ON tp.grantee = rp.granted_role
+  4   WHERE rp.grantee IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ')
+  5   ORDER BY rp.grantee, tp.table_name, tp.privilege;
+ JOIN dba_role_privs rp ON tp.grantee = rp.granted_role
+                           *
+ERROR at line 3:
+ORA-00904: "TP"."GRANTEE": invalid identifier
+Help: https://docs.oracle.com/error-help/db/ora-00904/
+
+
+SQL> 
+SQL> PROMPT === Aucun privilège système direct aux utilisateurs métier (E2) ===
+=== Aucun privilège système direct aux utilisateurs métier (E2) ===
+SQL> COLUMN grantee FORMAT A12
+SQL> COLUMN privilege FORMAT A30
+SQL> SELECT grantee, privilege
+  2    FROM dba_sys_privs
+  3   WHERE grantee IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ','GUI3');
+
+no rows selected
+
+SQL> 
+SQL> PROMPT === Aucun rôle DBA/CONNECT/RESOURCE direct aux utilisateurs métier (E2) ===
+=== Aucun rôle DBA/CONNECT/RESOURCE direct aux utilisateurs métier (E2) ===
+SQL> SELECT grantee, granted_role
+  2    FROM dba_role_privs
+  3   WHERE grantee IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ','GUI3')
+  4  	AND granted_role IN ('DBA','CONNECT','RESOURCE');
+
+no rows selected
+
+SQL> 
+SQL> PROMPT === Arbre des rôles de DIR1 ===
+=== Arbre des rôles de DIR1 ===
+SQL> SELECT LPAD(' ',2*(LEVEL-1)) || granted_role AS role
+  2    FROM dba_role_privs
+  3   START WITH grantee = 'DIR1'
+  4   CONNECT BY PRIOR granted_role = grantee;
+
+ROLE
+--------------------
+R_BQ_DIRECTEUR
+  R_BQ_CONSEILLER
+    R_BQ_GUICHET
+      R_BQ_CONNEXION
+R_BQ_GUICHET
+  R_BQ_CONNEXION
+
+6 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

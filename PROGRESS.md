@@ -20,8 +20,8 @@
 - [x] 3.1  [x] 3.2  [x] 3.3  [x] 3.4  [x] 3.5  [x] 3.6  [x] 3.7
 - [x] 4.1  [x] 4.2  [x] 4.3  [x] 4.4  [x] 4.5
 - [x] 5.1  [x] 5.2  [x] 5.3  [x] 5.4  [x] 5.5  [x] 5.6  [x] 5.7
-- [ ] 6.1 (T1)  [ ] 6.2 (T2)  [ ] 6.3 (T3)  [ ] 6.4 (T4)  [ ] 6.5 (T5)  [ ] 6.6 (T6)  [ ] 6.7 (T7)  [ ] 6.8
-- [ ] Rapport final compilé (PDF OK)
+- [x] 6.1 (T1)  [x] 6.2 (T2)  [x] 6.3 (T3)  [x] 6.4 (T4)  [x] 6.5 (T5)  [x] 6.6 (T6)  [x] 6.7 (T7)  [x] 6.8
+- [x] Rapport final compilé (PDF OK)
 
 ## État de la base (objets créés / supprimés, écarts constatés)
 - Chapitre 0 fait. `tools/sq.sh` : `-s` retiré pour que les commandes soient echoées (log `0_test`).
@@ -64,3 +64,4 @@
   DBMS_AUDIT_MGMT.FLUSH_UNIFIED_AUDIT_TRAIL -> PLS-00302 ; AUDIT_UNIFIED_ENABLED_POLICIES n'affiche pas les politiques
   activées ; DBA_FGA_AUDIT_TRAIL -> ORA-00904 (FGA dans UNIFIED_AUDIT_TRAIL) ; clause WHEN sur SYS_CONTEXT + littéral
   -> ORA-01756.
+- Chapitre 6 fait. Schéma BANQUE créé (6_init) : tables clients/comptes/operations, vue v_clients_guichet, procédure p_operation (droits du définisseur). Profils P_BQ_AGENT, P_BQ_CONSEIL, P_BQ_SENSIBLE, P_BQ_SERVICE créés (6.2). Comptes GUI1/GUI2 (P_BQ_AGENT), CONS1 (P_BQ_CONSEIL), DIR1/AUD1 (P_BQ_SENSIBLE), APP_BATCH (P_BQ_SERVICE), DEV_BQ (DEFAULT) créés avec proxy DEV_BQ -> BANQUE (6.3). Mots de passe : GUI1=Ag1#Banque2026, GUI2=Ag2#Banque2026, CONS1=Cn1#Conseil2026, DIR1=Dir1#Banque2026!, AUD1=Aud1#Banque2026!, APP_BATCH=BAtch##2026!, DEV_BQ=Dev1#Banque2026, GUI3=Ag3#Banque2026. Rôles R_BQ_CONNEXION/GUICHET/CONSEILLER/DIRECTEUR/AUDIT/BATCH créés et attribués (6.4). GRANT r_bq_guichet TO dir1 WITH ADMIN OPTION (seul privilège avec retransmission). Audit : POL_BQ_CLIENTS, POL_BQ_SOLDES (+_OPS) en WHENEVER NOT SUCCESSFUL, FGA FGA_BQ_GROS_MONTANTS, ORA_ACCOUNT_MGMT activés (6.5). 16 tests T6 exécutés (6.6_a + 6_6_b + session de fond). 3 requêtes de revue T7 (6.7 + 6_7b). Questions 6.8 rédigées. Écart 26ai : tests 4/9/13 renvoient ORA-41900 au lieu de ORA-01031 ; BANQUE a nécessité GRANT CREATE SESSION pour le proxy ; AUDIT_UNIFIED_ENABLED_POLICIES n'affiche pas les politiques activées.

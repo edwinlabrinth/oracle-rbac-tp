@@ -39,3 +39,19 @@
 \contentsline {subsection}{\numberline {6.5}Exercice 5.5 -- Politique conditionnelle et rôle}{89}{subsection.6.5}%
 \contentsline {subsection}{\numberline {6.6}Exercice 5.6 -- Audit fin des gros salaires (FGA)}{97}{subsection.6.6}%
 \contentsline {subsection}{\numberline {6.7}Exercice 5.7 -- Séparation des tâches et purge}{100}{subsection.6.7}%
+\contentsline {section}{\numberline {7}Étude de cas : Banque Atlas}{106}{section.7}%
+\contentsline {subsection}{\numberline {7.1}6\_init — Initialisation du schéma BANQUE}{106}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Exercice 6.1 — T1 : Matrice RBAC}{109}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Exercice 6.2 — T2 : Profils}{109}{subsection.7.3}%
+\contentsline {subsection}{\numberline {7.4}Exercice 6.3 — T3 : Comptes}{114}{subsection.7.4}%
+\contentsline {subsection}{\numberline {7.5}Exercice 6.4 — T4 : Rôles et habilitations}{115}{subsection.7.5}%
+\contentsline {subsection}{\numberline {7.6}Exercice 6.5 — T5 : Audit}{123}{subsection.7.6}%
+\contentsline {subsection}{\numberline {7.7}Exercice 6.6 — T6 : Campagne de tests (16 tests)}{125}{subsection.7.7}%
+\contentsline {subsection}{\numberline {7.8}Exercice 6.7 — T7 : Revue des habilitations}{131}{subsection.7.8}%
+\contentsline {subsection}{\numberline {7.9}Exercice 6.8 — Questions de synthèse}{135}{subsection.7.9}%
+\contentsline {subsubsection}{\numberline {7.9.1}1. Départ de GUI2}{135}{subsubsection.7.9.1}%
+\contentsline {subsubsection}{\numberline {7.9.2}2. Pourquoi P\_OPERATION protège mieux qu'un GRANT UPDATE(solde)}{136}{subsubsection.7.9.2}%
+\contentsline {subsubsection}{\numberline {7.9.3}3. Risque de la délégation du directeur}{136}{subsubsection.7.9.3}%
+\contentsline {subsubsection}{\numberline {7.9.4}4. Le DBA (SYS) peut lire les revenus — acceptable ?}{136}{subsubsection.7.9.4}%
+\contentsline {subsubsection}{\numberline {7.9.5}5. Limiter le conseiller à ses clients}{136}{subsubsection.7.9.5}%
+\contentsline {subsubsection}{\numberline {7.9.6}6. Deux améliorations de la politique de l'agence}{136}{subsubsection.7.9.6}%

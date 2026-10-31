@@ -1,0 +1,59 @@
+
+SQL*Plus: Release 23.26.3.0.0 - Production on Sat Oct 31 16:22:33 2026
+Version 23.26.3.0.0
+
+Copyright (c) 1982, 2026, Oracle.  All rights reserved.
+
+SQL> -- 6_3b.sql : Exercice 6.3 (T3 suite) -- Recréation des comptes refusés (complexité)
+SQL> SET LINESIZE 120 PAGESIZE 50
+SQL> CONNECT sys/"Admin#2026"@//localhost/FREEPDB1 AS SYSDBA
+Connected.
+SQL> 
+SQL> PROMPT === Recréation GUI1, GUI2, CONS1, APP_BATCH (mots de passe conformes) ===
+=== Recréation GUI1, GUI2, CONS1, APP_BATCH (mots de passe conformes) ===
+SQL> CREATE USER gui1 IDENTIFIED BY "Ag1#Banque2026" PROFILE p_bq_agent;
+
+User created.
+
+SQL> CREATE USER gui2 IDENTIFIED BY "Ag2#Banque2026" PROFILE p_bq_agent;
+
+User created.
+
+SQL> CREATE USER cons1 IDENTIFIED BY "Cn1#Conseil2026" PROFILE p_bq_conseil;
+
+User created.
+
+SQL> CREATE USER app_batch IDENTIFIED BY "Bt1#Batch2026" PROFILE p_bq_service;
+CREATE USER app_batch IDENTIFIED BY "Bt1#Batch2026" PROFILE p_bq_service
+*
+ERROR at line 1:
+ORA-28003: The password chosen did not meet the required complexity rules set by your organization.
+ORA-20000: password must contain 2 or more special characters
+Help: https://docs.oracle.com/error-help/db/ora-28003/
+
+
+SQL> 
+SQL> COLUMN username FORMAT A12
+SQL> COLUMN profile FORMAT A14
+SQL> COLUMN account_status FORMAT A12
+SQL> PROMPT === Comptes finaux ===
+=== Comptes finaux ===
+SQL> SELECT username, profile, account_status
+  2    FROM dba_users
+  3   WHERE username IN ('GUI1','GUI2','CONS1','DIR1','AUD1','APP_BATCH','DEV_BQ')
+  4   ORDER BY username;
+
+USERNAME     PROFILE	    ACCOUNT_STAT
+------------ -------------- ------------
+AUD1	     P_BQ_SENSIBLE  OPEN
+CONS1	     P_BQ_CONSEIL   OPEN
+DEV_BQ	     DEFAULT	    OPEN
+DIR1	     P_BQ_SENSIBLE  OPEN
+GUI1	     P_BQ_AGENT     OPEN
+GUI2	     P_BQ_AGENT     OPEN
+
+6 rows selected.
+
+SQL> EXIT
+Disconnected from Oracle AI Database 26ai Free Release 23.26.3.0.0 - Develop, Learn, and Run for Free
+Version 23.26.3.0.0

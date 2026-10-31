@@ -380,11 +380,86 @@ Overfull \hbox (1.78308pt too wide) in paragraph at lines 139--142
 []\TU/lmr/m/n/10.95 AUDITEUR tente \TU/DejaVuSansMono(0)/m/n/10.95 DROP AUDIT P
 OLICY pol\_rh\_salaires $\OMS/cmsy/m/n/10.95 !$ \TU/DejaVuSansMono(0)/m/n/10.95
  ORA-01031: insufficient
-) [105] (report/main.aux)
+) (./report/ch6.tex (./screenshots/6_init.tex [105] [106] [107])
+Overfull \hbox (11.78053pt too wide) in paragraph at lines 11--13
+[]\TU/lmr/m/n/10.95 L’utilisateur \TU/DejaVuSansMono(0)/m/n/10.95 BANQUE \TU/lm
+r/m/n/10.95 est créé avec \TU/DejaVuSansMono(0)/m/n/10.95 NO AUTHENTICATION \TU
+/lmr/m/n/10.95 et \TU/DejaVuSansMono(0)/m/n/10.95 QUOTA UNLIMITED ON users \TU/
+lmr/m/n/10.95 (schéma
+
+Overfull \hbox (49.51152pt too wide) in paragraph at lines 15--17
+[]\TU/lmr/m/n/10.95 La vue \TU/DejaVuSansMono(0)/m/n/10.95 v\_clients\_guichet 
+\TU/lmr/m/n/10.95 expose \TU/DejaVuSansMono(0)/m/n/10.95 client\_id, nom, cin, 
+telephone \TU/lmr/m/n/10.95 (pas de \TU/DejaVuSansMono(0)/m/n/10.95 revenu\_men
+suel\TU/lmr/m/n/10.95 ,
+[108]
+Overfull \hbox (146.02568pt too wide) in paragraph at lines 29--46
+ [] 
+
+Overfull \hbox (43.40416pt too wide) in paragraph at lines 60--63
+[]\TU/lmr/bx/n/10.95 E3 \TU/lmr/m/n/10.95 (soldes modifiables uniquement par P_
+OPERATION) : aucun rôle n’a \TU/DejaVuSansMono(0)/m/n/10.95 UPDATE \TU/lmr/m/n/
+10.95 sur \TU/DejaVuSansMono(0)/m/n/10.95 comptes.solde \TU/lmr/m/n/10.95 ;
+(./screenshots/6_2.tex [109] [110] [111] [112])
+Overfull \hbox (15.43379pt too wide) in paragraph at lines 75--79
+\TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_LOCK\_TIME 30/1440\TU/lmr/m/n/10.95 ,
+ \TU/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_LIFE\_TIME 60\TU/lmr/m/n/10.95 , \TU
+/DejaVuSansMono(0)/m/n/10.95 PASSWORD\_REUSE\_TIME 365\TU/lmr/m/n/10.95 ,
+[113]
+Overfull \hbox (23.44467pt too wide) in paragraph at lines 84--87
+[]\TU/DejaVuSansMono(0)/m/n/10.95 P\_BQ\_SERVICE \TU/lmr/m/n/10.95 : \TU/DejaVu
+SansMono(0)/m/n/10.95 PASSWORD\_LIFE\_TIME UNLIMITED \TU/lmr/m/n/10.95 (pas d’e
+xpiration), \TU/DejaVuSansMono(0)/m/n/10.95 IDLE\_TIME DEFAULT\TU/lmr/m/n/10.95
+ ,
+(./screenshots/6_3d.tex) [114] (./screenshots/6_4.tex [115] [116] [117]
+[118] [119]) (./screenshots/6_4c.tex [120] [121])
+Overfull \hbox (43.91124pt too wide) in paragraph at lines 128--132
+[]\TU/lmr/m/n/10.95 Les rôles sont affectés aux comptes : GUI1/GUI2 $\OMS/cmsy/
+m/n/10.95 !$ \TU/DejaVuSansMono(0)/m/n/10.95 R\_BQ\_GUICHET\TU/lmr/m/n/10.95 , 
+CONS1 $\OMS/cmsy/m/n/10.95 !$ \TU/DejaVuSansMono(0)/m/n/10.95 R\_BQ\_CONSEILLER
+\TU/lmr/m/n/10.95 ,
+
+Overfull \hbox (10.84666pt too wide) in paragraph at lines 132--135
+[]\TU/DejaVuSansMono(0)/m/n/10.95 GRANT r\_bq\_guichet TO dir1 WITH ADMIN OPTIO
+N \TU/lmr/m/n/10.95 : DIR1 peut déléguer \TU/DejaVuSansMono(0)/m/n/10.95 R\_BQ\
+_GUICHET
+[122] (./screenshots/6_5.tex [123]) [124]
+Overfull \hbox (6.3371pt too wide) in paragraph at lines 157--160
+[]\TU/DejaVuSansMono(0)/m/n/10.95 POL\_BQ\_SOLDES \TU/lmr/m/n/10.95 et \TU/Deja
+VuSansMono(0)/m/n/10.95 POL\_BQ\_SOLDES\_OPS \TU/lmr/m/n/10.95 activés avec \TU
+/DejaVuSansMono(0)/m/n/10.95 WHENEVER NOT SUCCESSFUL \TU/lmr/m/n/10.95 : seules
+
+(./screenshots/6_6_a.tex [125]) (./screenshots/6_6_b.tex [126] [127] [128]
+[129]) (./screenshots/6_6_fond.tex) [130]
+Overfull \hbox (119.37416pt too wide) in paragraph at lines 182--219
+ [] 
+
+Overfull \hbox (25.48312pt too wide) in paragraph at lines 223--226
+[]\TU/lmr/m/n/10.95 Tests 4, 9, 13 : l’énoncé attend \TU/DejaVuSansMono(0)/m/n/
+10.95 ORA-01031 \TU/lmr/m/n/10.95 mais 26ai renvoie \TU/DejaVuSansMono(0)/m/n/1
+0.95 ORA-41900: missing UPDATE/DELETE
+(./screenshots/6_7.tex [131] [132] [133]) (./screenshots/6_7b.tex) [134]
+Overfull \hbox (49.11896pt too wide) in paragraph at lines 260--265
+[]\TU/lmr/bx/n/10.95 Tuer ses sessions ouvertes \TU/lmr/m/n/10.95 : \TU/DejaVuS
+ansMono(0)/m/n/10.95 SELECT sid, serial\# FROM v\$session WHERE username='GUI2'
+;
+[135]
+Overfull \hbox (18.78261pt too wide) in paragraph at lines 266--268
+[]\TU/lmr/bx/n/10.95 Vérifier qu’il ne possède aucun objet \TU/lmr/m/n/10.95 : 
+\TU/DejaVuSansMono(0)/m/n/10.95 SELECT owner, object\_name FROM dba\_objects
+
+Overfull \hbox (53.77611pt too wide) in paragraph at lines 302--309
+[]\TU/lmr/m/n/10.95 Créer une vue filtrée : \TU/DejaVuSansMono(0)/m/n/10.95 CRE
+ATE VIEW banque.v\_clients\_conseiller AS SELECT * FROM banque.clients
+
+Overfull \hbox (4.58919pt too wide) in paragraph at lines 302--309
+\TU/lmr/m/n/10.95 ajoute automatiquement le prédicate \TU/DejaVuSansMono(0)/m/n
+/10.95 conseiller = SYS\_CONTEXT('USERENV','SESSION\_USER')
+[136]) [137] (report/main.aux)
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  )
 (see the transcript file for additional information)
-Output written on report/main.pdf (106 pages).
+Output written on report/main.pdf (138 pages).
 Transcript written on report/main.log.
