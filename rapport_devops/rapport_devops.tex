@@ -23,6 +23,7 @@
 \geometry{margin=2.5cm}
 
 \definecolor{intelliops}{RGB}{0,51,102}
+\definecolor{ensablue}{RGB}{0,51,102}
 \definecolor{codebg}{RGB}{245,245,245}
 
 \lstset{
@@ -50,7 +51,12 @@
 \titleformat{\section}{\Large\bfseries\color{intelliops}}{\thesection}{1em}{}
 \titleformat{\subsection}{\large\bfseries\color{intelliops}}{\thesubsection}{1em}{}
 
-\pagestyle{empty}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{LACHHAB Mohammed - GINF2}
+\fancyhead[R]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
 
 \begin{document}
 
@@ -58,20 +64,34 @@
 \begin{titlepage}
 \thispagestyle{empty}
 \begin{center}
-\vspace*{1.5cm}
+\vspace*{1cm}
 
-\includegraphics[height=4.2cm]{Ensat.jpg}\hfill\includegraphics[height=3.2cm]{header-devops.png}\\[1.4cm]
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \includegraphics[width=4.5cm]{Ensat.jpg}
+\end{minipage}
+\hfill
+\begin{minipage}{0.45\textwidth}
+    \centering
+    \includegraphics[width=6.5cm]{header-devops.png}
+\end{minipage}
 
-{\LARGE\bfseries\color{intelliops} Etude Technique des Sources de Données\\[0.3cm]
-et Modes de Collecte d'Evenements\\[0.5cm]
-(Plateforme IntelliOps)}\\[1.8cm]
+\vspace{1.5cm}
 
-{\large\itshape Architecture d'Ingestion - Sources de Données et Événements}\\[2.2cm]
+{\color{ensablue}\rule{\textwidth}{2pt}}
+\vspace{0.8cm}
+
+{\color{ensablue}\LARGE\bfseries RAPPORT TECHNIQUE}\\[0.4cm]
+{\color{ensablue}\Large\bfseries Plateforme IntelliOps}\\[0.3cm]
+{\color{ensablue}\large Étude des sources et modes de collecte (Agent 1 --- Extraction)}
+
+\vspace{1.2cm}
+{\color{ensablue}\rule{\textwidth}{2pt}}
+\vspace{1.2cm}
 
 {\large \textbf{Auteur :} LACHHAB Mohammed}\\[0.4cm]
-{\large \textbf{Filière :} GINF2}\\[0.4cm]
-{\large \textbf{Etablissement :} ENSA de Tanger}\\[0.4cm]
-{\large \textbf{Année universitaire :} 2025-2026}\\[1.8cm]
+{\large \textbf{Filière :} GINF2 --- ENSA de Tanger}\\[0.4cm]
+{\large \textbf{Année universitaire :} 2025-2026}
 \end{center}
 \end{titlepage}
 
